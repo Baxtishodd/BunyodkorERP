@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Record
+from .models import Record, Product
+
 
 class SignUpForm(UserCreationForm):
 	email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
@@ -49,3 +50,30 @@ class AddRecordForm(forms.ModelForm):
 	class Meta:
 		model = Record
 		exclude = ("user",)
+
+
+# Create Add Product Form
+class Add_Product_Form(forms.ModelForm):
+	customer_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Customer Name", "class":"form-control"}), label="")
+	model_id = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Model ID", "class":"form-control"}), label="")
+	model_sign_date = forms.CharField(required=True, widget=forms.widgets.DateInput(attrs={"placeholder":"Model Sign Date", "class":"form-control"}), label="")
+	fi_date = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"FI Date", "class":"form-control"}), label="")
+	quantity = forms.IntegerField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Quantity", "class":"form-control"}), label="")
+	example_ld = forms.CharField( widget=forms.widgets.TextInput(attrs={"placeholder":"LD", "class":"form-control"}), label="")
+	example_fit = forms.CharField( widget=forms.widgets.TextInput(attrs={"placeholder":"FIT", "class":"form-control"}), label="")
+	example_bulk = forms.CharField( widget=forms.widgets.TextInput(attrs={"placeholder":"BULK", "class":"form-control"}), label="")
+	example_print = forms.CharField( widget=forms.widgets.TextInput(attrs={"placeholder":"Print", "class":"form-control"}), label="")
+	pps = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"PPS", "class":"form-control"}), label="")
+	slice_qty = forms.IntegerField(widget=forms.widgets.TextInput(attrs={"placeholder": "Slice quantity", "class": "form-control"}), label="")
+	slice_status = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"Slice Status", "class":"form-control"}), label="")
+	print_qty = forms.IntegerField(widget=forms.widgets.TextInput(attrs={"placeholder": "Print quantity", "class": "form-control"}), label="")
+	print_status = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"Print Status", "class":"form-control"}), label="")
+	sewing_qty = forms.IntegerField(widget=forms.widgets.TextInput(attrs={"placeholder": "Print quantity", "class": "form-control"}), label="")
+	sewing_status = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"Sewing status", "class":"form-control"}), label="")
+	packing_qty = forms.IntegerField(widget=forms.widgets.TextInput(attrs={"placeholder": "Packing quantity", "class": "form-control"}), label="")
+	packing_status = forms.CharField(widget=forms.widgets.TextInput(attrs={"placeholder":"Packing status", "class":"form-control"}), label="")
+	date_of_update = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder": "Data Update time", "class": "form-control"}), label="")
+	class Meta:
+		model = Product
+		exclude = ("user",)
+

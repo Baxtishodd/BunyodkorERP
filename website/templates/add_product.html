@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+<h1>Add Product</h1>
+<br/>
+
+<form method="POST" action="{% url 'add_product' %}">
+	{% csrf_token %}
+
+	{{ form.customer_name }}<br>
+	{{ form.model_id }}<br>
+	{{ form.fi_date }}<br>
+	{{ form.quantity }}<br>
+	{{ form.example_ld }}<br>
+	{{ form.example_fit }}<br>
+	{{ form.example_bulk }}<br>
+	{{ form.example_print }}<br>
+	{{ form.pps }}<br>
+	{{ form.slice_qty }}<br>
+	{{ form.slice_status }}<br>
+	{{ form.print_qty }}<br>
+	{{ form.print_status }}<br>
+	{{ form.sewing_qty }}<br>
+	{{ form.sewing_status }}<br>
+    {{ form.packing_qty }}<br>
+	{{ form.packing_status }}<br>
+	{{ form.date_of_update }}
+
+
+<br/>
+  <button type="submit" class="btn btn-secondary">Add Product</button>
+   <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+
+</form>
+</div>
+
+{% endblock %}
+
+

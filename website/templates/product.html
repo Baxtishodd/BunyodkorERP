@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="card">
+  <div class="card-header"><strong>
+    	<h2>{{ product_record.customer_name }}</h2></strong>
+  </div>
+  <div class="card-body">
+    <p class="card-text"><strong>Model ID: </strong>{{ product_record.model_id }}</p>
+    <p class="card-text"><strong>Model imzolangan sana: </strong>{{ product_record.model_sign_date }}</p>
+    <p class="card-text"><strong>Model FI sana: </strong>{{ product_record.model_FI_date }}</p>
+    <p class="card-text"><strong>Soni: </strong>{{ product_record.quantity }}</p>
+    <p class="card-text"><strong>Namuna LD: </strong>{{ product_record.example_LD }}</p>
+    <p class="card-text"><strong>Namuna FIT: </strong>{{ product_record.example_FIT }}</p>
+    <p class="card-text"><strong>Namuna BULK: </strong>{{ product_record.example_BULK }}</p>
+    <p class="card-text"><strong>Namuna Print: </strong>{{ product_record.example_Print }}</p>
+    <p class="card-text"><strong>Namuna PPS: </strong>{{ product_record.example_PPS }}</p>
+    <p class="card-text"><strong>Kesim Soni: </strong>{{ product_record.slice_qty }}</p>
+    <p class="card-text"><strong>Kesim holati: </strong>{{ product_record.slice_status }}</p>
+    <p class="card-text"><strong>Pechat soni: </strong>{{ product_record.print_qty }}</p>
+    <p class="card-text"><strong>Pechat holati: </strong>{{ product_record.print_status }}</p>
+    <p class="card-text"><strong>Tikim soni: </strong>{{ product_record.sewing_qty }}</p>
+    <p class="card-text"><strong>Tikim holati: </strong>{{ product_record.sewing_status }}</p>
+    <p class="card-text"><strong>Upakovka soni: </strong>{{ product_record.packing_qty }}</p>
+    <p class="card-text"><strong>Upakovka holati: </strong>{{ product_record.packing_status }}</p>
+    <p class="card-text"><strong>Ma'lumot yangilangan sana: </strong>{{ product_record.date_of_update }}</p>
+  </div>
+</div>
+
+<br/><br/>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+<a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger">Delete</a>
+<a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update Record</a>
+
+
+{% endblock %}

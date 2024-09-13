@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+{% if user.is_authenticated %}
+
+
+<table class="table table-striped table-hover table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">Customer Name</th>
+      <th scope="col">Model ID</th>
+      <th scope="col">ModelSignDate</th>
+      <th scope="col">FI Date</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">LD</th>
+      <th scope="col">FIT</th>
+      <th scope="col">BULK</th>
+      <th scope="col">Print</th>
+      <th scope="col">PPS</th>
+      <th scope="col">Slice status</th>
+      <th scope="col">Print status</th>
+      <th scope="col">Sewing status</th>
+      <th scope="col">Packing status</th>
+      <th scope="col">ID</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% if products %}
+	{% for product in products %}
+		<tr>
+			<td><a href="{% url 'product' product.id %}">{{ product.customer_name }}</a></td>
+			<td>{{ product.model_id }}</td>
+			<td>{{ product.model_sign_date }}</td>
+			<td>{{ product.model_FI_date }}</td>
+			<td>{{ product.quantity }}</td>
+			<td>{{ product.example_LD }}</td>
+			<td>{{ product.example_FIT }}</td>
+			<td>{{ product.example_BULK }}</td>
+			<td>{{ product.example_Print }}</td>
+			<td>{{ product.example_PPS }}</td>
+			<td>{{ product.slice_status }}</td>
+			<td>{{ product.print_status }}</td>
+			<td>{{ product.sewing_status }}</td>
+			<td>{{ product.packing_status }}</td>
+			<td><a href="{% url 'product' product.id %}">{{ product.id }}</a></td>
+		</tr>
+	{% endfor %}
+
+{% endif %}
+
+
+	  </tbody>
+	</table>
+
+
+
+
+
+{% else %}
+
+<div class="col-md-6 offset-md-3">
+    <h1>Login</h1>
+    <br/>
+    <form method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+
+      <div class="mb-3">
+        <input type="text" class="form-control" name="username", placeholder="Username" required>
+      </div><br/>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="password", placeholder="Password" required>
+      </div>
+      <br/>
+      <button type="submit" class="btn btn-secondary">Login</button>
+
+    </form>
+</div>
+
+
+{% endif %}
+
+{% endblock %}
