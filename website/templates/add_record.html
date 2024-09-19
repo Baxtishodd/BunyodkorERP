@@ -3,12 +3,12 @@
 
 <form method="POST" action="{% url 'add_record' %}">{% csrf_token %}
     <!-- Accordion start -->
-    <div class="accordion" id="accordionPanelsStayOpenExample">
+    <div class="accordion shadow-lg" id="accordionPanelsStayOpenExample">
 
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-            XODIM MA`LUMOTLARI
+            XODIM MA'LUMOTLARI
           </button>
         </h2>
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
@@ -75,8 +75,6 @@
                     <label class="form-label">Email:</label>
                     {{ form.email }}
                   </div>
-
-
               </div>
 
           </div>
@@ -86,7 +84,7 @@
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-            BANDLIK MA`LUMOTLARI
+            BANDLIK MA'LUMOTLARI
           </button>
         </h2>
         <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
