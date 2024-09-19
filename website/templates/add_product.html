@@ -2,37 +2,89 @@
 {% block content %}
 
 <div class="col-md-6 offset-md-3">
-<h1>Add Product</h1>
+<h1>MODEL Qo`shish</h1>
 <br/>
-
-<form method="POST" action="{% url 'add_product' %}">
-	{% csrf_token %}
-
-	{{ form.customer_name }}<br>
-	{{ form.model_id }}<br>
-	{{ form.fi_date }}<br>
-	{{ form.quantity }}<br>
-	{{ form.example_ld }}<br>
-	{{ form.example_fit }}<br>
-	{{ form.example_bulk }}<br>
-	{{ form.example_print }}<br>
-	{{ form.pps }}<br>
-	{{ form.slice_qty }}<br>
-	{{ form.slice_status }}<br>
-	{{ form.print_qty }}<br>
-	{{ form.print_status }}<br>
-	{{ form.sewing_qty }}<br>
-	{{ form.sewing_status }}<br>
-    {{ form.packing_qty }}<br>
-	{{ form.packing_status }}<br>
-	{{ form.date_of_update }}
-
-
-<br/>
-  <button type="submit" class="btn btn-secondary">Add Product</button>
-   <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
-
-</form>
+	<form method="POST" action="{% url 'add_product' %}">
+		{% csrf_token %}
+		<div class="container text-center">
+		  <div class="row">
+			<div class="col">
+			  {{ form.customer_name }}
+			</div>
+			<div class="col">
+			  {{ form.model_id }}
+			</div>
+			<div class="col">
+			  {{ form.fi_date }}
+			</div>
+		  </div>
+			<br>
+		  <div class="row">
+			<div class="col">
+			   {{ form.quantity }}
+			</div>
+			<div class="col">
+			   {{ form.example_ld }}
+			</div>
+			<div class="col">
+			   {{ form.example_fit }}
+			</div>
+		  </div>
+			<br>
+		  <div class="row">
+			<div class="col">
+			   {{ form.example_bulk }}
+			</div>
+			<div class="col">
+			   {{ form.example_print }}
+			</div>
+			<div class="col">
+			   {{ form.pps }}
+			</div>
+		  </div>
+			<br>
+		  <div class="row">
+			<div class="col">
+			   {{ form.slice_qty }}
+			</div>
+			<div class="col">
+			   {{ form.slice_status }}
+			</div>
+			<div class="col">
+			   {{ form.print_qty }}
+			</div>
+		  </div>
+			<br>
+		  <div class="row">
+			<div class="col">
+			   {{ form.print_status }}
+			</div>
+			<div class="col">
+			   {{ form.sewing_qty }}
+			</div>
+			<div class="col">
+			   {{ form.sewing_status }}
+			</div>
+		  </div>
+			<br>
+		  <div class="row">
+			<div class="col">
+				{{ form.packing_qty }}
+			</div>
+			<div class="col">
+				{{ form.packing_status }}
+			</div>
+			<div class="col">
+				{{ form.date_of_update }}
+			</div>
+		  </div>
+			<br>
+			{{ form.status }}
+			<br>
+		  <button type="submit" class="btn btn-secondary">Add Product</button>
+		   <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+		</div>
+	</form>
 </div>
 
 {% endblock %}

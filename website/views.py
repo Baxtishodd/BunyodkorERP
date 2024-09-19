@@ -15,19 +15,18 @@ def home(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			messages.success(request, "You Have Been Logged In!")
+			messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
 			return redirect('home')
 		else:
-			messages.success(request, "There Was An Error Logging In, Please Try Again...")
+			messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
 			return redirect('home')
 	else:
 		return render(request, 'home.html', {'records':records})
 
 
-
 def logout_user(request):
 	logout(request)
-	messages.success(request, "You Have Been Logged Out...")
+	messages.success(request, "Tizimdan chiqdingiz!")
 	return redirect('home')
 
 
@@ -41,7 +40,7 @@ def register_user(request):
 			password = form.cleaned_data['password1']
 			user = authenticate(username=username, password=password)
 			login(request, user)
-			messages.success(request, "You Have Successfully Registered! Welcome!")
+			messages.success(request, "Siz muvaffaqiyatli ro`yhatdan o`tdingiz!")
 			return redirect('home')
 	else:
 		form = SignUpForm()
@@ -50,6 +49,11 @@ def register_user(request):
 	return render(request, 'register.html', {'form':form})
 
 
+def dashboard_view(request, pk=1):
+	if request.user.is_authenticated:
+		user = Record.objects.get(id=pk)
+		return render(request, 'dashboard.html', {'dashboard_view': user})
+
 ###			start record  		###
 def customer_record(request, pk):
 	if request.user.is_authenticated:
@@ -57,7 +61,7 @@ def customer_record(request, pk):
 		customer_record = Record.objects.get(id=pk)
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
-		messages.success(request, "You Must Be Logged In To View That Page...")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('home')
 
 
@@ -66,10 +70,10 @@ def delete_record(request, pk):
 	if request.user.is_authenticated:
 		delete_it = Record.objects.get(id=pk)
 		delete_it.delete()
-		messages.success(request, "Record Deleted Successfully...")
+		messages.warning(request, "Ma`lumotlar o`chirildi!")
 		return redirect('home')
 	else:
-		messages.success(request, "You Must Be Logged In To Do That...")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('home')
 
 
@@ -79,14 +83,14 @@ def add_record(request):
 		if request.method == "POST":
 			if form.is_valid():
 				add_record = form.save()
-				messages.success(request, "Record Added...")
+				messages.success(request, "Ma`lumotlar qo`shildi!")
 				return redirect('home')
 			else:
-				messages.success(request, "Data is not valid")
-				print("Data is not valid")
+				messages.success(request, "Ma`lumotlar qo`shilmadi! Formada qandaydir xatolik mavjud!")
+
 		return render(request, 'add_record.html', {'form':form})
 	else:
-		messages.success(request, "You Must Be Logged In...")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('home')
 
 
@@ -96,11 +100,11 @@ def update_record(request, pk):
 		form = AddRecordForm(request.POST or None, instance=current_record)
 		if form.is_valid():
 			form.save()
-			messages.success(request, "Record Has Been Updated!")
+			messages.success(request, "Ma`lumotlar o`zgartirildi!")
 			return redirect('home')
 		return render(request, 'update_record.html', {'form':form})
 	else:
-		messages.success(request, "You Must Be Logged In...")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('home')
 
 ### 		End record		###
@@ -116,10 +120,10 @@ def products(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			messages.success(request, "You Have Been Logged In!")
+			messages.success(request, "Tizimga kirgansiz!")
 			return redirect('products')
 		else:
-			messages.success(request, "There Was An Error Logging In, Please Try Again...")
+			messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 			return redirect('products')
 	else:
 		return render(request, 'product_list.html', {'products':products})
@@ -130,7 +134,7 @@ def product_record(request, pk):
 		product_record = Product.objects.get(id=pk)
 		return render(request, 'product.html', {'product_add': product_record})
 	else:
-		messages.success(request, "You Must Be Logged In To View That Page...")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('home')
 
 
@@ -138,10 +142,10 @@ def delete_product(request, pk):
 	if request.user.is_authenticated:
 		delete_it = Product.objects.get(id=pk)
 		delete_it.delete()
-		messages.success(request, "Product Deleted succesfully")
+		messages.success(request, "Model o`chirildi")
 		return redirect('product')
 	else:
-		messages.success(request, "You Must Be Logged In To View That Page")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('product')
 
 
@@ -151,11 +155,11 @@ def add_product(request):
 		if request.method == "POST":
 			if form.is_valid():
 				add_product = form.save()
-				messages.success(request, "Product Added")
+				messages.success(request, "Model qo`shildi")
 				return redirect('add_product')
 		return render(request, 'add_product.html', {'form':form})
 	else:
-		messages.success(request, "You must Be Logged In")
+		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('add_product')
 
 

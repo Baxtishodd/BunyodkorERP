@@ -2,51 +2,71 @@
 {% block content %}
 
 
+<div class="card shadow-lg" style="max-width:400px;">
+  <div class="card-header">
 
-<div class="card">
-  <div class="card-header"><strong>
-    	{{ customer_record.first_name }} 
-		{{ customer_record.last_name }}</strong>
+    <strong>
+      <i class="bi bi-person"></i>
+      {{ customer_record.first_name }}
+      {{ customer_record.last_name }}
+    </strong>
   </div>
   <div class="card-body">
+    <p class="card-text">
+    <strong>Email: </strong>{{ customer_record.email }}</p>
+    <p class="card-text">
+    <strong>Phone: </strong>{{ customer_record.phone }}</p>
+    <p class="card-text">
+    <strong>Address: </strong>{{ customer_record.address }}</p>
+    <p class="card-text">
+    <strong>City: </strong>{{ customer_record.city }}</p>
+    <p class="card-text">
+    <strong>State: </strong>{{ customer_record.state }}</p>
+    <p class="card-text">
+    <strong>Zipcode: </strong>{{ customer_record.zipcode }}</p>
+    <p class="card-text">
+    <strong>Create At: </strong>{{ customer_record.created_at }}</p>
+
+    <p class="card-text">
+    <strong>ID: </strong>{{ customer_record.id }}</p>
+  </div>
+    <div class="card-footer">
+
+      <a href="{% url 'home' %}" class="btn btn-secondary rounded-5 g-2">
+        <i class="bi bi-arrow-left"></i> Orqaga</a>
+
+      <a href="{% url 'update_record' customer_record.id %}" class="btn btn-success rounded-5 g-2">
+        <i class="bi bi-pen"></i> O`zgartirish</a>
+
+      <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <i class="bi bi-trash"></i>
+      </button>
+    </div>
+</div>
 
 
 
-<p class="card-text">
-<strong>Email: </strong>{{ customer_record.email }}</p>
-
-<p class="card-text">
-<strong>Phone: </strong>{{ customer_record.phone }}
-</p>
-
-<p class="card-text">
-<strong>Address: </strong>{{ customer_record.address }}</p>
-
-<p class="card-text">
-<strong>City: </strong>{{ customer_record.city }}</p>
-
-<p class="card-text">
-<strong>State: </strong>{{ customer_record.state }}</p>
-
-<p class="card-text">
-<strong>Zipcode: </strong>{{ customer_record.zipcode }}</p>
-
-<p class="card-text">
-<strong>Create At: </strong>{{ customer_record.created_at }}</p>
-
-<p class="card-text">
-<strong>ID: </strong>{{ customer_record.id }}</p>
-    
-    
+<!-- Modal -->
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ma`lumotlarni o`chirish</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Chindan ham ma`lumotlarni o`chirishni hohlaysizmi?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Orqaga</button>
+        <a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger">
+        <i class="bi bi-trash"></i> O`chirish
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 
-<br/><br/>
-<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 
-<a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger">Delete</a>
-
-<a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update Record</a>
-		
 
 {% endblock %}

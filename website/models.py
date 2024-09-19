@@ -2,15 +2,33 @@ from django.db import models
 
 
 class Record(models.Model):
+	SEX_CHOICES = [
+		('Ayol', 'Ayol'),
+		('Erkak', 'Erkak'),
+	]
+	FAMILY_SITUATION_CHOICES = [
+		("Yolg'iz", "Yolg'iz"),
+		('Oilali', 'Oilali'),
+	]
+
 	created_at = models.DateTimeField(auto_now_add=True)
+	# Xodim ma`lumotlari
 	first_name = models.CharField(max_length=50)
 	last_name =  models.CharField(max_length=50)
-	email =  models.CharField(max_length=100)
-	phone = models.CharField(max_length=15)
-	address =  models.CharField(max_length=100)
-	city =  models.CharField(max_length=50)
-	state =  models.CharField(max_length=50)
-	zipcode =  models.CharField(max_length=20)
+	# sex =  models.CharField(max_length=50)
+	# family_situation =  models.CharField(max_length=50)
+	birthday =  models.DateField(null=True, blank=True)
+	nationality =  models.CharField(max_length=100, null=True, blank=True)
+	zipcode = models.CharField(max_length=20, null=True, blank=True)
+	address =  models.CharField(max_length=100, null=True, blank=True)
+	city =  models.CharField(max_length=50, null=True, blank=True)
+	state =  models.CharField(max_length=50, null=True, blank=True)
+	country = models.CharField(max_length=50, null=True, blank=True)
+	email = models.CharField(max_length=50, null=True, blank=True)
+	phone = models.CharField(max_length=50, null=True, blank=True)
+	sex = models.CharField(max_length=10, choices=SEX_CHOICES, null=True, blank=True)  # Using choices
+	family_situation = models.CharField(max_length=10, default="Yolg'iz", choices=FAMILY_SITUATION_CHOICES)  # Using choices
+
 
 	def __str__(self):
 		return f"{self.first_name} {self.last_name}"
