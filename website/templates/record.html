@@ -16,21 +16,28 @@
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
           <div class="accordion-body">
               <div class="row g-2">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <label class="form-label"><strong>Ismi:</strong></label>
                       {{ customer_record.first_name }}
-
                   </div>
-                  <div class="col-md-6 ">
+                  <div class="col-md-4">
+                    <label class="form-label"><strong>Ishchi ID:</strong></label>
+                      EMP{{ customer_record.id }}
+                  </div>
+                  <div class="col-md-4 ">
 
                     <label class="form-label"><strong>Jinsi:</strong> </label>
                       {{ customer_record.sex }}
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <label class="form-label"><strong>Familiyasi:</strong></label>
                       {{ customer_record.last_name }}
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
+                    <label class="form-label"><strong>Otasinig ismi:</strong></label>
+                      {{ customer_record.father_name }}
+                  </div>
+                  <div class="col-md-4">
                       <label class="form-label"><strong>Oilaviy ahvoli:</strong></label>
                       {{ customer_record.family_situation }}
                   </div>
