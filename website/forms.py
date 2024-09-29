@@ -46,7 +46,7 @@ class AddRecordForm(forms.ModelForm):
 		fields = [
 			'first_name', 'last_name', 'father_name', 'birthday', 'nationality',
 			'zipcode', 'address', 'city', 'state', 'country',
-			'email', 'phone', 'sex', 'family_situation'
+			'email', 'phone', 'sex', 'family_situation', 'avatar',
 		]
 		widgets = {
 			'first_name': forms.TextInput(attrs={'class': 'form-control'}),

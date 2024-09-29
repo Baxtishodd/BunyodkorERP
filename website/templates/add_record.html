@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<form method="POST" action="{% url 'add_record' %}">{% csrf_token %}
+<form method="POST" action="{% url 'add_record' %}" enctype="multipart/form-data">{% csrf_token %}
     <!-- Accordion start -->
     <div class="accordion shadow-lg" id="accordionPanelsStayOpenExample">
 
@@ -181,7 +181,7 @@
     <div class="row">
         <div class="col-md-3">
             <button type="submit" class="btn btn-success"><i class="bi bi-person-plus"></i> Qo`shish</button>
-            <a href="{% url 'home' %}" class="btn btn-secondary">Orqaga</a>
+            <a href="{% url 'records' %}" class="btn btn-secondary">Orqaga</a>
         </div>
         <div class="col-md-3">
 

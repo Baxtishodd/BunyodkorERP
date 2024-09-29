@@ -1,5 +1,6 @@
 from django.db import models
-
+# from django.contrib.auth.models import User
+# from django.contrib.auth import get_user_model
 
 
 
@@ -15,6 +16,8 @@ class Record(models.Model):
 	]
 
 	created_at = models.DateTimeField(auto_now_add=True)
+	# created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # New field
+
 	# Xodim ma`lumotlari
 	first_name = models.CharField(max_length=50)
 	last_name =  models.CharField(max_length=50)
@@ -30,6 +33,9 @@ class Record(models.Model):
 	phone = models.CharField(max_length=50, null=True, blank=True)
 	sex = models.CharField(max_length=10, choices=SEX_CHOICES, null=True, blank=True)  # Using choices
 	family_situation = models.CharField(max_length=10, default="Yolg'iz", choices=FAMILY_SITUATION_CHOICES)  # Using choices
+
+	# Avatar field
+	avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
 
 	def __str__(self):

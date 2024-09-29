@@ -10,8 +10,15 @@ per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
-def home(request):
-	records = Record.objects.all() # Fetch all records from the database
+
+# Bosh sahifa
+def index_page(request):
+
+	return render(request, 'index.html')
+
+# Xodimlar ro`yhati
+def records_view(request):
+	records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
 	paginator = Paginator(records, 30)  # Show 30 records per page
 
 	page_number = request.GET.get('page')
@@ -29,10 +36,10 @@ def home(request):
 		if user is not None:
 			login(request, user)
 			messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
-			return redirect('home')
+			return redirect('records')
 		else:
 			messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
-			return redirect('home')
+			return redirect('records')
 	# search method
 	elif query:
 		page_obj = Record.objects.filter(first_name__icontains=query) | \
@@ -48,31 +55,6 @@ def home(request):
 		return render(request, 'home.html', {'records':page_obj})
 
 
-def logout_user(request):
-	logout(request)
-	messages.success(request, "Tizimdan chiqdingiz!")
-	return redirect('home')
-
-
-# def register_user(request):
-# 	if request.method == 'POST':
-# 		form = SignUpForm(request.POST)
-# 		if form.is_valid():
-# 			form.save()
-# 			# Authenticate and login
-# 			username = form.cleaned_data['username']
-# 			password = form.cleaned_data['password1']
-# 			user = authenticate(username=username, password=password)
-# 			login(request, user)
-# 			messages.success(request, "Siz muvaffaqiyatli ro`yhatdan o`tdingiz!")
-# 			return redirect('home')
-# 	else:
-# 		form = SignUpForm()
-# 		return render(request, 'register.html', {'form':form})
-#
-# 	return render(request, 'register.html', {'form':form})
-
-
 def dashboard_view(request, pk=1):
 	if request.user.is_authenticated:
 		user = Record.objects.get(id=pk)
@@ -86,7 +68,7 @@ def customer_record(request, pk):
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('home')
+		return redirect('records')
 
 
 
@@ -96,7 +78,7 @@ def delete_record(request, pk):
 			delete_it = Record.objects.get(id=pk)
 			delete_it.delete()
 			messages.warning(request, "Ma`lumotlar o`chirildi!")
-			return redirect('home')
+			return redirect('')
 		else:
 			messages.success(request, per_del_mess)
 			return redirect('home')
@@ -106,7 +88,7 @@ def delete_record(request, pk):
 
 
 def add_record(request):
-	form = AddRecordForm(request.POST or None)
+	form = AddRecordForm(request.POST , request.FILES or None)
 	if request.user.is_authenticated:
 		if request.user.has_perm('website.add_record'):
 			if request.method == "POST":

@@ -6,18 +6,13 @@ from django.contrib.auth.models import User
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustomUser
-        fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-        )
+        fields = ('username', 'first_name', 'last_name', 'email',)
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ('username','first_name','last_name','email','age',)
+        fields = ('first_name','last_name','email','age',)
 
 
 
@@ -45,7 +40,7 @@ class SignUpForm(UserCreationForm):
         self.fields['password1'].label = ''
         self.fields['password1'].help_text = ('<ul class="form-text text-muted small">'
                                               '<li>Sizning parol ma\'lumotlaringiz bilan bir hil bo\'lmasin!</li>'
-                                              '<li>Sizning parol 8 belgidan kam bo\'lmasin!</li>'
+                                                     '<li>Sizning parol 8 belgidan kam bo\'lmasin!</li>'
                                               '<li>Sizning parol juda ham oddiy bo\'lmasligi lozim!</li>'
                                               '<li>Sizning parol faqat raqamlardan tashkil topmasligi lozim!</li></ul>')
 

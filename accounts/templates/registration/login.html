@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+<div class="col-md-6 offset-md-3">
+
+    <form method="POST" action="{% url 'records' %}">{% csrf_token %}
+
+        <div class="card shadow-lg mt-5" style="max-width: 50%;">
+            <div class="card-header">Login</div>
+            <div class="card-body">
+                <div class="input-group mb-6">
+                    <span class="input-group-text" ><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control" name="username" placeholder="Username" required>
+                </div><br/>
+                <div class="input-group mb-3">
+                      <span class="input-group-text" ><i class="bi bi-lock"></i></span>
+                  <input type="password" class="form-control" name="password" placeholder="Parol" required>
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-primary w-100" style="max-width:100%;">Login</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock %}
