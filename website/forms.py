@@ -64,6 +64,7 @@ class AddRecordForm(forms.ModelForm):
 			'sex': forms.RadioSelect(choices=Record.SEX_CHOICES), # RadioType
 			'family_situation': forms.Select(choices=Record.FAMILY_SITUATION_CHOICES,
 											 attrs={'class': 'form-select'}),  # Dropdown
+			'avatar': forms.ClearableFileInput(attrs={'class': 'form-control'})
 		}
 
 

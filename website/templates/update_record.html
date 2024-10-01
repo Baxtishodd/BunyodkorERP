@@ -2,8 +2,15 @@
 {% block content %}
 
 
-<h4>Ma'lumotlarni o'zgartirish</h4>
-<form method="POST" >{% csrf_token %}
+<!--<h4>Ma'lumotlarni o'zgartirish</h4>-->
+<div class="d-flex justify-content-center align-items-center mb-4" style="">
+    {% if customer_record.avatar %}
+        <img class="rounded-circle" src="{{ customer_record.avatar.url }}" width="200px" height="200px" alt="Avatar">
+    {% else %}
+        <img class="rounded-circle" src="/media/avatars/default-avatar.jpg" width="200px" height="200px" alt="Avatar">
+    {% endif %}
+</div>
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
     <!-- Accordion start -->
     <div class="accordion shadow-lg" id="accordionPanelsStayOpenExample">
 
@@ -16,12 +23,17 @@
         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
           <div class="accordion-body">
               <div class="row g-4">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <label class="form-label">Ismi:</label>
                       {{ form.first_name }}
 
                   </div>
-                  <div class="col-md-6 ">
+                  <div class="col-md-4">
+                    <label class="form-label">Avatar:</label>
+                      {{ form.avatar }}
+
+                  </div>
+                  <div class="col-md-4 ">
 
                     <label class="form-label">Jinsi: </label><br>
                       {% for value, label in form.sex.field.choices %}
@@ -182,8 +194,8 @@
 
     <div class="row">
         <div class="col-md-3">
-            <button type="submit" class="btn btn-success"><i class="bi bi-database-add"></i> Saqlash</button>
             <a href="{% url 'records' %}" class="btn btn-secondary">Orqaga</a>
+            <button type="submit" class="btn btn-success"><i class="bi bi-database-add"></i> Saqlash</button>
         </div>
         <div class="col-md-3">
 

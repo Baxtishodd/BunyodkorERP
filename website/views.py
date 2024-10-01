@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -71,58 +71,87 @@ def customer_record(request, pk):
 		return redirect('records')
 
 
-
 def delete_record(request, pk):
 	if request.user.is_authenticated:
 		if request.user.has_perm('website.delete_record'):
 			delete_it = Record.objects.get(id=pk)
 			delete_it.delete()
 			messages.warning(request, "Ma`lumotlar o`chirildi!")
-			return redirect('')
+			return redirect('records')
 		else:
 			messages.success(request, per_del_mess)
-			return redirect('home')
+			return redirect('records')
 	else:
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('home')
+		return redirect('index')
 
 
 def add_record(request):
-	form = AddRecordForm(request.POST , request.FILES or None)
+	form = AddRecordForm(request.POST or None, request.FILES )
 	if request.user.is_authenticated:
 		if request.user.has_perm('website.add_record'):
 			if request.method == "POST":
 				if form.is_valid():
-					add_record = form.save()
+					form.save()
 					messages.success(request, "Ma`lumotlar qo`shildi!")
-					return redirect('home')
+					return redirect('records')
 				else:
 					messages.success(request, "Ma`lumotlar qo`shilmadi! Formada qandaydir xatolik mavjud!")
 			return render(request, 'add_record.html', {'form':form})
 		else:
 			messages.success(request, per_add_mess)
-			return redirect('home')
+			return redirect('index')
 	else:
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('home')
+		return redirect('index')
 
+
+# def update_record(request, pk):
+# 	if request.user.is_authenticated:
+# 		if request.user.has_perm('website.update_record'):
+# 			current_record = Record.objects.get(id=pk)
+# 			form = AddRecordForm(request.POST or None, instance=current_record) # request.FILES,
+# 			if form.is_valid():
+# 				form.save()
+# 				messages.success(request, "Ma`lumotlar o`zgartirildi!")
+# 				return redirect('records')
+# 			return render(request, 'update_record.html', {'form':form})
+# 		else:
+# 			messages.success(request, per_upd_mess)
+# 			return redirect('index')
+# 	else:
+# 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
+# 		return redirect('index')
 
 def update_record(request, pk):
+	# Check if the user is authenticated
 	if request.user.is_authenticated:
+		# Check if the user has the permission to update records
 		if request.user.has_perm('website.update_record'):
-			current_record = Record.objects.get(id=pk)
-			form = AddRecordForm(request.POST or None, instance=current_record)
+			# Get the record or return 404 if not found
+			current_record = get_object_or_404(Record, id=pk)
+
+			# Handle POST request with file uploads (images, etc.)
+			form = AddRecordForm(request.POST or None, request.FILES or None, instance=current_record)
+
 			if form.is_valid():
 				form.save()
-				messages.success(request, "Ma`lumotlar o`zgartirildi!")
-				return redirect('home')
-			return render(request, 'update_record.html', {'form':form})
+				messages.success(request, "Ma'lumotlar o'zgartirildi!")
+				return redirect('records')  # Redirect to the records list or another relevant view
+			else:
+				messages.error(request, "Formada xatolik bor, iltimos qaytadan tekshiring!")
+
+			return render(request, 'update_record.html', {'form': form, 'record': current_record})
+
 		else:
-			messages.success(request, per_upd_mess)
-			return redirect('home')
+			# If user doesn't have permission
+			messages.error(request, "Sizda bu ma'lumotni yangilash huquqi yo'q!")
+			return redirect('index')
+
 	else:
-		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('home')
+		# If user is not authenticated
+		messages.error(request, "Siz ro'yhatdan o'tgan bo'lishingiz lozim!")
+		return redirect('index')
 
 ### 		End record		###
 
@@ -152,7 +181,7 @@ def product_record(request, pk):
 		return render(request, 'product.html', {'product_add': product_record})
 	else:
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('home')
+		return redirect('index')
 
 
 def delete_product(request, pk):
