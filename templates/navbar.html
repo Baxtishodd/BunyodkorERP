@@ -26,6 +26,22 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            SALES
+         </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="">
+                <i class="bi bi-person-plus"></i> Kontaktlar
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href=""> </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Product Management
          </a>
           <ul class="dropdown-menu">
@@ -37,7 +53,7 @@
           </ul>
         </li>
       </ul>
-      <div class="text-end  ">
+      <div class="text-end">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -53,7 +69,7 @@
       </div>
 
         {% else %}
-      <div class="ms-5">
+      <div class="ms-5 text-end">
         <a class="btn btn-warning" href="{% url 'accounts:signup' %}">Sign up</a>
         <a class="btn btn-outline-light me-2" href="{% url 'accounts:login' %}">Login</a>
       </div>

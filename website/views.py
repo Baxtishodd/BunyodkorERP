@@ -13,6 +13,18 @@ per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
 # Bosh sahifa
 def index_page(request):
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
+		# Authenticate
+		user = authenticate(request, username=username, password=password)
+		if user is not None:
+			login(request, user)
+			messages.success(request, "i Tizimga muvaffaqiyatli kirdingiz!")
+			return redirect('index')
+		else:
+			messages.warning(request, "i Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
+			return redirect('index')
 
 	return render(request, 'index.html')
 
@@ -28,31 +40,36 @@ def records_view(request):
 	query = request.GET.get('q')  # Get the search query from the URL
 
 	# Check to see if logging in
-	if request.method == 'POST':
-		username = request.POST['username']
-		password = request.POST['password']
-		# Authenticate
-		user = authenticate(request, username=username, password=password)
-		if user is not None:
-			login(request, user)
-			messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
-			return redirect('records')
-		else:
-			messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
-			return redirect('records')
+	if request.user.is_authenticated:
+	# if request.method == 'POST':
+	# 	username = request.POST['username']
+	# 	password = request.POST['password']
+	# 	# Authenticate
+	# 	user = authenticate(request, username=username, password=password)
+	# 	if user is not None:
+	# 		login(request, user)
+	# 		messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
+	# 		return redirect('records')
+	# 	else:
+	# 		messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
+	# 		return redirect('records')
 	# search method
-	elif query:
-		page_obj = Record.objects.filter(first_name__icontains=query) | \
-				  Record.objects.filter(last_name__icontains=query) | \
-				  Record.objects.filter(email__icontains=query) | \
-				  Record.objects.filter(phone__icontains=query) | \
-				  Record.objects.filter(country__icontains=query) | \
-				  Record.objects.filter(state__icontains=query) | \
-				  Record.objects.filter(city__icontains=query)
-		return render(request, 'home.html', {'records':page_obj})
+		if query:
+			page_obj = Record.objects.filter(first_name__icontains=query) | \
+					  Record.objects.filter(last_name__icontains=query) | \
+					  Record.objects.filter(email__icontains=query) | \
+					  Record.objects.filter(phone__icontains=query) | \
+					  Record.objects.filter(country__icontains=query) | \
+					  Record.objects.filter(state__icontains=query) | \
+					  Record.objects.filter(city__icontains=query)
+			return render(request, 'home.html', {'records':page_obj})
+
+		else:
+			return render(request, 'home.html', {'records':page_obj})
 
 	else:
-		return render(request, 'home.html', {'records':page_obj})
+		messages.success(request, "Tizimga login qilib kirishingiz lozim!")
+		return redirect('index')
 
 
 def dashboard_view(request, pk=1):

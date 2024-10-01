@@ -40,7 +40,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
-            return redirect('login')
+            return redirect('index')
         else:
             messages.warning(request, "Tizimga kirib bo`lmadi!")
             return redirect('login')
