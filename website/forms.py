@@ -1,10 +1,10 @@
-from random import choices
-
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django import forms
 from .models import Record, Product
+from .models import Contact
 
+# from random import choices
+# from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.models import User
 
 # class SignUpForm(UserCreationForm):
 # 	email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email'}))
@@ -107,4 +107,21 @@ class Add_Product_Form(forms.ModelForm):
 	class Meta:
 		model = Product
 		exclude = ("user",)
+
+
+
+
+class ContactForm(forms.ModelForm):
+	class Meta:
+		model = Contact
+		fields = '__all__'
+		widgets = {
+			'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+			'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+			'email': forms.EmailInput(attrs={'class': 'form-control'}),
+			'phone_mobile': forms.TextInput(attrs={'class': 'form-control'}),
+			'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+			'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+		}
+
 

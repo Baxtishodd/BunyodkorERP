@@ -2,9 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .forms import AddRecordForm, Add_Product_Form
-from .models import Record, Product
-
+from .forms import AddRecordForm, Add_Product_Form, ContactForm
+from .models import Record, Product, Contact
 
 per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
@@ -20,10 +19,10 @@ def index_page(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			messages.success(request, "i Tizimga muvaffaqiyatli kirdingiz!")
+			messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
 			return redirect('index')
 		else:
-			messages.warning(request, "i Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
+			messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
 			return redirect('index')
 
 	return render(request, 'index.html')
@@ -77,6 +76,7 @@ def dashboard_view(request, pk=1):
 		user = Record.objects.get(id=pk)
 		return render(request, 'dashboard.html', {'dashboard_view': user})
 
+
 ###			start record  		###
 def customer_record(request, pk):
 	if request.user.is_authenticated:
@@ -109,7 +109,9 @@ def add_record(request):
 		if request.user.has_perm('website.add_record'):
 			if request.method == "POST":
 				if form.is_valid():
-					form.save()
+					record = form.save(commit=False)
+					record.created_by = request.user
+					record.save()
 					messages.success(request, "Ma`lumotlar qo`shildi!")
 					return redirect('records')
 				else:
@@ -122,23 +124,6 @@ def add_record(request):
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('index')
 
-
-# def update_record(request, pk):
-# 	if request.user.is_authenticated:
-# 		if request.user.has_perm('website.update_record'):
-# 			current_record = Record.objects.get(id=pk)
-# 			form = AddRecordForm(request.POST or None, instance=current_record) # request.FILES,
-# 			if form.is_valid():
-# 				form.save()
-# 				messages.success(request, "Ma`lumotlar o`zgartirildi!")
-# 				return redirect('records')
-# 			return render(request, 'update_record.html', {'form':form})
-# 		else:
-# 			messages.success(request, per_upd_mess)
-# 			return redirect('index')
-# 	else:
-# 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-# 		return redirect('index')
 
 def update_record(request, pk):
 	# Check if the user is authenticated
@@ -155,8 +140,8 @@ def update_record(request, pk):
 				form.save()
 				messages.success(request, "Ma'lumotlar o'zgartirildi!")
 				return redirect('records')  # Redirect to the records list or another relevant view
-			else:
-				messages.error(request, "Formada xatolik bor, iltimos qaytadan tekshiring!")
+			# else:
+			# 	messages.error(request, "Formada xatolik bor, iltimos qaytadan tekshiring!")
 
 			return render(request, 'update_record.html', {'form': form, 'record': current_record})
 
@@ -230,6 +215,34 @@ def update_product(request):
 	form = None
 
 
+# Contacts
+# List Contacts
+def contact_list(request):
+	contacts = Contact.objects.all()
+	return render(request, 'contacts/contact_list.html', {'contacts': contacts})
+
+# Add New Contact
+def contact_create(request):
+	if request.method == 'POST':
+		form = ContactForm(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return redirect('contact_list')
+	else:
+		form = ContactForm()
+	return render(request, 'contacts/contact_form.html', {'form': form})
+
+# Edit Contact
+def contact_edit(request, pk):
+	contact = get_object_or_404(Contact, pk=pk)
+	if request.method == 'POST':
+		form = ContactForm(request.POST, request.FILES, instance=contact)
+		if form.is_valid():
+			form.save()
+			return redirect('contact_list')
+	else:
+		form = ContactForm(instance=contact)
+	return render(request, 'contacts/contact_form.html', {'form': form})
 
 
 

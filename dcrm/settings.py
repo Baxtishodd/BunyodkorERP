@@ -28,12 +28,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # third party apps
-    # 'crispy_forms',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'colorfield',
+    'admin_interface',
 
     # my apps
     'accounts',
     'website',
 ]
+
+INSTALLED_APPS += ['django.contrib.sites']
+SITE_ID = 1
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -105,27 +114,26 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-US'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+STATIC_URL = '/static/'  # Note the leading slash
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Add this line
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-LOGIN = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'  # Fixed from LOGIN to LOGIN_URL
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
 
 # Media files
 MEDIA_URL = '/media/'

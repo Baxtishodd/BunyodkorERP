@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
+from django.conf import settings
 
 # from django.contrib.auth.models import User
 # from django.contrib.auth import get_user_model
@@ -20,7 +21,10 @@ class Record(models.Model):
 	]
 
 	created_at = models.DateTimeField(auto_now_add=True)
-	# created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # New field
+	created_by = models.ForeignKey(
+		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+		null=True, blank=True, related_name='records_created')  # New field
+	updated_at = models.DateTimeField(auto_now=True) # New field
 
 	# Xodim ma`lumotlari
 	first_name = models.CharField(max_length=50)
@@ -39,8 +43,7 @@ class Record(models.Model):
 	family_situation = models.CharField(max_length=10, default="Yolg'iz", choices=FAMILY_SITUATION_CHOICES)  # Using choices
 
 	# Avatar field
-	avatar = models.ImageField(upload_to='avatars/', default='avatars/default-avatar.jpg',)
-
+	avatar = models.ImageField(upload_to='avatars/', default='avatars/default-avatar.jpg',) # New field
 
 	def __str__(self):
 		return f"{self.first_name} {self.last_name}"
@@ -106,3 +109,66 @@ class Product(models.Model):
 	def __str__(self):
 		return f"{self.customer_name}"
 
+# Contacts
+
+class Contact(models.Model):
+	# Basic Information
+	first_name = models.CharField(max_length=100)
+	last_name = models.CharField(max_length=100)
+	job_title = models.CharField(max_length=100, blank=True, null=True)
+	company_name = models.CharField(max_length=150, blank=True, null=True)
+	department = models.CharField(max_length=100, blank=True, null=True)
+	contact_source = models.CharField(max_length=150, blank=True, null=True)
+	profile_picture = models.ImageField(upload_to='contacts/', blank=True, null=True)
+
+	# Contact Details
+	email = models.EmailField()
+	phone_office = models.CharField(max_length=15, blank=True, null=True)
+	phone_mobile = models.CharField(max_length=15, blank=True, null=True)
+	fax = models.CharField(max_length=15, blank=True, null=True)
+	preferred_communication = models.CharField(max_length=50, choices=[
+		('phone', 'Phone'),
+		('email', 'Email'),
+		('sms', 'SMS'),
+		('social', 'Social Media')], default='email')
+
+	# Geographical Information
+	address = models.CharField(max_length=255, blank=True, null=True)
+	billing_address = models.CharField(max_length=255, blank=True, null=True)
+	shipping_address = models.CharField(max_length=255, blank=True, null=True)
+	time_zone = models.CharField(max_length=50, blank=True, null=True)
+
+	# Relationship Status
+	lead_status = models.CharField(max_length=50, choices=[
+		('new', 'New Lead'),
+		('qualified', 'Qualified'),
+		('customer', 'Customer'),
+		('inactive', 'Inactive')], default='new')
+	account_manager = models.CharField(max_length=100, blank=True, null=True)
+	lead_source = models.CharField(max_length=100, blank=True, null=True)
+
+	# Demographics and Preferences
+	industry = models.CharField(max_length=100, blank=True, null=True)
+	company_size = models.CharField(max_length=50, blank=True, null=True)
+	budget_range = models.CharField(max_length=50, blank=True, null=True)
+	interests = models.TextField(blank=True, null=True)
+	preferred_language = models.CharField(max_length=50, blank=True, null=True)
+	birthday = models.DateField(blank=True, null=True)
+
+	# Engagement Details
+	last_interaction = models.DateTimeField(blank=True, null=True)
+	engagement_score = models.IntegerField(blank=True, null=True)
+	opt_in_status = models.BooleanField(default=False)
+	contract_expiry = models.DateField(blank=True, null=True)
+
+	# Custom Fields
+	tags = models.CharField(max_length=255, blank=True, null=True)
+	projects = models.TextField(blank=True, null=True)
+	subscription_status = models.CharField(max_length=50, blank=True, null=True)
+	payment_terms = models.CharField(max_length=50, blank=True, null=True)
+
+	# Additional Notes
+	notes = models.TextField(blank=True, null=True)
+
+	def __str__(self):
+		return f"{self.first_name} {self.last_name} ({self.company_name})"
