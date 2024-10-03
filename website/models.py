@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.utils import timezone
 
 # from django.contrib.auth.models import User
 # from django.contrib.auth import get_user_model
@@ -112,6 +113,12 @@ class Product(models.Model):
 # Contacts
 
 class Contact(models.Model):
+	created_at = models.DateTimeField(default=timezone.now, editable=False)
+	created_by = models.ForeignKey(
+		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+		null=True, blank=True, related_name='contact_created')  # New field
+	updated_at = models.DateTimeField(auto_now=True)
+
 	# Basic Information
 	first_name = models.CharField(max_length=100)
 	last_name = models.CharField(max_length=100)

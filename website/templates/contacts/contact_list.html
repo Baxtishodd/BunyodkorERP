@@ -11,6 +11,7 @@
             <th>Email</th>
             <th>Company</th>
             <th>Phone</th>
+            <th>Author</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -21,8 +22,10 @@
             <td>{{ contact.email }}</td>
             <td>{{ contact.company_name }}</td>
             <td>{{ contact.phone_mobile }}</td>
+            <td>{{ contact.created_by }}</td>
             <td>
                 <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="{% url 'contact_delete' contact.id %}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
         {% endfor %}

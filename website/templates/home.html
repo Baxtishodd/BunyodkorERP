@@ -3,10 +3,6 @@
 
 {% block content %}
 
-
-
-
-
 <form method="GET" action="">
     <div class="row m-3">
         <div class="col-md-2">
@@ -29,8 +25,6 @@
       <th scope="col">Telefon</th>
       <th scope="col">Manzil</th>
       <th scope="col">Shahar</th>
-      <th scope="col">Viloyat</th>
-      <th scope="col">Zipcode</th>
       <th scope="col">Muallif</th>
       <th scope="col">Qo'shilgan Vaqti</th>
       <th scope="col">EMP ID</th>
@@ -48,8 +42,6 @@
 			<td>{{ record.phone }}</td>
 			<td>{{ record.address }}</td>
 			<td>{{ record.city }}</td>
-			<td>{{ record.state }}</td>
-			<td>{{ record.zipcode }}</td>
 			<td>{{ record.created_by.first_name|default:"deleted user" }}</td>
 			<td>{{ record.created_at }}</td>
 			<td><a href="{% url 'record' record.id %}" class="text-decoration-none">EMP{{ record.id }}</a></td>

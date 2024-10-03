@@ -19,9 +19,11 @@
                   <input type="password" class="form-control" name="password" placeholder="Parol" required>
                 </div>
                 <br/>
-                <button type="submit" class="btn btn-primary w-100" style="max-width:100%;">Login</button>
+                <button type="submit" class="btn btn-primary w-100 fs-5" style="max-width:100%;">Login</button>
+                <br>
+                <p class="text-center">OR</p>
+	            <a class="btn btn-success w-100 fs-5" href="{% url 'accounts:signup' %}">Sign Up</a>
             </div>
-
         </div>
     </form>
 </div>

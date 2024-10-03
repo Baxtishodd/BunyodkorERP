@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required, permission_required
+
+
+# my imports
 from .forms import AddRecordForm, Add_Product_Form, ContactForm
 from .models import Record, Product, Contact
 
@@ -244,8 +248,14 @@ def contact_edit(request, pk):
 		form = ContactForm(instance=contact)
 	return render(request, 'contacts/contact_form.html', {'form': form})
 
-
-
+@login_required
+@permission_required('website.delete_contact', raise_exception=True)
+def contact_delete(request, pk):
+	# Use get_object_or_404 for better error handling
+	delete_it = get_object_or_404(Contact, id=pk)
+	delete_it.delete()
+	messages.warning(request, "Ma`lumotlar o`chirildi!")  # Message for successful deletion
+	return redirect('contact_list')
 
 
 

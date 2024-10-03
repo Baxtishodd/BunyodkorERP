@@ -30,8 +30,6 @@ INSTALLED_APPS = [
     # third party apps
     'crispy_forms',
     'crispy_bootstrap5',
-    'colorfield',
-    'admin_interface',
 
     # my apps
     'accounts',
