@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
 
@@ -15,6 +16,7 @@ per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
 
 # Bosh sahifa
+@login_required
 def index_page(request):
 	if request.method == 'POST':
 		username = request.POST['username']
@@ -32,6 +34,7 @@ def index_page(request):
 	return render(request, 'index.html')
 
 # Xodimlar ro`yhati
+@login_required
 def records_view(request):
 	records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
 	paginator = Paginator(records, 30)  # Show 30 records per page
@@ -44,19 +47,6 @@ def records_view(request):
 
 	# Check to see if logging in
 	if request.user.is_authenticated:
-	# if request.method == 'POST':
-	# 	username = request.POST['username']
-	# 	password = request.POST['password']
-	# 	# Authenticate
-	# 	user = authenticate(request, username=username, password=password)
-	# 	if user is not None:
-	# 		login(request, user)
-	# 		messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
-	# 		return redirect('records')
-	# 	else:
-	# 		messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
-	# 		return redirect('records')
-	# search method
 		if query:
 			page_obj = Record.objects.filter(first_name__icontains=query) | \
 					  Record.objects.filter(last_name__icontains=query) | \
@@ -74,7 +64,7 @@ def records_view(request):
 		messages.success(request, "Tizimga login qilib kirishingiz lozim!")
 		return redirect('index')
 
-
+@login_required
 def dashboard_view(request, pk=1):
 	if request.user.is_authenticated:
 		user = Record.objects.get(id=pk)
@@ -82,6 +72,7 @@ def dashboard_view(request, pk=1):
 
 
 ###			start record  		###
+@login_required
 def customer_record(request, pk):
 	if request.user.is_authenticated:
 		# Look Up Records
@@ -91,7 +82,7 @@ def customer_record(request, pk):
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('records')
 
-
+@login_required
 def delete_record(request, pk):
 	if request.user.is_authenticated:
 		if request.user.has_perm('website.delete_record'):
@@ -106,7 +97,7 @@ def delete_record(request, pk):
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('index')
 
-
+@login_required
 def add_record(request):
 	form = AddRecordForm(request.POST or None, request.FILES )
 	if request.user.is_authenticated:
@@ -129,6 +120,7 @@ def add_record(request):
 		return redirect('index')
 
 
+@login_required
 def update_record(request, pk):
 	# Check if the user is authenticated
 	if request.user.is_authenticated:
@@ -219,13 +211,39 @@ def update_product(request):
 	form = None
 
 
-# Contacts
+# Contacts model
 # List Contacts
+
+@login_required
+@permission_required('website.can_view_contact', raise_exception=False)
 def contact_list(request):
-	contacts = Contact.objects.all()
-	return render(request, 'contacts/contact_list.html', {'contacts': contacts})
+
+	contacts = Contact.objects.all().order_by('-created_at') # Fetch all contacts from the database
+	paginator = Paginator(contacts, 30)  # Show 30 contacts per page
+
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)  # Get the current page contacts
+
+	# search method
+	query = request.GET.get('q')  # Get the search query from the URL
+
+
+	if query:
+		page_obj = Contact.objects.filter(first_name__icontains=query) | \
+				  Contact.objects.filter(last_name__icontains=query) | \
+				  Contact.objects.filter(job_title__icontains=query) | \
+				  Contact.objects.filter(email__icontains=query) | \
+				  Contact.objects.filter(company_name__icontains=query)
+		return render(request, 'contacts/contact_list.html', {'contacts':page_obj})
+
+	else:
+		return render(request, 'contacts/contact_list.html', {'contacts':page_obj})
+
+
 
 # Add New Contact
+@login_required
+@permission_required('website.add_contact', raise_exception=True)
 def contact_create(request):
 	if request.method == 'POST':
 		form = ContactForm(request.POST, request.FILES)
@@ -237,6 +255,8 @@ def contact_create(request):
 	return render(request, 'contacts/contact_form.html', {'form': form})
 
 # Edit Contact
+@login_required
+@permission_required('website.change_contact', raise_exception=True)
 def contact_edit(request, pk):
 	contact = get_object_or_404(Contact, pk=pk)
 	if request.method == 'POST':
@@ -248,13 +268,21 @@ def contact_edit(request, pk):
 		form = ContactForm(instance=contact)
 	return render(request, 'contacts/contact_form.html', {'form': form})
 
+
 @login_required
 @permission_required('website.delete_contact', raise_exception=True)
 def contact_delete(request, pk):
 	# Use get_object_or_404 for better error handling
 	delete_it = get_object_or_404(Contact, id=pk)
-	delete_it.delete()
-	messages.warning(request, "Ma`lumotlar o`chirildi!")  # Message for successful deletion
+
+	# Check if the contact was created by the logged-in user
+	if delete_it.created_by == request.user:
+		delete_it.delete()
+		messages.warning(request, "Ma`lumotlar o`chirildi!")  # Message for successful deletion
+	else:
+		# If the user is not the creator, show an error message
+		messages.error(request, "Siz faqat o'zingiz yaratgan ma'lumotlarni o'chirishingiz mumkin!")
+
 	return redirect('contact_list')
 
 

@@ -39,7 +39,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, "Tizimga muvaffaqiyatli kirdingiz!")
+            messages.info(request, "Tizimga muvaffaqiyatli kirdingiz!")
             return redirect('index')
         else:
             messages.warning(request, "Tizimga kirib bo`lmadi!")

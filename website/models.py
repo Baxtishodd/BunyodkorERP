@@ -111,7 +111,6 @@ class Product(models.Model):
 		return f"{self.customer_name}"
 
 # Contacts
-
 class Contact(models.Model):
 	created_at = models.DateTimeField(default=timezone.now, editable=False)
 	created_by = models.ForeignKey(
@@ -179,3 +178,8 @@ class Contact(models.Model):
 
 	def __str__(self):
 		return f"{self.first_name} {self.last_name} ({self.company_name})"
+
+	class Meta:
+		permissions = [
+			("can_view_contact", "Can view contact details"),
+		]
