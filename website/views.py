@@ -36,17 +36,18 @@ def index_page(request):
 # Xodimlar ro`yhati
 @login_required
 def records_view(request):
-	records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
-	paginator = Paginator(records, 30)  # Show 30 records per page
-
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)  # Get the current page records
-
-	# search method
-	query = request.GET.get('q')  # Get the search query from the URL
-
 	# Check to see if logging in
-	if request.user.is_authenticated:
+	if request.user.has_perm('website.view_record'):
+		records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
+		paginator = Paginator(records, 30)  # Show 30 records per page
+
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)  # Get the current page records
+
+		# search method
+		query = request.GET.get('q')  # Get the search query from the URL
+
+
 		if query:
 			page_obj = Record.objects.filter(first_name__icontains=query) | \
 					  Record.objects.filter(last_name__icontains=query) | \
@@ -59,9 +60,8 @@ def records_view(request):
 
 		else:
 			return render(request, 'home.html', {'records':page_obj})
-
 	else:
-		messages.success(request, "Tizimga login qilib kirishingiz lozim!")
+		messages.success(request, "Sizda bu ma'lumotlarni ko'rish huquqi yo'q!")
 		return redirect('index')
 
 @login_required
@@ -75,9 +75,13 @@ def dashboard_view(request, pk=1):
 @login_required
 def customer_record(request, pk):
 	if request.user.is_authenticated:
-		# Look Up Records
-		customer_record = Record.objects.get(id=pk)
-		return render(request, 'record.html', {'customer_record':customer_record})
+		if request.user.has_perm('website.view_record'):
+			# Look Up Records
+			customer_record = Record.objects.get(id=pk)
+			return render(request, 'record.html', {'customer_record':customer_record})
+		else:
+			messages.success(request, "Sizda bu ma'lumotni ko'rish huquqi yo'q!")
+			return redirect('index')
 	else:
 		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
 		return redirect('records')
@@ -98,6 +102,7 @@ def delete_record(request, pk):
 		return redirect('index')
 
 @login_required
+@permission_required('website.add_record', raise_exception=False)
 def add_record(request):
 	form = AddRecordForm(request.POST or None, request.FILES )
 	if request.user.is_authenticated:
@@ -215,62 +220,107 @@ def update_product(request):
 # List Contacts
 
 @login_required
-@permission_required('website.can_view_contact', raise_exception=False)
 def contact_list(request):
+	if request.user.has_perm('website.view_contact'):
+		# Start with all contacts
+		contacts = Contact.objects.all().order_by('-created_at')
+		form = ContactForm()
 
-	contacts = Contact.objects.all().order_by('-created_at') # Fetch all contacts from the database
-	paginator = Paginator(contacts, 30)  # Show 30 contacts per page
+		# Search functionality
+		query = request.GET.get('q')  # Get the search query from the URL
+		if query:
+			contacts = contacts.filter(
+				first_name__icontains=query
+			) | contacts.filter(
+				last_name__icontains=query
+			) | contacts.filter(
+				job_title__icontains=query
+			) | contacts.filter(
+				email__icontains=query
+			) | contacts.filter(
+				company_name__icontains=query
+			)
 
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)  # Get the current page contacts
+		# Filtering functionality
+		lead_status = request.GET.get('lead_status')
+		industry = request.GET.get('industry')
+		account_manager = request.GET.get('account_manager')
 
-	# search method
-	query = request.GET.get('q')  # Get the search query from the URL
+		# Apply filters if values are provided
+		if lead_status:
+			contacts = contacts.filter(lead_status=lead_status)
 
+		if industry:
+			contacts = contacts.filter(industry__id=industry)
 
-	if query:
-		page_obj = Contact.objects.filter(first_name__icontains=query) | \
-				  Contact.objects.filter(last_name__icontains=query) | \
-				  Contact.objects.filter(job_title__icontains=query) | \
-				  Contact.objects.filter(email__icontains=query) | \
-				  Contact.objects.filter(company_name__icontains=query)
-		return render(request, 'contacts/contact_list.html', {'contacts':page_obj})
+		if account_manager:
+			contacts = contacts.filter(account_manager__id=account_manager)
 
+		# Pagination
+		paginator = Paginator(contacts, 10)  # Show 10 contacts per page
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)  # Get the current page contacts
+
+		# Get distinct values for filters
+		industries = Contact.objects.values('industry').distinct()
+		account_managers = Contact.objects.values('account_manager').distinct()
+
+		return render(request, 'contacts/contact_list.html', {
+			'contact_form':form,
+			'contacts': page_obj,
+			'query': query,  # Pass the query back to the template to retain it in the search box
+			'lead_status': lead_status,  # Pass lead status to retain in the filter dropdown
+			'industry': industry,  # Pass industry to retain in the filter dropdown
+			'account_manager': account_manager,  # Pass account manager to retain in the filter dropdown
+			'industries': industries,  # Pass industries for filter dropdown options
+			'account_managers': account_managers,  # Pass account managers for filter dropdown options
+		})
 	else:
-		return render(request, 'contacts/contact_list.html', {'contacts':page_obj})
-
-
+		messages.error(request, "Sizda bu ma'lumotni ko'rish huquqi yo'q!")
+		return redirect('index')
 
 # Add New Contact
 @login_required
-@permission_required('website.add_contact', raise_exception=True)
 def contact_create(request):
+	if not request.user.has_perm('website.add_contact'):
+		messages.error(request, "Sizda yangi kontakt qo'shish huquqi yo'q!")
+		return redirect('index')
+
 	if request.method == 'POST':
 		form = ContactForm(request.POST, request.FILES)
 		if form.is_valid():
-			form.save()
+			contact = form.save(commit=False)
+			contact.created_by = request.user
+			contact.save()
+			messages.success(request, "Yangi kontakt muvaffaqiyatli qo'shildi!")
 			return redirect('contact_list')
 	else:
 		form = ContactForm()
+
 	return render(request, 'contacts/contact_form.html', {'form': form})
 
 # Edit Contact
 @login_required
-@permission_required('website.change_contact', raise_exception=True)
+@permission_required('website.change_contact', raise_exception=False)
 def contact_edit(request, pk):
-	contact = get_object_or_404(Contact, pk=pk)
-	if request.method == 'POST':
-		form = ContactForm(request.POST, request.FILES, instance=contact)
-		if form.is_valid():
-			form.save()
-			return redirect('contact_list')
+	contact = get_object_or_404(Contact, id=pk)
+	if contact.created_by == request.user:
+
+		if request.method == 'POST':
+			form = ContactForm(request.POST, request.FILES, instance=contact)
+			if form.is_valid():
+				form.save()
+				return redirect('contact_list')
+		else:
+			form = ContactForm(instance=contact)
+		return render(request, 'contacts/contact_form.html', {'form': form})
 	else:
-		form = ContactForm(instance=contact)
-	return render(request, 'contacts/contact_form.html', {'form': form})
+		messages.error(request, "Sizda kontaktni o'zgartitish huquqi yo'q!")
+		return redirect('contact_list')
 
 
 @login_required
-@permission_required('website.delete_contact', raise_exception=True)
+@permission_required('website.delete_contact', raise_exception=False)
 def contact_delete(request, pk):
 	# Use get_object_or_404 for better error handling
 	delete_it = get_object_or_404(Contact, id=pk)

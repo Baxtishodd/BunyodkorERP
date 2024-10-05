@@ -1,22 +1,49 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}Contact List{% endblock %}
 
 {% block content %}
+<!--<form method="GET" action="{% url 'contact_list' %}">-->
+<!--    <label for="lead_status">Lead Status:</label>-->
+<!--    {{ contact_form.lead_status }}-->
+<!--    <button type="submit">Filter</button>-->
+<!--</form>-->
 
-<form method="GET" action="{% url 'contact_list' %}">
-    <div class="row m-3">
+<!--<form method="GET" action="{% url 'contact_list' %}">-->
+<!--    <div class="row m-3">-->
+<!--        <div class="col-md-2">-->
+<!--            <a class="btn btn-success bi bi-person-plus" style="width:100%;" href="{% url 'contact_create' %}"> New Contact</a>-->
+<!--        </div>-->
+<!--        <div class="col-md-4">-->
+<!--            <input class="form-control" type="text" name="q" placeholder="Search contacts.." value="{{ query}}">-->
+<!--        </div>-->
+<!--        <div class="col-md-2">-->
+<!--            <button class="btn btn-outline-primary" type="submit">Search</button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</form>-->
+
+<div class="row m-3 align-items-center">
         <div class="col-md-2">
-            <a class="btn btn-success bi bi-person-plus" style="width:100%;" href="{% url 'contact_create' %}"> New Contact</a>
+            <a class="btn btn-success bi bi-person-plus" style="width: 100%;" href="{% url 'contact_create' %}"> New Contact</a>
         </div>
         <div class="col-md-4">
-            <input class="form-control" type="text" name="q" placeholder="Search contacts.." value="{{ query}}">
+            <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+                {% csrf_token %}
+                <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ query|default:'' }}">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
+        <div class="col-md-4">
+            <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+
+                <label  class="me-2">Lead Status:</label>
+                {{ contact_form.lead_status}}
+                <button class="btn btn-warning  ms-2" type="submit">Filter</button>
+                <a href="{% url 'contact_list' %}" class="btn btn-outline-danger ms-2">Reset Filters</a>
+            </form>
         </div>
     </div>
-</form>
 
 <table class="table table-hover">
     <thead class="table-dark">
@@ -24,6 +51,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Company</th>
+            <th>Lead status</th>
             <th>Phone</th>
             <th>Author</th>
             <th>Actions</th>
@@ -36,11 +64,14 @@
             <td>{{ contact.first_name }} {{ contact.last_name }}</td>
             <td>{{ contact.email }}</td>
             <td>{{ contact.company_name }}</td>
+            <td>{{ contact.lead_status }}</td>
             <td>{{ contact.phone_mobile }}</td>
             <td>{{ contact.created_by }}</td>
             <td>
-                <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-primary btn-sm">Edit</a>
-                <a href="{% url 'contact_delete' contact.id %}" class="btn btn-danger btn-sm">Delete</a>
+                {% if contact.created_by == request.user %}
+                    <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-outline-primary rounded-5 btn-sm"><i class="bi bi-pen"></i></a>
+                    <a href="{% url 'contact_delete' contact.id %}" class="btn btn-outline-danger rounded-5 btn-sm"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
             </td>
         </tr>
         {% empty %}
