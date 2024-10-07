@@ -256,6 +256,16 @@ def contact_list(request):
 		if account_manager:
 			contacts = contacts.filter(account_manager__id=account_manager)
 
+		# Sorting functionality
+		sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
+		direction = request.GET.get('direction', 'desc')  # Default to descending
+
+		# Add ordering direction
+		if direction == 'asc':
+			contacts = contacts.order_by(sort_by)
+		else:
+			contacts = contacts.order_by(f'-{sort_by}')
+
 		# Pagination
 		paginator = Paginator(contacts, 10)  # Show 10 contacts per page
 		page_number = request.GET.get('page')
@@ -274,6 +284,8 @@ def contact_list(request):
 			'account_manager': account_manager,  # Pass account manager to retain in the filter dropdown
 			'industries': industries,  # Pass industries for filter dropdown options
 			'account_managers': account_managers,  # Pass account managers for filter dropdown options
+			'sort_by': sort_by,  # Pass the current sort field to the template
+			'direction': direction,  # Pass the current direction to the template
 		})
 	else:
 		messages.error(request, "Sizda bu ma'lumotni ko'rish huquqi yo'q!")

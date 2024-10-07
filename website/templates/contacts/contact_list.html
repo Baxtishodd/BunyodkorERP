@@ -48,12 +48,79 @@
 <table class="table table-hover">
     <thead class="table-dark">
         <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Company</th>
-            <th>Lead status</th>
-            <th>Phone</th>
-            <th>Author</th>
+                    <!-- Name Column -->
+            <th>
+                <a class="text-white" href="?sort=first_name&direction={% if sort_by == 'first_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Name
+                    {% if sort_by == 'first_name' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=email&direction={% if sort_by == 'email' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Email
+                    {% if sort_by == 'email' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=company_name&direction={% if sort_by == 'company_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Company
+                    {% if sort_by == 'company_name' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=lead_status&direction={% if sort_by == 'lead_status' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Lead Status
+                    {% if sort_by == 'company_name' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=phone_mobile&direction={% if sort_by == 'phone_mobile' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Phone mobile
+                    {% if sort_by == 'phone_mobile' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=created_by&direction={% if sort_by == 'created_by' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Author
+                    {% if sort_by == 'created_by' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
             <th>Actions</th>
         </tr>
     </thead>
