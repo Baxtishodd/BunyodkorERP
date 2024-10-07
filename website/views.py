@@ -226,6 +226,9 @@ def contact_list(request):
 		contacts = Contact.objects.all().order_by('-created_at')
 		form = ContactForm()
 
+		# Determine which view to render
+		view_type = request.GET.get('view', 'list')  # Default to 'list' view
+
 		# Search functionality
 		query = request.GET.get('q')  # Get the search query from the URL
 		if query:
@@ -256,6 +259,18 @@ def contact_list(request):
 		if account_manager:
 			contacts = contacts.filter(account_manager__id=account_manager)
 
+		# Pagination logic based on view type
+		if view_type == 'cards':
+			items_per_page = 4  # Card view: 12 items per page
+		else:
+			items_per_page = 5  # List view: 30 items per page
+
+		# Pagination
+		paginator = Paginator(contacts, items_per_page)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)  # Get the current page contacts
+
+
 		# Sorting functionality
 		sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
 		direction = request.GET.get('direction', 'desc')  # Default to descending
@@ -266,16 +281,19 @@ def contact_list(request):
 		else:
 			contacts = contacts.order_by(f'-{sort_by}')
 
-		# Pagination
-		paginator = Paginator(contacts, 10)  # Show 10 contacts per page
-		page_number = request.GET.get('page')
-		page_obj = paginator.get_page(page_number)  # Get the current page contacts
+
 
 		# Get distinct values for filters
 		industries = Contact.objects.values('industry').distinct()
 		account_managers = Contact.objects.values('account_manager').distinct()
 
-		return render(request, 'contacts/contact_list.html', {
+
+		if view_type == 'cards':
+			template_name = 'contacts/contact_list_card.html'
+		else:
+			template_name = 'contacts/contact_list.html'
+
+		return render(request, template_name, {
 			'contact_form':form,
 			'contacts': page_obj,
 			'query': query,  # Pass the query back to the template to retain it in the search box
@@ -286,6 +304,8 @@ def contact_list(request):
 			'account_managers': account_managers,  # Pass account managers for filter dropdown options
 			'sort_by': sort_by,  # Pass the current sort field to the template
 			'direction': direction,  # Pass the current direction to the template
+			'view_type': view_type,  # Pass current view type to the template for links/buttons
+
 		})
 	else:
 		messages.error(request, "Sizda bu ma'lumotni ko'rish huquqi yo'q!")

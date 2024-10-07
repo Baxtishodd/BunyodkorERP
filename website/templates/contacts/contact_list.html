@@ -31,6 +31,7 @@
             <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
                 {% csrf_token %}
                 <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ query|default:'' }}">
+                <input type="hidden" name="view" value="{{ view_type }}"> <!-- Retain the view type -->
                 <button class="btn btn-outline-primary" type="submit">Search</button>
             </form>
         </div>
@@ -40,8 +41,12 @@
                 <label  class="me-2">Lead Status:</label>
                 {{ contact_form.lead_status}}
                 <button class="btn btn-warning  ms-2" type="submit">Filter</button>
-                <a href="{% url 'contact_list' %}" class="btn btn-outline-danger ms-2">Reset Filters</a>
+                <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>
+
             </form>
+        </div>
+        <div class="col-md-2">
+            <a href="?view=cards" class="btn btn-light"><i class="bi bi-grid-3x3-gap-fill"></i></a>
         </div>
     </div>
 
