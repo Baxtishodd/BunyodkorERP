@@ -54,9 +54,9 @@
                     Name
                     {% if sort_by == 'first_name' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
@@ -66,9 +66,9 @@
                     Email
                     {% if sort_by == 'email' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
@@ -78,9 +78,9 @@
                     Company
                     {% if sort_by == 'company_name' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
@@ -88,11 +88,11 @@
             <th>
                 <a class="text-white" href="?sort=lead_status&direction={% if sort_by == 'lead_status' and direction == 'asc' %}desc{% else %}asc{% endif %}">
                     Lead Status
-                    {% if sort_by == 'company_name' %}
+                    {% if sort_by == 'lead_status' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
@@ -102,9 +102,9 @@
                     Phone mobile
                     {% if sort_by == 'phone_mobile' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
@@ -114,9 +114,9 @@
                     Author
                     {% if sort_by == 'created_by' %}
                         {% if direction == 'asc' %}
-                            <i class="fas fa-sort-up"></i>  <!-- Ascending sort icon -->
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
-                            <i class="fas fa-sort-down"></i>  <!-- Descending sort icon -->
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
                         {% endif %}
                     {% endif %}
                 </a>
