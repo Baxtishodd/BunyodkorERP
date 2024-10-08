@@ -37,7 +37,11 @@
     <div class="col-12 col-md-6 col-lg-3 mb-4"> <!-- 4 cards per row on larger screens -->
         <div class="card h-100">
             <!-- Contact Photo -->
-            <img src="media/contacts/default-avatar.jpg" class="card-img-top" alt="{{ contact.first_name }} {{ contact.last_name }}'s photo">
+            {% if contact.profile_picture %}
+                <img src="{{ contact.profile_picture.url }}" class="card-img-top no-rounded-circle" alt="{{ contact.first_name }} {{ contact.last_name }}'s photo">
+            {% else %}
+                <img src="media/contacts/default-avatar.jpg" class="card-img-top" alt="{{ contact.first_name }} {{ contact.last_name }}'s photo">
+            {% endif %}
 
             <!-- Card Body -->
             <div class="card-body p-2">
@@ -71,9 +75,14 @@
                 <div class="d-flex align-items-center">
                     <!-- Contact Author Photo -->
 
-                    <img src="/media/contacts/default-avatar.jpg" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">
+                    {% if contact.created_by.profile_picture %}
+                        <img src="{{ contact.created_by.profile_picture.url }}" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">
+                    {% else %}
+                        <img src="/media/contacts/default-avatar.jpg" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">
+                    {% endif %}
 
-<!--                    <img src="none" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">-->
+
+
                     <div>
                         <!-- Author Full Name -->
                         <p class="mb-0">{{ contact.created_by.get_full_name }}</p>

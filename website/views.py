@@ -5,7 +5,6 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
 
-
 # my imports
 from .forms import AddRecordForm, Add_Product_Form, ContactForm
 from .models import Record, Product, Contact
@@ -242,6 +241,8 @@ def contact_list(request):
 				email__icontains=query
 			) | contacts.filter(
 				company_name__icontains=query
+			) | contacts.filter(
+				created_by__username__icontains=query
 			)
 
 		# Filtering functionality
@@ -259,6 +260,21 @@ def contact_list(request):
 		if account_manager:
 			contacts = contacts.filter(account_manager__id=account_manager)
 
+		# Sorting functionality
+		sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
+		direction = request.GET.get('direction', 'desc')  # Default to descending
+
+		# Validate sort_by field to avoid sorting by invalid fields
+		valid_sort_fields = ['created_at', 'first_name', 'last_name', 'email', 'company_name']
+		if sort_by not in valid_sort_fields:
+			sort_by = 'created_at'
+
+		# Add ordering direction
+		if direction == 'asc':
+			contacts = contacts.order_by(sort_by)
+		else:
+			contacts = contacts.order_by(f'-{sort_by}')
+
 		# Pagination logic based on view type
 		if view_type == 'cards':
 			items_per_page = 4  # Card view: 12 items per page
@@ -271,15 +287,15 @@ def contact_list(request):
 		page_obj = paginator.get_page(page_number)  # Get the current page contacts
 
 
-		# Sorting functionality
-		sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
-		direction = request.GET.get('direction', 'desc')  # Default to descending
-
-		# Add ordering direction
-		if direction == 'asc':
-			contacts = contacts.order_by(sort_by)
-		else:
-			contacts = contacts.order_by(f'-{sort_by}')
+		# # Sorting functionality
+		# sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
+		# direction = request.GET.get('direction', 'desc')  # Default to descending
+		#
+		# # Add ordering direction
+		# if direction == 'asc':
+		# 	contacts = contacts.order_by(sort_by)
+		# else:
+		# 	contacts = contacts.order_by(f'-{sort_by}')
 
 
 

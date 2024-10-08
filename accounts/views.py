@@ -4,7 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm, SignUpForm
-
+from django.contrib.auth.decorators import login_required
+from .models import CustomUser
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
@@ -53,11 +54,10 @@ def logout_user(request):
     messages.success(request, "Tizimdan chiqdingiz!")
     return redirect('index')
 
-
+@login_required
 def profile_view(request):
 
-    if request.user.is_authenticated:
-        return render(request, 'profile.html')
+    return render(request, 'profile.html', {'user':request.user})
 
 
 def profile_edit_view(request):
