@@ -15,6 +15,15 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ('first_name','last_name','email',)
 
 
+class CustomUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'birthday', 'profile_picture', 'job_role', 'address', 'phone', 'mobile', 'website', 'whatsapp', 'telegram']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date'}),
+            'profile_picture': forms.FileInput(),
+        }
+
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email'}))

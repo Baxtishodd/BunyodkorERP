@@ -81,7 +81,7 @@
             {{ user.username }}
          </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profil</a></li>
+            <li><a class="dropdown-item" href="{% url 'accounts:profile' user.id  %}">Profil</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item " href="/logout">Logout</a></li>
           </ul>

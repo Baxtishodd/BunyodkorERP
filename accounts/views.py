@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import CreateView
-from .forms import CustomUserCreationForm, SignUpForm
-from django.contrib.auth.decorators import login_required
+
+from .forms import CustomUserCreationForm, SignUpForm, CustomUserForm
+from django.contrib.auth.decorators import login_required, permission_required
 from .models import CustomUser
 
 class SignUpView(CreateView):
@@ -55,14 +56,32 @@ def logout_user(request):
     return redirect('index')
 
 @login_required
-def profile_view(request):
+def profile_view(request, pk):
+    user_profile = get_object_or_404(CustomUser, pk=pk)
+    return render(request, 'profile.html', {'profile': user_profile, 'user':request.user})
 
-    return render(request, 'profile.html', {'user':request.user})
 
+@login_required
+def profile_edit_view(request, pk):
+    profile = get_object_or_404(CustomUser, id=pk)
 
-def profile_edit_view(request):
-    pass
+    # Ensure the logged-in user is editing their own profile
+    if profile.id == request.user.id:
+        if request.method == 'POST':
+            form = CustomUserForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully!')
+                return redirect('index')
+                # return redirect('profile', pk=request.user.pk)
+        else:
+            form = CustomUserForm(instance=profile)
 
+        return render(request, 'profile_edit.html', {'form': form})
+
+    else:
+        # If user tries to edit someone else's profile, redirect or show a forbidden page
+        return redirect('index')  # You can change this to an error page if needed
 
 
 
