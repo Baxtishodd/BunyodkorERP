@@ -265,7 +265,7 @@ def contact_list(request):
 		direction = request.GET.get('direction', 'desc')  # Default to descending
 
 		# Validate sort_by field to avoid sorting by invalid fields
-		valid_sort_fields = ['created_at', 'first_name', 'last_name', 'email', 'company_name']
+		valid_sort_fields = ['first_name', 'lead_status', 'email', 'company_name', 'phone_mobile', 'created_by']
 		if sort_by not in valid_sort_fields:
 			sort_by = 'created_at'
 
