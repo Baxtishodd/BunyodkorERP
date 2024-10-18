@@ -4,9 +4,115 @@
 
 
 {% block content %}
-<h1>Bosh Saxifa</h1>
+
 <br>
-<img src="/media/images/not-found.png" alt="Nothing to show" width="auto">
+
+<div class="row justify-content">
+
+    <div class="row gy-3">
+      <div class="col-md-3 col-sm-6">
+        <div class="card widget-card border-light shadow-sm">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-8">
+                <h5 class="card-title widget-card-title mb-3">
+                    <a href="{% url 'contact_list' %}" class="text-decoration-none">Contacts</a>
+                </h5>
+                <h4 class="card-subtitle text-body-secondary m-0">{{ contact_count }}</h4>
+              </div>
+              <div class="col-4">
+                <div class="d-flex justify-content-end">
+                  <div class="lh-1 text-white bg-info rounded-circle p-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person fs-1"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+<!--            <div class="row">-->
+<!--              <div class="col-12">-->
+<!--                <div class="d-flex align-items-center mt-3">-->
+<!--                  <span class="lh-1 me-3 bg-danger-subtle text-danger rounded-circle p-1 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-arrow-right-short bsb-rotate-45"></i>-->
+<!--                  </span>-->
+<!--                  <div>-->
+<!--                    <p class="fs-7 mb-0">-9%</p>-->
+<!--                    <p class="fs-7 mb-0 text-secondary">since last week</p>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3  col-sm-6">
+        <div class="card widget-card border-light shadow-sm">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-8">
+                <h5 class="card-title widget-card-title mb-3">
+                    <a href="{% url 'records' %}" class="text-decoration-none">Employees</a>
+                </h5>
+                <h4 class="card-subtitle text-body-secondary m-0">{{ record_count }}</h4>
+              </div>
+              <div class="col-4">
+                <div class="d-flex justify-content-end">
+                  <div class="lh-1 text-white bg-dark rounded-circle p-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people fs-1"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3  col-sm-6">
+        <div class="card widget-card border-light shadow-sm">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-8">
+                <h5 class="card-title widget-card-title mb-3">Visitors</h5>
+                <h4 class="card-subtitle text-body-secondary m-0">3,764</h4>
+              </div>
+              <div class="col-4">
+                <div class="d-flex justify-content-end">
+                  <div class="lh-1 text-white bg-info rounded-circle p-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person fs-4"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3   col-sm-6">
+        <div class="card widget-card border-light shadow-sm">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-8">
+                <h5 class="card-title widget-card-title mb-3">Orders</h5>
+                <h4 class="card-subtitle text-body-secondary m-0">786</h4>
+              </div>
+              <div class="col-4">
+                <div class="d-flex justify-content-end">
+                  <div class="lh-1 text-white bg-info rounded-circle p-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cart fs-4"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+<!--<img src="/media/images/not-found.png" alt="Nothing to show" width="auto">-->
 <!--<iframe width="1024" height="666" src="https://www.youtube.com/embed/asaIt9pmTrY?list=PLp8HTS59FoNpySc5G81T0BodKIYsGK3r8" title="Prezident Koson tumanidagi ishlab chiqarish korxonalarini borib ko‘rdi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>-->
 
 {% endblock %}

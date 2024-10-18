@@ -6,8 +6,10 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
 
 # my imports
-from .forms import AddRecordForm, Add_Product_Form, ContactForm
-from .models import Record, Product, Contact
+from .forms import AddRecordForm, Add_Product_Form, ContactForm, AccountForm
+from .models import Record, Product, Contact, Account
+
+from django.views.generic import ListView
 
 per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
@@ -17,6 +19,9 @@ per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 # Bosh sahifa
 @login_required
 def index_page(request):
+	contact_count = Contact.objects.count()  # Count all contacts
+	record_count = Record.objects.count()  # Count all employees
+
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
@@ -30,7 +35,14 @@ def index_page(request):
 			messages.warning(request, "Tizimga kirib bo`lmadi, keyinroq urinib ko`ring!")
 			return redirect('index')
 
-	return render(request, 'index.html')
+
+	context = {
+		'contact_count': contact_count,
+		'record_count': record_count
+	}
+
+
+	return render(request, 'index.html', context)
 
 # Xodimlar ro`yhati
 @login_required
@@ -129,7 +141,7 @@ def update_record(request, pk):
 	# Check if the user is authenticated
 	if request.user.is_authenticated:
 		# Check if the user has the permission to update records
-		if request.user.has_perm('website.update_record'):
+		if request.user.has_perm('website.change_record'):
 			# Get the record or return 404 if not found
 			current_record = get_object_or_404(Record, id=pk)
 
@@ -236,12 +248,6 @@ def contact_list(request):
 			) | contacts.filter(
 				last_name__icontains=query
 			) | contacts.filter(
-				job_title__icontains=query
-			) | contacts.filter(
-				email__icontains=query
-			) | contacts.filter(
-				company_name__icontains=query
-			) | contacts.filter(
 				created_by__username__icontains=query
 			)
 
@@ -253,9 +259,6 @@ def contact_list(request):
 		# Apply filters if values are provided
 		if lead_status:
 			contacts = contacts.filter(lead_status=lead_status)
-
-		if industry:
-			contacts = contacts.filter(industry__id=industry)
 
 		if account_manager:
 			contacts = contacts.filter(account_manager__id=account_manager)
@@ -277,9 +280,9 @@ def contact_list(request):
 
 		# Pagination logic based on view type
 		if view_type == 'cards':
-			items_per_page = 4  # Card view: 12 items per page
+			items_per_page = 15  # Card view: 12 items per page
 		else:
-			items_per_page = 5  # List view: 30 items per page
+			items_per_page = 15  # List view: 30 items per page
 
 		# Pagination
 		paginator = Paginator(contacts, items_per_page)
@@ -296,7 +299,6 @@ def contact_list(request):
 		# 	contacts = contacts.order_by(sort_by)
 		# else:
 		# 	contacts = contacts.order_by(f'-{sort_by}')
-
 
 
 		# Get distinct values for filters
@@ -384,8 +386,36 @@ def contact_delete(request, pk):
 	return redirect('contact_list')
 
 
+# Account view start
+@login_required
+def account_create(request):
+	if not request.user.has_perm('website.add_account'):
+		messages.error(request, "Sizda yangi akkaunt qo'shish huquqi yo'q!")
+		return redirect('index')
+
+	if request.method == 'POST':
+		form = AccountForm(request.POST, request.FILES)
+		if form.is_valid():
+			account = form.save(commit=False)
+			account.created_by = request.user
+			account.save()
+			messages.success(request, "Yangi account muvaffaqiyatli qo'shildi!")
+			return redirect('new-account')
+	else:
+		form = AccountForm()
+
+	return render(request, 'accounts/account_form.html', {'form': form})
 
 
+class AccountListView(ListView):
+	model = Account
+	template_name = 'accounts/account_list.html'  # Customize your template path if necessary
+	context_object_name = 'accounts'  # Name for the accounts in the template
+	paginate_by = 10  # Optional: Add pagination, 10 accounts per page
+
+	def get_queryset(self):
+		# You can customize the queryset if needed, e.g., filter by some condition
+		return Account.objects.all().order_by('account_name')
 
 
 

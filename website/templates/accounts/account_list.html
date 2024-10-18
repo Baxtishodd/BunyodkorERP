@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Account List</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Account Name</th>
+                <th>Industry</th>
+                <th>Website</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts %}
+                <tr>
+                    <td>{{ account.account_name }}</td>
+                    <td>{{ account.industry }}</td>
+                    <td><a href="{{ account.website }}" target="_blank">{{ account.website }}</a></td>
+                    <td>{{ account.phone }}</td>
+                    <td>
+                        <a href="">View</a> |
+                        <a href=" ">Edit</a> |
+                        <a href=" ">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No accounts found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if accounts.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ accounts.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}.
+            </span>
+
+            {% if accounts.has_next %}
+                <a href="?page={{ accounts.next_page_number }}">next</a>
+                <a href="?page={{ accounts.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endblock %}

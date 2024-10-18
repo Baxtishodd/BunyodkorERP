@@ -1,6 +1,6 @@
 from django import forms
-from .models import Record, Product
-from .models import Contact
+from .models import Record, Product, Contact, Account
+
 
 
 class AddRecordForm(forms.ModelForm):
@@ -82,9 +82,25 @@ class ContactForm(forms.ModelForm):
 			'last_name': forms.TextInput(attrs={'class': 'form-control'}),
 			'email': forms.EmailInput(attrs={'class': 'form-control'}),
 			'phone_mobile': forms.TextInput(attrs={'class': 'form-control'}),
-			'company_name': forms.TextInput(attrs={'class': 'form-control'}),
 			'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
 		}
 		exclude = ['created_by']  # Exclude 'created_by' from the form
 
 
+class AccountForm(forms.ModelForm):
+	class Meta:
+		model = Account
+		fields = [
+			'account_name',
+			'industry',
+			'website',
+			'phone',
+			'address',
+			'description',
+			'annual_revenue',
+			'account_manager'
+		]
+		widgets = {
+			'description': forms.Textarea(attrs={'rows': 3}),
+			'address': forms.Textarea(attrs={'rows': 2}),
+	}
