@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
+from django.utils import timezone
 
 # my imports
 from .forms import AddRecordForm, Add_Product_Form, ContactForm, AccountForm
@@ -15,12 +16,29 @@ per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
+now = timezone.now()
 
 # Bosh sahifa
 @login_required
 def index_page(request):
 	contact_count = Contact.objects.count()  # Count all contacts
+	# Count all contacts in this month
+	contacts_this_month = Contact.objects.filter(
+		# created_at__year=now.year,
+		created_at__month=now.month
+	)
+
+	print(f"Current UTC time: {now}")
+	print(f"Year: {now.year}, Month: {now.month}")
+	print(f"Contacts created this month: {contacts_this_month}")
+	
+	contacts = Contact.objects.all()
+	for contact in contacts:
+		print(contact.created_at)
+
+
 	record_count = Record.objects.count()  # Count all employees
+	account_count = Account.objects.count()  # Count all accounts
 
 	if request.method == 'POST':
 		username = request.POST['username']
@@ -38,7 +56,10 @@ def index_page(request):
 
 	context = {
 		'contact_count': contact_count,
-		'record_count': record_count
+		'record_count': record_count,
+		'account_count': account_count,
+
+		'contact_this_month':contacts_this_month
 	}
 
 

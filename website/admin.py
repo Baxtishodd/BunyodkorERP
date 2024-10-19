@@ -15,12 +15,12 @@ class RecordAdmin(admin.ModelAdmin):
 
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'get_company_name', 'lead_status')
+    list_display = ('first_name', 'last_name', 'email', 'company', 'lead_status', 'created_at')
     search_fields = ('first_name', 'last_name', 'email', 'company__account_name')
     list_filter = ('lead_status', 'industry', 'account_manager')
 
     # Make 'created_by' read-only so it cannot be manually edited
-    readonly_fields = ['created_by']
+    readonly_fields = ['created_by', 'created_at']
 
     # Automatically assign 'created_by' to the current user on save
     def save_model(self, request, obj, form, change):
@@ -28,10 +28,10 @@ class ContactAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
-    def get_company_name(self, obj):
-        return obj.company.account_name if obj.company else None
-
-    get_company_name.short_description = 'Company Name'
+    # def get_company_name(self, obj):
+    #     return obj.company.account_name if obj.company else None
+    #
+    # get_company_name.short_description = 'Company Name'
 
 # @admin.register(Contact)
 # class ContactAdmin(admin.ModelAdmin):
