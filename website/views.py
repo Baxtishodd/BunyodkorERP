@@ -17,28 +17,23 @@ per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
-now = timezone.now()
+
 
 # Bosh sahifa
 @login_required
 def index_page(request):
+	now = timezone.now()
+
 	contact_count = Contact.objects.count()  # Count all contacts
 	# Count all contacts in this month
 	contacts_this_month = Contact.objects.filter(
-		# created_at__year=now.year,
-		created_at__month=now.month
-	)
-
-	print(f"Current UTC time: {now}")
-	print(f"Year: {now.year}, Month: {now.month}")
-	print(f"Contacts created this month: {contacts_this_month}")
-	
-	contacts = Contact.objects.all()
-	for contact in contacts:
-		print(contact.created_at)
+		created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)).count()
 
 
 	record_count = Record.objects.count()  # Count all employees
+	records_this_month = Record.objects.filter(
+		created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)).count()
+
 	account_count = Account.objects.count()  # Count all accounts
 
 	if request.method == 'POST':
@@ -60,7 +55,8 @@ def index_page(request):
 		'record_count': record_count,
 		'account_count': account_count,
 
-		'contact_this_month':contacts_this_month
+		'contact_this_month':contacts_this_month,
+		'records_this_month':records_this_month
 	}
 
 

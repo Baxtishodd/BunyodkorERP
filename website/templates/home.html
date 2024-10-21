@@ -42,7 +42,7 @@
 			<td>{{ record.address }}</td>
 			<td>{{ record.city }}</td>
 			<td>{{ record.created_by.first_name|default:"deleted user" }}</td>
-			<td>{{ record.created_at }}</td>
+			<td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
 			<td><a href="{% url 'record' record.id %}" class="text-decoration-none">EMP{{ record.id }}</a></td>
             <td><a href="{% url 'update_record' record.id %}" class="text-decoration-none"><i class="bi bi-pen"></i></a></td>
 		</tr>
