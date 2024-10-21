@@ -112,6 +112,34 @@ class Product(models.Model):
 
 # Contacts
 class Contact(models.Model):
+	PREFERRED_COMMUNICATION_CHOICES = [
+		('email', 'Email'),
+		('phone', 'Phone Call'),
+		('whatsapp', 'WhatsApp'),
+		('telegram', 'Telegram'),
+		('sms', 'SMS'),
+		('video_call', 'Video Call (Zoom/Google Meet)'),
+		('in_person', 'In-Person Meeting'),
+		('linkedin', 'LinkedIn Messaging'),
+		('fax', 'Fax'),
+	]
+
+	LEAD_STATUS_CHOICES = [
+		('new_inquiry', 'New Inquiry'),
+		('initial_contact', 'Initial Contact Made'),
+		('sample_requested', 'Sample Requested'),
+		('sample_sent', 'Sample Sent'),
+		('quote_requested', 'Quotation Requested'),
+		('quote_sent', 'Quotation Sent'),
+		('negotiation', 'Negotiation/Follow-Up'),
+		('awaiting_po', 'Awaiting Purchase Order'),
+		('po_received', 'Purchase Order Received'),
+		('production_started', 'Production Started'),
+		('order_shipped', 'Order Shipped'),
+		('deal_closed', 'Deal Closed'),
+		('lost', 'Lost'),
+		('on_hold', 'On Hold'),
+	]
 	created_at = models.DateTimeField(default=timezone.now, editable=False)
 	created_by = models.ForeignKey(
 		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -134,11 +162,7 @@ class Contact(models.Model):
 	phone_office = models.CharField(max_length=15, blank=True, null=True)
 	phone_mobile = models.CharField(max_length=15, blank=True, null=True)
 	fax = models.CharField(max_length=15, blank=True, null=True)
-	preferred_communication = models.CharField(max_length=50, choices=[
-		('phone', 'Phone'),
-		('email', 'Email'),
-		('sms', 'SMS'),
-		('social', 'Social Media')], default='email')
+	preferred_communication = models.CharField(max_length=50, choices=PREFERRED_COMMUNICATION_CHOICES, default='email')
 
 	# Geographical Information
 	address = models.CharField(max_length=255, blank=True, null=True)
@@ -147,11 +171,7 @@ class Contact(models.Model):
 	time_zone = models.CharField(max_length=50, blank=True, null=True)
 
 	# Relationship Status
-	lead_status = models.CharField(max_length=50, choices=[
-		('new', 'New Lead'),
-		('qualified', 'Qualified'),
-		('customer', 'Customer'),
-		('inactive', 'Inactive')], default='new')
+	lead_status = models.CharField(max_length=50, choices=LEAD_STATUS_CHOICES, default='new_inquiry')
 	account_manager = models.CharField(max_length=100, blank=True, null=True)
 	lead_source = models.CharField(max_length=100, blank=True, null=True)
 
@@ -189,25 +209,39 @@ class Contact(models.Model):
 
 # Account
 class Account(models.Model):
+
 	INDUSTRY_CHOICES = [
-		('tech', 'Technology'),
-		('finance', 'Finance'),
-		('manufacturing', 'Manufacturing'),
-		('healthcare', 'Healthcare'),
+		('textile_manufacturing', 'Textile Manufacturing'),
+		('apparel_fashion', 'Apparel and Fashion'),
+		('home_textiles', 'Home Textiles'),
+		('industrial_textiles', 'Industrial Textiles'),
 		('retail', 'Retail'),
+		('wholesale', 'Wholesale'),
+		('ecommerce', 'E-commerce'),
+		('furniture', 'Furniture'),
+		('interior_design', 'Interior Design'),
+		('hospitality', 'Hospitality'),
+		('healthcare', 'Healthcare'),
+		('automotive', 'Automotive'),
+		('agriculture', 'Agriculture'),
+		('construction', 'Construction'),
+		('sports_leisure', 'Sports and Leisure'),
+		('government', 'Government/Public Sector'),
 		('education', 'Education'),
-		('ecommerce', 'Ecommerce'),
+		('non_profit', 'Non-profit/NGO'),
 		('other', 'Other'),
 	]
 
 	account_name = models.CharField(max_length=100, unique=True)
-	industry = models.CharField(max_length=50, choices=INDUSTRY_CHOICES, blank=True, null=True)
+	director = models.CharField(max_length=100, blank=True, null=True)
+	industry = models.CharField(max_length=50, choices=INDUSTRY_CHOICES, default='textile_manufacturing')
 	website = models.URLField(blank=True, null=True)
 	phone = models.CharField(max_length=20, blank=True, null=True)
 	address = models.CharField(max_length=255, blank=True, null=True)
 	description = models.TextField(blank=True, null=True)
 	annual_revenue = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
 	contacts = models.ManyToManyField('Contact', related_name='accounts')
+
 	account_manager = models.ForeignKey(
 		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='managed_accounts')
 
@@ -215,8 +249,64 @@ class Account(models.Model):
 	updated_at = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
-		return self.account_name
+		return f"{self.account_name}"
 
 	class Meta:
 		ordering = ['-created_at']
 
+
+# Leads
+class Lead(models.Model):
+	LEAD_STATUS_CHOICES = [
+		('new_inquiry', 'New Inquiry'),
+		('initial_contact', 'Initial Contact Made'),
+		('sample_requested', 'Sample Requested'),
+		('sample_sent', 'Sample Sent'),
+		('quote_requested', 'Quotation Requested'),
+		('quote_sent', 'Quotation Sent'),
+		('negotiation', 'Negotiation/Follow-Up'),
+		('awaiting_po', 'Awaiting Purchase Order'),
+		('po_received', 'Purchase Order Received'),
+		('production_started', 'Production Started'),
+		('order_shipped', 'Order Shipped'),
+		('deal_closed', 'Deal Closed'),
+		('lost', 'Lost'),
+		('on_hold', 'On Hold'),
+	]
+
+	LEAD_SOURCE_CHOICES = [
+		('website', 'Website Inquiry'),
+		('trade_show', 'Trade Shows/Exhibitions'),
+		('referral', 'Referral'),
+		('social_media', 'Social Media'),
+		('email_campaign', 'Email Campaigns'),
+		('cold_call', 'Cold Call/Direct Outreach'),
+		('distributor', 'Distributor/Agent'),
+		('online_marketplace', 'Online Marketplace'),
+		('print_media', 'Print Media'),
+		('word_of_mouth', 'Word of Mouth'),
+		('previous_client', 'Previous Client'),
+		('local_business', 'Local Business Network'),
+		('partnership', 'Partnerships'),
+		('phone_inquiry', 'Inbound Phone Inquiry'),
+		('search_engine', 'Search Engine'),
+	]
+
+	lead_name = models.CharField(max_length=255)
+	company_name = models.CharField(max_length=255, blank=True, null=True)
+	email = models.EmailField()
+	phone = models.CharField(max_length=20, blank=True, null=True)
+	account_manager = models.ForeignKey(
+		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='leads'
+	)
+	status = models.CharField(max_length=20, choices=LEAD_STATUS_CHOICES, default='new')
+	source = models.CharField(max_length=20, choices=LEAD_SOURCE_CHOICES, default='website')
+	description = models.TextField(blank=True, null=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return f"{self.lead_name} ({self.company_name})"
+
+	class Meta:
+		ordering = ['-created_at']

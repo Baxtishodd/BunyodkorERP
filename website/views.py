@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 
 # my imports
@@ -418,25 +419,41 @@ def account_create(request):
 		form = AccountForm(request.POST, request.FILES)
 		if form.is_valid():
 			account = form.save(commit=False)
-			account.created_by = request.user
+			account.account_manager = request.user
 			account.save()
 			messages.success(request, "Yangi account muvaffaqiyatli qo'shildi!")
-			return redirect('new-account')
+			return redirect('accounts')
 	else:
 		form = AccountForm()
 
 	return render(request, 'accounts/account_form.html', {'form': form})
 
 
-class AccountListView(ListView):
+class AccountListView(LoginRequiredMixin, ListView):
 	model = Account
 	template_name = 'accounts/account_list.html'  # Customize your template path if necessary
 	context_object_name = 'accounts'  # Name for the accounts in the template
 	paginate_by = 10  # Optional: Add pagination, 10 accounts per page
+	login_url = '/login/'  # The URL to redirect to for login if needed
+
+	# def get_queryset(self):
+	# 	# You can customize the queryset if needed, e.g., filter by some condition
+	# 	return Account.objects.all().order_by('account_name')
 
 	def get_queryset(self):
-		# You can customize the queryset if needed, e.g., filter by some condition
-		return Account.objects.all().order_by('account_name')
+		# Get the base queryset
+		queryset = Account.objects.all().order_by('account_name')
+
+		# Get the search query
+		query = self.request.GET.get('q')
+		if query:
+			# Use Q objects to perform a case-insensitive search across multiple fields
+			queryset = queryset.filter(
+				Q(account_name__icontains=query) |
+				Q(account_manager__username__icontains=query)  # Adjust based on your fields
+			)
+
+		return queryset
 
 
 

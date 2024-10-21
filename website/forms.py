@@ -92,6 +92,7 @@ class AccountForm(forms.ModelForm):
 		model = Account
 		fields = [
 			'account_name',
+			'director',
 			'industry',
 			'website',
 			'phone',
@@ -103,4 +104,5 @@ class AccountForm(forms.ModelForm):
 		widgets = {
 			'description': forms.Textarea(attrs={'rows': 3}),
 			'address': forms.Textarea(attrs={'rows': 2}),
-	}
+		}
+		exclude = ['account_manager']  # Exclude 'account_manager' from the form

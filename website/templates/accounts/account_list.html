@@ -1,55 +1,103 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Account List</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Account Name</th>
-                <th>Industry</th>
-                <th>Website</th>
-                <th>Phone</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for account in accounts %}
-                <tr>
-                    <td>{{ account.account_name }}</td>
-                    <td>{{ account.industry }}</td>
-                    <td><a href="{{ account.website }}" target="_blank">{{ account.website }}</a></td>
-                    <td>{{ account.phone }}</td>
-                    <td>
-                        <a href="">View</a> |
-                        <a href=" ">Edit</a> |
-                        <a href=" ">Delete</a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5">No accounts found.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="pagination">
-        <span class="step-links">
-            {% if accounts.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ accounts.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}.
-            </span>
-
-            {% if accounts.has_next %}
-                <a href="?page={{ accounts.next_page_number }}">next</a>
-                <a href="?page={{ accounts.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
+<div class="row m-3 align-items-center">
+    <div class="col-md-2">
+        <a class="btn btn-success bi bi-person-plus" style="width: 100%;" href="{% url 'account_create' %}"> New Account</a>
     </div>
+    <div class="col-md-4">
+        <form method="GET" action="{% url 'account_list' %}" class="d-flex">
+            {% csrf_token %}
+            <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ request.GET.q }}">
+            <input type="hidden" name="view" value=""> <!-- Retain the view type -->
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+    </div>
+<!--    <div class="col-md-4">-->
+<!--        <form method="GET" action="{% url 'account_list' %}" class="d-flex">-->
+
+<!--            <label  class="me-2">Lead Status:</label>-->
+
+<!--            <button class="btn btn-warning  ms-2" type="submit">Filter</button>-->
+<!--            <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>-->
+
+<!--        </form>-->
+<!--    </div>-->
+    <div class="col-md-2">
+        <a href="?view=cards" class="btn btn-light"><i class="bi bi-grid-3x3-gap-fill"></i></a>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Account Name</th>
+            <th>Industry</th>
+            <th>Website</th>
+            <th>Phone</th>
+            <th>Account manager</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in accounts %}
+            <tr>
+                <td>{{ account.account_name }}</td>
+                <td>{{ account.industry }}</td>
+                <td><a href="{{ account.website }}" target="_blank">{{ account.website }}</a></td>
+                <td>{{ account.phone }}</td>
+                <td>{{ account.account_manager }}</td>
+                <td>
+                    <a href="">Edit</a> |
+                    <a href=" ">Delete</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No accounts found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Links -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
 {% endblock %}

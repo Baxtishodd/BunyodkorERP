@@ -49,7 +49,9 @@
                         <div class="col-sm-6">
                             <p><strong>Mobile:</strong> {{ user.mobile }}</p>
                             <p><strong>Address:</strong> {{ user.address }}</p>
-                            <a class="text-white" href="{% url 'accounts:edit_profile' user.id %}"><button class="btn btn-info">Edit</button></a>
+                            {% if user.pk == request.user.pk %}
+                                <a class="text-white" href="{% url 'accounts:edit_profile' user.id %}"><button class="btn btn-info">Edit</button></a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

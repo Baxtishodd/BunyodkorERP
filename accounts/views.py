@@ -57,8 +57,9 @@ def logout_user(request):
 
 @login_required
 def profile_view(request, pk):
-    user_profile = get_object_or_404(CustomUser, pk=pk)
-    return render(request, 'profile.html', {'profile': user_profile, 'user':request.user})
+    user = get_object_or_404(CustomUser, pk=pk)
+    return render(request, 'profile.html', {'user':user})
+    # 'profile': user_profile, 'user':request.user
 
 
 @login_required

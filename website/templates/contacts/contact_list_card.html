@@ -79,8 +79,10 @@
 
                     <div>
                         <!-- Author Full Name -->
-                        <p class="mb-0">{{ contact.created_by.get_full_name }}</p>
-                        <!-- Created Date -->
+                        <p class="mb-0">
+                            <a class=" text-decoration-none" href="{% url 'accounts:profile' contact.created_by.pk %}">{{ contact.created_by.get_full_name }}</a>
+                        </p>
+                        <!-- Created Date { % url 'accounts:profile/' contact.created_by.pk %} -->
                         <small class="text-muted">{{ contact.created_at|date:"M d, Y  H:i" }}</small>
                     </div>
                 </div>
