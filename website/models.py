@@ -140,6 +140,95 @@ class Contact(models.Model):
 		('lost', 'Lost'),
 		('on_hold', 'On Hold'),
 	]
+
+	contact_source_choices = [
+		('website', 'Website'),
+		('referral', 'Referral'),
+		('email_campaign', 'Email Campaign'),
+		('social_media', 'Social Media'),
+		('trade_show', 'Trade Show'),
+		('direct_call', 'Direct Call'),
+		('partner', 'Partner'),
+		('advertisement', 'Advertisement'),
+		('other', 'Other'),
+	]
+
+	COUNTRY_CHOICES = [
+		('UZ', 'Uzbekistan'),
+		('RU', 'Russia'),
+		('CN', 'China'),
+		('TR', 'Turkey'),
+		('US', 'United States'),
+		('DE', 'Germany'),
+		('IN', 'India'),
+		('IT', 'Italy'),
+		('JP', 'Japan'),
+		('FR', 'France'),
+		('GB', 'United Kingdom'),
+		('CA', 'Canada'),
+		('BR', 'Brazil'),
+		('AU', 'Australia'),
+		('KR', 'South Korea'),
+		('SA', 'Saudi Arabia'),
+		('AE', 'United Arab Emirates'),
+		('ES', 'Spain'),
+		('NL', 'Netherlands'),
+		('SE', 'Sweden'),
+		('MX', 'Mexico'),
+		('CH', 'Switzerland'),
+		('PL', 'Poland'),
+		('NG', 'Nigeria'),
+		('ID', 'Indonesia'),
+		('ZA', 'South Africa'),
+		('AR', 'Argentina'),
+		('EG', 'Egypt'),
+		('MY', 'Malaysia'),
+		('PH', 'Philippines'),
+		('SG', 'Singapore'),
+		('VN', 'Vietnam'),
+		('TH', 'Thailand'),
+		('BD', 'Bangladesh'),
+		('IR', 'Iran'),
+		('IQ', 'Iraq'),
+		('KZ', 'Kazakhstan'),
+		('UA', 'Ukraine'),
+		('PK', 'Pakistan'),
+		('IL', 'Israel'),
+		('GR', 'Greece'),
+		('PT', 'Portugal'),
+		('BE', 'Belgium'),
+		('DK', 'Denmark'),
+		('NO', 'Norway'),
+		('FI', 'Finland'),
+		('AT', 'Austria'),
+		('HU', 'Hungary'),
+		('CZ', 'Czech Republic'),
+		('SK', 'Slovakia'),
+		('NZ', 'New Zealand'),
+		('CL', 'Chile'),
+		('PE', 'Peru'),
+		('CO', 'Colombia'),
+		('OTHER', 'Other'),
+	]
+
+	LEAD_SOURCE_CHOICES = [
+		('website', 'Website Inquiry'),
+		('trade_show', 'Trade Shows/Exhibitions'),
+		('referral', 'Referral'),
+		('social_media', 'Social Media'),
+		('email_campaign', 'Email Campaigns'),
+		('cold_call', 'Cold Call/Direct Outreach'),
+		('distributor', 'Distributor/Agent'),
+		('online_marketplace', 'Online Marketplace'),
+		('print_media', 'Print Media'),
+		('word_of_mouth', 'Word of Mouth'),
+		('previous_client', 'Previous Client'),
+		('local_business', 'Local Business Network'),
+		('partnership', 'Partnerships'),
+		('phone_inquiry', 'Inbound Phone Inquiry'),
+		('search_engine', 'Search Engine'),
+	]
+
 	created_at = models.DateTimeField(default=timezone.now, editable=False)
 	created_by = models.ForeignKey(
 		settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -148,32 +237,38 @@ class Contact(models.Model):
 
 	# Basic Information
 	first_name = models.CharField(max_length=100)
-	last_name = models.CharField(max_length=100)
+	last_name = models.CharField(max_length=100, blank=True, null=True)
 	job_title = models.CharField(max_length=100, blank=True, null=True)
 
 	company = models.ForeignKey('Account', on_delete=models.SET_NULL, null=True, blank=True, related_name='contact_set')
 
 	department = models.CharField(max_length=100, blank=True, null=True)
-	contact_source = models.CharField(max_length=150, blank=True, null=True)
+	contact_source = models.CharField(
+		max_length=20,
+		choices=contact_source_choices,
+		default='other'
+	)
 	profile_picture = models.ImageField(upload_to='contacts/', blank=True, null=True)
 
 	# Contact Details
 	email = models.EmailField()
-	phone_office = models.CharField(max_length=15, blank=True, null=True)
-	phone_mobile = models.CharField(max_length=15, blank=True, null=True)
+	phone_office = models.CharField(max_length=20, blank=True, null=True)
+	phone_mobile = models.CharField(max_length=20, blank=True, null=True)
 	fax = models.CharField(max_length=15, blank=True, null=True)
 	preferred_communication = models.CharField(max_length=50, choices=PREFERRED_COMMUNICATION_CHOICES, default='email')
 
 	# Geographical Information
+	country = models.CharField(
+		max_length=5,
+		choices=COUNTRY_CHOICES,
+		default='UZ'  # Default set to Uzbekistan
+	)
 	address = models.CharField(max_length=255, blank=True, null=True)
-	billing_address = models.CharField(max_length=255, blank=True, null=True)
-	shipping_address = models.CharField(max_length=255, blank=True, null=True)
-	time_zone = models.CharField(max_length=50, blank=True, null=True)
 
 	# Relationship Status
 	lead_status = models.CharField(max_length=50, choices=LEAD_STATUS_CHOICES, default='new_inquiry')
 	account_manager = models.CharField(max_length=100, blank=True, null=True)
-	lead_source = models.CharField(max_length=100, blank=True, null=True)
+	lead_source = models.CharField(max_length=20, choices=LEAD_SOURCE_CHOICES, default='website')
 
 	# Demographics and Preferences
 	industry = models.CharField(max_length=100, blank=True, null=True)
@@ -182,18 +277,6 @@ class Contact(models.Model):
 	interests = models.TextField(blank=True, null=True)
 	preferred_language = models.CharField(max_length=50, blank=True, null=True)
 	birthday = models.DateField(blank=True, null=True)
-
-	# Engagement Details
-	last_interaction = models.DateTimeField(blank=True, null=True)
-	engagement_score = models.IntegerField(blank=True, null=True)
-	opt_in_status = models.BooleanField(default=False)
-	contract_expiry = models.DateField(blank=True, null=True)
-
-	# Custom Fields
-	tags = models.CharField(max_length=255, blank=True, null=True)
-	projects = models.TextField(blank=True, null=True)
-	subscription_status = models.CharField(max_length=50, blank=True, null=True)
-	payment_terms = models.CharField(max_length=50, blank=True, null=True)
 
 	# Additional Notes
 	notes = models.TextField(blank=True, null=True)
@@ -302,6 +385,7 @@ class Lead(models.Model):
 	status = models.CharField(max_length=20, choices=LEAD_STATUS_CHOICES, default='new')
 	source = models.CharField(max_length=20, choices=LEAD_SOURCE_CHOICES, default='website')
 	description = models.TextField(blank=True, null=True)
+
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 

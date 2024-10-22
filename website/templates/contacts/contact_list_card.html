@@ -19,7 +19,7 @@
             <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
 
                 <input type="hidden" name="view" value="{{ view_type }}">
-                <label  class="me-2">Lead Status:</label>
+<!--                <label  class="me-2">Lead Status:</label>-->
                 {{ contact_form.lead_status}}
                 <button class="btn btn-warning  ms-2" type="submit">Filter</button>
                 <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>

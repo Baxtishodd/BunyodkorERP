@@ -19,7 +19,7 @@
     <div class="col-md-4">
         <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
 
-            <label  class="me-2">Lead Status:</label>
+<!--            <label  class="me-2">Lead Status:</label>-->
             {{ contact_form.lead_status}}
             <button class="btn btn-warning  ms-2" type="submit">Filter</button>
             <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>
@@ -48,9 +48,9 @@
                 </a>
             </th>
             <th>
-                <a class="text-white" href="?sort=email&direction={% if sort_by == 'email' and direction == 'asc' %}desc{% else %}asc{% endif %}">
-                    Email
-                    {% if sort_by == 'email' %}
+                <a class="text-white" href="?sort=country&direction={% if sort_by == 'country' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Country
+                    {% if sort_by == 'country' %}
                         {% if direction == 'asc' %}
                             <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
@@ -60,9 +60,9 @@
                 </a>
             </th>
             <th>
-                <a class="text-white" href="?sort=company_name&direction={% if sort_by == 'company_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                <a class="text-white" href="?sort=company&direction={% if sort_by == 'company' and direction == 'asc' %}desc{% else %}asc{% endif %}">
                     Company
-                    {% if sort_by == 'company_name' %}
+                    {% if sort_by == 'company' %}
                         {% if direction == 'asc' %}
                             <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
                         {% else %}
@@ -116,7 +116,7 @@
         {% for contact in contacts %}
         <tr>
             <td>{{ contact.first_name }} {{ contact.last_name }}</td>
-            <td>{{ contact.email }}</td>
+            <td>{{ contact.country }}</td>
             <td>{{ contact.company }}</td>
             <td>{{ contact.lead_status }}</td>
             <td>{{ contact.phone_mobile }}</td>

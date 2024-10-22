@@ -8,7 +8,7 @@
     <div class="col-md-4">
         <form method="GET" action="{% url 'account_list' %}" class="d-flex">
             {% csrf_token %}
-            <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ request.GET.q }}">
+            <input class="form-control me-2" type="text" name="q" placeholder="Search accounts.." value="{{ request.GET.q }}">
             <input type="hidden" name="view" value=""> <!-- Retain the view type -->
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
@@ -23,9 +23,9 @@
 
 <!--        </form>-->
 <!--    </div>-->
-    <div class="col-md-2">
-        <a href="?view=cards" class="btn btn-light"><i class="bi bi-grid-3x3-gap-fill"></i></a>
-    </div>
+<!--    <div class="col-md-2">-->
+<!--        <a href="?view=cards" class="btn btn-light"><i class="bi bi-grid-3x3-gap-fill"></i></a>-->
+<!--    </div>-->
 </div>
 
 <table class="table">

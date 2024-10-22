@@ -34,7 +34,10 @@ def index_page(request):
 	records_this_month = Record.objects.filter(
 		created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)).count()
 
-	account_count = Account.objects.count()  # Count all accounts
+	account_count = Account.objects.count()
+	accounts_this_month = Account.objects.filter(
+		created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)).count()
+
 
 	if request.method == 'POST':
 		username = request.POST['username']
@@ -56,7 +59,8 @@ def index_page(request):
 		'account_count': account_count,
 
 		'contact_this_month':contacts_this_month,
-		'records_this_month':records_this_month
+		'records_this_month':records_this_month,
+		'accounts_this_month':accounts_this_month
 	}
 
 
@@ -286,7 +290,7 @@ def contact_list(request):
 		direction = request.GET.get('direction', 'desc')  # Default to descending
 
 		# Validate sort_by field to avoid sorting by invalid fields
-		valid_sort_fields = ['first_name', 'lead_status', 'email', 'company_name', 'phone_mobile', 'created_by']
+		valid_sort_fields = ['first_name', 'lead_status', 'country', 'company', 'phone_mobile', 'created_by']
 		if sort_by not in valid_sort_fields:
 			sort_by = 'created_at'
 
@@ -306,18 +310,6 @@ def contact_list(request):
 		paginator = Paginator(contacts, items_per_page)
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)  # Get the current page contacts
-
-
-		# # Sorting functionality
-		# sort_by = request.GET.get('sort', 'created_at')  # Default to 'created_at' field
-		# direction = request.GET.get('direction', 'desc')  # Default to descending
-		#
-		# # Add ordering direction
-		# if direction == 'asc':
-		# 	contacts = contacts.order_by(sort_by)
-		# else:
-		# 	contacts = contacts.order_by(f'-{sort_by}')
-
 
 		# Get distinct values for filters
 		industries = Contact.objects.values('industry').distinct()
