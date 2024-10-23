@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Record, Product, Contact, Account, Lead
+from django.utils.html import format_html
+
+from .models import Record, Contact, Account, Lead, Deal, Product
 
 # from django.contrib.auth.admin import UserAdmin
 
@@ -8,18 +10,27 @@ admin.site.site_header = "BunyodCore Platform"
 admin.site.site_title = "BunyodCore Platform"
 admin.site.index_title = "BunyodCore Platform | created by Bakhtishod"
 
+
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'email', 'birthday', 'phone', 'sex', 'country', 'state', 'city', 'id']
+    list_display = [ 'first_name', 'last_name', 'thumbnail', 'email', 'birthday', 'phone', 'country', 'state', 'city', 'id']
     search_fields = ('first_name', 'last_name', 'email', 'phone')
     list_filter = ('email', 'sex', 'country', 'state', 'city')
+
+    def thumbnail(self, obj):
+        if obj.avatar:
+            return format_html('<img src="{}" style="width: 50px; height:50px;" />', obj.avatar.url)
+        return ""
+
+    thumbnail.short_description = 'Avatar'
 
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'company', 'lead_status', 'created_at')
+    list_display = ('first_name', 'last_name', 'thumbnail', 'email', 'company', 'lead_status', 'created_at')
     search_fields = ('first_name', 'last_name', 'email', 'company__account_name')
     list_filter = ('lead_status', 'industry', 'account_manager', 'created_at')
+    # date_hierarchy = 'created_at'
 
     # Make 'created_by' read-only so it cannot be manually edited
     readonly_fields = ['created_by', 'created_at']
@@ -30,10 +41,13 @@ class ContactAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
-    # def get_company_name(self, obj):
-    #     return obj.company.account_name if obj.company else None
-    #
-    # get_company_name.short_description = 'Company Name'
+    def thumbnail(self, obj):
+        if obj.profile_picture:
+            return format_html('<img src="{}" style="width: 50px; height:50px;" />', obj.profile_picture.url)
+        return ""
+
+    thumbnail.short_description = 'Avatar'
+
 
 
 @admin.register(Account)
@@ -55,6 +69,7 @@ class AccountAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('created_at', 'updated_at', 'account_manager')
 
+
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     list_display = ('lead_name', 'company_name', 'email', 'phone', 'status', 'source', 'account_manager', 'created_at')
@@ -63,7 +78,25 @@ class LeadAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 
-# admin.site.register(Contact, ContactAdmin)
-# admin.site.register(Record, RecordAdmin)
-admin.site.register(Product)
+@admin.register(Deal)
+class DealAdmin(admin.ModelAdmin):
+    list_display = ('name', 'account', 'deal_type', 'deal_stage', 'amount', 'currency', 'start_date', 'close_date', 'deal_status')
+    list_filter = ('deal_type', 'deal_stage', 'deal_status', 'currency')
+    search_fields = ('name', 'account__account_name', 'contact__first_name', 'contact__last_name')
+    date_hierarchy = 'close_date'
+    ordering = ('-close_date',)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'thumbnail', 'category', 'price', 'quantity_in_stock', 'description', 'created_at', 'updated_at')
+    search_fields = ('name', 'description')
+    list_filter = ('category',)
+
+    def thumbnail(self, obj):
+        if obj.product_picture:
+            return format_html('<img src="{}" style="width: 50px; height:50px;" />', obj.product_picture.url)
+        return ""
+
+    thumbnail.short_description = 'Picture'
 

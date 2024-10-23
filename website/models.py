@@ -84,31 +84,31 @@ def auto_delete_image_on_change(sender, instance, **kwargs):
 			os.remove(old_image.path)
 
 
-class Product(models.Model):
-	created_at = models.DateTimeField(auto_now=True)
-	customer_name = models.CharField(max_length=100)# mijoz nomi
-	model_id = models.CharField(max_length=100)		# model idsi
-	model_sign_date = models.DateTimeField(null=True, blank=True)		# model imzolangan sana
-	model_FI_date = models.DateTimeField(null=True, blank=True)			# model FI sana
-	quantity = models.IntegerField() 				# model soni
-	example_LD = models.CharField(max_length=100, null=True, blank=True)
-	example_FIT = models.CharField(max_length=100, null=True, blank=True)
-	example_BULK = models.CharField(max_length=100, null=True, blank=True)
-	example_Print = models.CharField(max_length=100, null=True, blank=True)
-	example_PPS = models.CharField(max_length=100, null=True, blank=True)
-	slice_qty = models.IntegerField(null=True, blank=True)
-	slice_status = models.CharField(max_length=50, null=True, blank=True) 	# kesim statusi
-	print_qty = models.IntegerField(null=True, blank=True)
-	print_status = models.CharField(max_length=50,null=True, blank=True )	# bo`yoq pechat statusi
-	sewing_qty = models.IntegerField(null=True, blank=True)
-	sewing_status = models.CharField(max_length=50, null=True, blank=True)	# tikim statusi
-	packing_qty = models.IntegerField(null=True, blank=True)
-	packing_status = models.CharField(max_length=50, null=True, blank=True)# qadoqlangan korobka statusi
-	date_of_update = models.CharField(max_length=50, null=True, blank=True )
-
-
-	def __str__(self):
-		return f"{self.customer_name}"
+# class Product_status(models.Model):
+# 	created_at = models.DateTimeField(auto_now=True)
+# 	customer_name = models.CharField(max_length=100)# mijoz nomi
+# 	model_id = models.CharField(max_length=100)		# model idsi
+# 	model_sign_date = models.DateTimeField(null=True, blank=True)		# model imzolangan sana
+# 	model_FI_date = models.DateTimeField(null=True, blank=True)			# model FI sana
+# 	quantity = models.IntegerField() 				# model soni
+# 	example_LD = models.CharField(max_length=100, null=True, blank=True)
+# 	example_FIT = models.CharField(max_length=100, null=True, blank=True)
+# 	example_BULK = models.CharField(max_length=100, null=True, blank=True)
+# 	example_Print = models.CharField(max_length=100, null=True, blank=True)
+# 	example_PPS = models.CharField(max_length=100, null=True, blank=True)
+# 	slice_qty = models.IntegerField(null=True, blank=True)
+# 	slice_status = models.CharField(max_length=50, null=True, blank=True) 	# kesim statusi
+# 	print_qty = models.IntegerField(null=True, blank=True)
+# 	print_status = models.CharField(max_length=50,null=True, blank=True )	# bo`yoq pechat statusi
+# 	sewing_qty = models.IntegerField(null=True, blank=True)
+# 	sewing_status = models.CharField(max_length=50, null=True, blank=True)	# tikim statusi
+# 	packing_qty = models.IntegerField(null=True, blank=True)
+# 	packing_status = models.CharField(max_length=50, null=True, blank=True)# qadoqlangan korobka statusi
+# 	date_of_update = models.CharField(max_length=50, null=True, blank=True )
+#
+#
+# 	def __str__(self):
+# 		return f"{self.customer_name}"
 
 # Contacts
 class Contact(models.Model):
@@ -394,3 +394,124 @@ class Lead(models.Model):
 
 	class Meta:
 		ordering = ['-created_at']
+
+
+
+
+class Product(models.Model):
+	CATEGORY_CHOICES = [
+		('not_selected', 'Not selected'),
+		('fiber', 'Fiber'),
+		('fabric', 'Fabric'),
+		('yarn', 'Yarn'),
+		('garment', 'Garment'),
+		('service', 'Service'),
+	]
+	CURRENCY_CHOICES = [
+		('USD', 'Dollar ($)'),
+		('RUB', 'Ruble (₽)'),
+		('EUR', 'Euro (€)'),
+		('UZS', 'UZS (so‘m)'),
+	]
+	UNIT_CHOICES = [
+		('kg', 'Kilogram'),
+		('m', 'Meter'),
+		('pcs', 'Pieces'),
+		('roll', 'Roll'),
+	]
+
+	name = models.CharField(max_length=255)
+	description = models.TextField(blank=True, null=True)
+	category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='not_selected')
+	price = models.DecimalField(max_digits=10, decimal_places=2)
+	currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
+	quantity_in_stock = models.DecimalField(max_digits=10, decimal_places=2)
+	unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='pcs')  # Unit of measurement
+	product_picture = models.ImageField(upload_to='product_pictures/', blank=True, null=True)  # Product picture field
+
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return f'{self.name} ({self.unit})'
+
+
+# Deals
+class Deal(models.Model):
+	DEAL_STATUS_CHOICES = [
+		('open', 'Open'),
+		('won', 'Closed Won'),
+		('lost', 'Closed Lost'),
+	]
+
+	DEAL_STAGE_CHOICES = [
+		('initial_contact', 'Initial Contact'),
+		('sample_delivery', 'Sample Delivery'),
+		('quotation_sent', 'Quotation Sent'),
+		('negotiation', 'Negotiation'),
+		('final_approval', 'Final Approval'),
+		('order_processing', 'Order Processing'),
+		('closed_won', 'Closed Won'),
+		('closed_lost', 'Closed Lost'),
+	]
+
+	CURRENCY_CHOICES = [
+		('USD', 'Dollar ($)'),
+		('RUB', 'Ruble (₽)'),
+		('EUR', 'Euro (€)'),
+		('UZS', 'UZS (so‘m)'),
+	]
+
+	DEAL_TYPE_CHOICES = [
+		('not_selected', 'Not selected'),
+		('sale', 'Sale'),
+		('sale_of_fiber', 'Sale of Fiber'),
+		('sale_of_fabric', 'Sale of Fabric'),
+		('sale_of_yarn', 'Sale of Yarn'),
+		('sale_of_garment', 'Sale of Garment'),
+		('sale_of_services', 'Sale of Services'),
+	]
+
+	DEAL_SOURCE_CHOICES = [
+		('referral', 'Referral'),
+		('cold_call', 'Cold Call'),
+		('email_campaign', 'Email Campaign'),
+		('website_inquiry', 'Website Inquiry'),
+		('trade_show', 'Trade Show'),
+		('online_advertisement', 'Online Advertisement'),
+		('distributor', 'Distributor'),
+		('social_media', 'Social Media'),
+		('direct_visit', 'Direct Visit'),
+	]
+
+	account = models.ForeignKey('Account',  on_delete=models.SET_NULL, null=True, blank=True, related_name='deals')
+	contact = models.ForeignKey('Contact', on_delete=models.CASCADE, null=True, blank=True, related_name='deals')
+	products = models.ManyToManyField('Product', related_name='deals')  # Link to Product model
+	name = models.CharField(max_length=255)
+
+	deal_status = models.CharField(max_length=10, choices=DEAL_STATUS_CHOICES, default='open')
+	deal_stage = models.CharField(max_length=20, choices=DEAL_STAGE_CHOICES, default='initial_contact')
+	deal_type = models.CharField(max_length=20, choices=DEAL_TYPE_CHOICES, default='not_selected')
+	source = models.CharField(max_length=20, choices=DEAL_SOURCE_CHOICES, default='website_inquiry')
+	amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True,)
+	currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
+	start_date = models.DateField()
+	close_date = models.DateField()
+	description = models.TextField(blank=True, null=True)
+	account_manager = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	""""
+	Савдо бу’лди: 
+	Nm50/1 
+	BUNYODKOR - 60 тонн, 
+	$2.20kg. 
+	Харидор Красная Талка - ПрофиТекс ёки Ип Колесова;
+	Юклама Галтекслан кегин;  
+	Тулов 20 тонн 18 ОКТ гача; 
+	колгани 25 ОКТ гача
+	"""
+
+	def __str__(self):
+		return self.name

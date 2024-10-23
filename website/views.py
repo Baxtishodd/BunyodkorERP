@@ -8,8 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 
 # my imports
-from .forms import AddRecordForm, Add_Product_Form, ContactForm, AccountForm
-from .models import Record, Product, Contact, Account
+from .forms import AddRecordForm, ContactForm, AccountForm
+from .models import Record, Contact, Account
 
 from django.views.generic import ListView
 
@@ -191,62 +191,6 @@ def update_record(request, pk):
 
 ### 		End record		###
 
-###			start Product	###
-def products(request):
-	products = Product.objects.all()
-	# Check to see if logging in
-	if request.method == 'POST':
-		username = request.POST['username']
-		password = request.POST['password']
-		# Authenticate
-		user = authenticate(request, username=username, password=password)
-		if user is not None:
-			login(request, user)
-			messages.success(request, "Tizimga kirgansiz!")
-			return redirect('products')
-		else:
-			messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-			return redirect('products')
-	else:
-		return render(request, 'product_list.html', {'products':products})
-
-
-def product_record(request, pk):
-	if request.user.is_authenticated:
-		product_record = Product.objects.get(id=pk)
-		return render(request, 'product.html', {'product_add': product_record})
-	else:
-		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('index')
-
-
-def delete_product(request, pk):
-	if request.user.is_authenticated:
-		delete_it = Product.objects.get(id=pk)
-		delete_it.delete()
-		messages.success(request, "Model o`chirildi")
-		return redirect('product')
-	else:
-		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('product')
-
-
-def add_product(request):
-	form = Add_Product_Form(request.POST or None)
-	if request.user.is_authenticated:
-		if request.method == "POST":
-			if form.is_valid():
-				add_product = form.save()
-				messages.success(request, "Model qo`shildi")
-				return redirect('add_product')
-		return render(request, 'add_product.html', {'form':form})
-	else:
-		messages.success(request, "Siz ro`yhatdan o`tgan bo`lishingiz lozim!")
-		return redirect('add_product')
-
-
-def update_product(request):
-	form = None
 
 
 # Contacts model

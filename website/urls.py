@@ -12,13 +12,6 @@ urlpatterns = [
     path('add_record/', views.add_record, name='add_record'),
     path('update_record/<int:pk>', views.update_record, name='update_record'),
 
-
-    path('products/', views.products, name='products'),
-    path('product/<int:pk>', views.product_record, name='product'),
-    path('delete_product/<int:pk>', views.delete_product, name='delete_product'),
-    path('add_product/', views.add_product, name='add_product'),
-    path('update_product/<int:pk>', views.update_product, name='update_product'),
-
     path('contact-list', views.contact_list, name='contact_list'),
     path('new-contact/', views.contact_create, name='contact_create'),
     path('edit-contact/<int:pk>/', views.contact_edit, name='contact_edit'),
