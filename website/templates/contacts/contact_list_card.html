@@ -47,7 +47,9 @@
             <div class="card-body p-2">
                 <!-- Company employee Name -->
                 <h5 class="card-title text-truncate">
-                    <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">{{ contact.first_name }} {{ contact.last_name }}</a></h5>
+                    <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">
+                        {{ contact.first_name|title }} {% if contact.last_name %}{{ contact.last_name|title }}{% endif %}
+                    </a></h5>
 
                 <!-- Phone Number -->
                 <p class="card-text mb-1">

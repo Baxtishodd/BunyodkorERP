@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.utils import timezone
 
+from random import randint
+
 # from django.contrib.auth.models import User
 # from django.contrib.auth import get_user_model
 

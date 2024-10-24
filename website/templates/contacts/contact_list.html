@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 {% block title %}Contact List{% endblock %}
 
 {% block content %}
@@ -35,6 +36,7 @@
     <thead class="table-dark">
         <tr>
                     <!-- Name Column -->
+            <th></th>
             <th>
                 <a class="text-white" href="?sort=first_name&direction={% if sort_by == 'first_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
                     Name
@@ -115,12 +117,34 @@
 
         {% for contact in contacts %}
         <tr>
+<!--            {% if contact.avatar %}-->
+<!--                <img src="{{ contact.avatar.url }}" class="rounded-circle me-2" alt="{{ contact.first_name }}" width="30" height="30">-->
+<!--            {% else %}-->
+<!--                 <div width="30" height="30"></div>-->
+<!--            {% endif %}-->
+
             <td>
-                <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">{{ contact.first_name }} {{ contact.last_name }}</a>
+                <div class="contact-avatar p-3"
+                     style="width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+                     background-color:{% if not contact.profile_picture %}{{ contact_colors|get_item:contact.id }}{% else %}transparent{% endif %};">
+                    {% if contact.profile_picture %}
+                      <img src="{{ contact.profile_picture.url }}" alt="{{ contact.first_name }}" style="width: 35px; height: 35px; border-radius: 50%;">
+                    {% else %}
+                      <span style="color: white; font-weight: bold;" class="">
+                        {{ contact.first_name.0|title }}{{ contact.last_name.0|title }}
+                      </span>
+                    {% endif %}
+              </div>
+            </td>
+
+            <td>
+                <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">
+                    {{ contact.first_name }} {% if contact.last_name %}{{ contact.last_name }}{% endif %}
+                </a>
             </td>
             <td>{{ contact.country }}</td>
             <td>{{ contact.company }}</td>
-            <td>{{ contact.lead_status }}</td>
+            <td>{{ contact.get_lead_status_display }}</td>
             <td>{{ contact.phone_mobile }}</td>
             <td>
                 <a class=" text-decoration-none" href="{% url 'accounts:profile' contact.created_by.pk %}">{{ contact.created_by }}</a>

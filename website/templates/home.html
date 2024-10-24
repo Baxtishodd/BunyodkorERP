@@ -20,23 +20,34 @@
 <table class="table table-hover table-bordered">
   <thead class="table-secondary">
     <tr>
-      <th scope="col"><i class="bi bi-list"></i> Ism Familiya</th>
-      <th scope="col">Email</th>
-      <th scope="col">Telefon</th>
-      <th scope="col">Manzil</th>
-      <th scope="col">Shahar</th>
-      <th scope="col">Muallif</th>
-      <th scope="col">Qo'shilgan Vaqti</th>
-      <th scope="col">EMP ID</th>
-      <th scope="col">...</th>
+        <th scope="col"><i class="bi bi-list"></i></th>
+        <th scope="col">Ism Familiya</th>
+        <th scope="col">Email</th>
+        <th scope="col">Telefon</th>
+        <th scope="col">Manzil</th>
+        <th scope="col">Shahar</th>
+        <th scope="col">Muallif</th>
+        <th scope="col">Qo'shilgan Vaqti</th>
+        <th scope="col">EMP ID</th>
+        <th scope="col">...</th>
     </tr>
   </thead>
   <tbody>
 
 	{% for record in records %}
 		<tr>
+            <td>
+                <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+
+                    {% if record.avatar %}
+                      <img class="rounded-circle" src="{{ record.avatar.url }}" title="{{ record.first_name }} {{ record.last_name }}"  width="30px" height="30px">
+                    {% else %}
+                      <img class="rounded-circle" src="/media/avatars/default-avatar.jpg" title="{{ record.first_name }} {{ record.last_name }}"  width="30px" height="30px">
+                    {% endif %}
+              </div>
+            </td>
 			<td><a href="{% url 'record' record.id %}" class="link-primary hover-link text-decoration-none">
-                <i class="bi bi-grip-vertical"></i> {{ record.first_name }} {{ record.last_name }}</a></td>
+                {{ record.first_name }} {{ record.last_name }}</a></td>
 			<td>{{ record.email }}</td>
 			<td>{{ record.phone }}</td>
 			<td>{{ record.address }}</td>

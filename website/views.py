@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
+from .utils import get_random_color
 
 # my imports
 from .forms import AddRecordForm, ContactForm, AccountForm
@@ -259,6 +260,8 @@ def contact_list(request):
 		industries = Contact.objects.values('industry').distinct()
 		account_managers = Contact.objects.values('account_manager').distinct()
 
+		# Create a dictionary to store random colors for contacts without profile pictures
+		contact_colors = {contact.id: get_random_color() for contact in contacts if not contact.profile_picture}
 
 		if view_type == 'cards':
 			template_name = 'contacts/contact_list_card.html'
@@ -268,6 +271,7 @@ def contact_list(request):
 		return render(request, template_name, {
 			'contact_form':form,
 			'contacts': page_obj,
+			'contact_colors': contact_colors,
 			'query': query,  # Pass the query back to the template to retain it in the search box
 			'lead_status': lead_status,  # Pass lead status to retain in the filter dropdown
 			'industry': industry,  # Pass industry to retain in the filter dropdown
@@ -354,7 +358,7 @@ def account_create(request):
 			account.account_manager = request.user
 			account.save()
 			messages.success(request, "Yangi account muvaffaqiyatli qo'shildi!")
-			return redirect('accounts')
+			return redirect('account_list')
 	else:
 		form = AccountForm()
 
