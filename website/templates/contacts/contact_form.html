@@ -4,7 +4,6 @@
 
 {% block content %}
 <h2>{{ form.instance.pk|yesno:"Edit Contact,Add New Contact" }}</h2>
-
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form|crispy }}

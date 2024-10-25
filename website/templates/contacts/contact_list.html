@@ -139,13 +139,16 @@
 
             <td>
                 <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">
-                    {{ contact.first_name }} {% if contact.last_name %}{{ contact.last_name }}{% endif %}
+                    {{ contact.first_name|title }} {% if contact.last_name %}{{ contact.last_name|title }}{% endif %}
                 </a>
             </td>
             <td>{{ contact.country }}</td>
-            <td>{{ contact.company }}</td>
+            <td>{% if contact.company %}{{ contact.company }}{% else %}-{% endif %}</td>
             <td>{{ contact.get_lead_status_display }}</td>
-            <td>{{ contact.phone_mobile }}</td>
+            <td>{% if contact.phone_mobile %}
+                    <a href="tel:{{ contact.phone_mobile }}" class="text-decoration-none">{{ contact.phone_mobile }}</a>
+                {% else %}-
+                {% endif %}</td>
             <td>
                 <a class=" text-decoration-none" href="{% url 'accounts:profile' contact.created_by.pk %}">{{ contact.created_by }}</a>
             </td>

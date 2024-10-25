@@ -20,6 +20,7 @@
             <div class="col-8">
               <h5 class="card-title widget-card-title mb-3">
                 <a href="{% url 'account_list' %}" class="text-decoration-none">Accounts</a>
+                <a href="{% url 'account_create' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
               </h5>
               <h4 class="card-subtitle text-body-secondary m-0">{{ account_count }}</h4>
             </div>
@@ -56,7 +57,8 @@
             <div class="row">
               <div class="col-8">
                 <h5 class="card-title widget-card-title mb-3">
-                    <a href="{% url 'contact_list' %}" class="text-decoration-none">Contacts</a>
+                  <a href="{% url 'contact_list' %}" class="text-decoration-none">Contacts</a>
+                  <a href="{% url 'contact_create' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
                 </h5>
                 <h4 class="card-subtitle text-body-secondary m-0">{{ contact_count }}</h4>
               </div>
@@ -93,7 +95,8 @@
             <div class="row">
               <div class="col-8">
                 <h5 class="card-title widget-card-title mb-3">
-                    <a href="{% url 'records' %}" class="text-decoration-none">Employees</a>
+                  <a href="{% url 'records' %}" class="text-decoration-none">Employees</a>
+                  <a href="{% url 'add_record' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
                 </h5>
                 <h4 class="card-subtitle text-body-secondary m-0">{{ record_count }}</h4>
               </div>

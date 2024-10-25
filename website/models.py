@@ -127,7 +127,7 @@ class Contact(models.Model):
 	]
 
 	LEAD_STATUS_CHOICES = [
-		('new_inquiry', 'New Inquiry'),
+		('new_request', 'New Request'),
 		('initial_contact', 'Initial Contact Made'),
 		('sample_requested', 'Sample Requested'),
 		('sample_sent', 'Sample Sent'),

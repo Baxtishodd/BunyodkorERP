@@ -42,10 +42,17 @@
     <tbody>
         {% for account in accounts %}
             <tr>
-                <td>{{ account.account_name }}</td>
-                <td>{{ account.industry }}</td>
-                <td><a href="{{ account.website }}" target="_blank">{{ account.website }}</a></td>
-                <td>{{ account.phone }}</td>
+                <td>{{ account.account_name|title }}</td>
+                <td>{{ account.get_industry_display }}</td>
+                <td>
+                    {% if account.website %}
+                    <a href="{{ account.website }}" target="_blank">{{ account.website }}</a>
+                    {% else %}-
+                    {% endif %}
+                </td>
+                <td>
+                    {% if account.phone %}{{ account.phone }}{% else %}-{% endif %}
+                </td>
                 <td>{{ account.account_manager }}</td>
                 <td>
                     <a href="">Edit</a> |

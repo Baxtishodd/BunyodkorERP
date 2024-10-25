@@ -78,13 +78,63 @@ class ContactForm(forms.ModelForm):
 		model = Contact
 		fields = '__all__'
 		widgets = {
-			'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-			'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-			'email': forms.EmailInput(attrs={'class': 'form-control'}),
-			'phone_mobile': forms.TextInput(attrs={'class': 'form-control'}),
-			'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+			# 'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+			# 'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+			# 'email': forms.EmailInput(attrs={'class': 'form-control'}),
+			# 'phone_mobile': forms.TextInput(attrs={'class': 'form-control'}),
+			# 'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+
+			'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+			'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+			'job_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}),
+			'department': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Department'}),
+			'contact_source': forms.Select(attrs={'class': 'form-control'}),
+			'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+
+			'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
+			'phone_office': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Office Phone'}),
+			'phone_mobile': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mobile Phone'}),
+			'fax': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fax Number'}),
+			'preferred_communication': forms.Select(attrs={'class': 'form-control'}),
+
+			'country': forms.Select(attrs={'class': 'form-control'}),
+			'address': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Address', 'rows': 2}),
+
+			'lead_status': forms.Select(attrs={'class': 'form-control'}),
+			'account_manager': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Account Manager'}),
+			'lead_source': forms.Select(attrs={'class': 'form-control'}),
+
+			'industry': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Industry'}),
+			'company_size': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Size'}),
+			'budget_range': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Budget Range'}),
+			'interests': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Interests', 'rows': 3}),
+			'preferred_language': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Preferred Language'}),
+
+			'birthday': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+			'notes': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Additional Notes', 'rows': 4}),
 		}
 		exclude = ['created_by']  # Exclude 'created_by' from the form
+
+
+# class ContactForm(forms.ModelForm):
+# 	class Meta:
+# 		model = Contact
+# 		fields = [
+# 			'first_name', 'last_name', 'job_title', 'department', 'contact_source', 'profile_picture',
+# 			'email', 'phone_office', 'phone_mobile', 'fax', 'preferred_communication', 'country',
+# 			'address', 'lead_status', 'account_manager', 'lead_source', 'industry', 'company_size',
+# 			'budget_range', 'interests', 'preferred_language', 'birthday', 'notes'
+# 		]
+# 		widgets = {
+# 			'lead_status': forms.Select(attrs={'class': 'form-control'}),
+# 			'account_manager': forms.TextInput(attrs={'class': 'form-control'}),
+# 			'lead_source': forms.Select(attrs={'class': 'form-control'}),
+# 			'contact_source': forms.Select(attrs={'class': 'form-control'}),
+# 			'country': forms.Select(attrs={'class': 'form-control'}),
+# 			'preferred_communication': forms.Select(attrs={'class': 'form-control'}),
+# 			'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+# 			'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+# 		}
 
 
 class AccountForm(forms.ModelForm):
