@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/bakhtech/bakhtech.uz 
+    - /bin/cp -r * $DEPLOYPATH
