@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # my edit
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # 'django.middleware.locale.LocaleMiddleware',
 ]
 
