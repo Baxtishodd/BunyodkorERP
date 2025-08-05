@@ -520,14 +520,7 @@ class Deal(models.Model):
 
 # Buyurtmanoma yaratish modeli Bo`lim boshliqlari yaratadi.
 class Requisition(models.Model):
-	STATUS = [
-		('director_approved', 'Director Tastiqladi'),
-		('prices_added', 'Narh qo`shildi'),
-		('leader_approved', 'Rahbar Tastiqladi'),
-		('finance_approved', 'Moliya Tastiqladi'),
-		('purchased', 'Xarid qilindi'),
-		('delivered', 'Omborga Yetkazildi'),
-	]
+
 	UNIT_CHOICES = [
 		('kg', 'Kilogram (kg)'),
 		('g', 'Gram (g)'),
@@ -589,12 +582,51 @@ class Requisition(models.Model):
 	is_delivered = models.BooleanField(default=False)
 	transferred_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
-	# Rahbaryat, Direktor va Moliya rahbari tastiqlashi uchun
-	director_approved = models.BooleanField(default=False)
-	leader_approved = models.BooleanField(default=False)
-	finance_approved = models.BooleanField(default=False)
+	# Direktor o'rinbosari (boshlang‘ich rahbar) statusi
+	DIRECTOR_STATUS_CHOICES = [
+		('tasdiqlashda', 'Tasdiqlash jarayonida'),
+		('tasdiqlandi', 'Tasdiqlandi'),
+		('kutishda', 'Kutishda'),
+		('rad_etildi', 'Rad etildi'),
+	]
+	director_status = models.CharField(max_length=20, choices=DIRECTOR_STATUS_CHOICES, default='kutishda')
+	director_approved_at = models.DateTimeField(null=True, blank=True)
 
-	status = models.CharField(max_length=50, choices=STATUS, default='draft')
+	# Ta’minot bo‘limi statusi
+	SUPPLY_STATUS_CHOICES = [
+		('jarayonda', 'Jarayonda'),
+		('bajarildi', 'To‘liq bajarildi'),
+		('bekor_qilindi', 'Bekor qilindi'),
+	]
+	supply_status = models.CharField(max_length=20, choices=SUPPLY_STATUS_CHOICES, default='jarayonda')
+
+	# Moliya bo‘limi statusi
+	FINANCE_STATUS_CHOICES = [
+		('tasdiqlashda', 'Tasdiqlash jarayonida'),
+		('tasdiqlandi', 'Tasdiqlandi'),
+		('kutishda', 'Kutishda'),
+		('bekor_qilindi', 'Bekor qilindi'),
+	]
+	finance_status = models.CharField(max_length=20, choices=FINANCE_STATUS_CHOICES, default='kutishda')
+	finance_approved_at = models.DateTimeField(null=True, blank=True)
+
+	# Rahbar statusi
+	LEADER_STATUS_CHOICES = [
+		('tasdiqlashda', 'Tasdiqlash jarayonida'),
+		('tasdiqlandi', 'Tasdiqlandi'),
+		('kutishda', 'Kutishda'),
+		('rad_etildi', 'Rad etildi'),
+	]
+	leader_status = models.CharField(max_length=20, choices=LEADER_STATUS_CHOICES, default='kutishda')
+	leader_approved_at = models.DateTimeField(null=True, blank=True)
+
+	# Ombor statusi
+	WAREHOUSE_STATUS_CHOICES = [
+		('yetib_keldi', 'Yetib keldi'),
+		('qabul_qilindi', 'Qabul qilindi'),
+	]
+	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_keldi')
+	warehouse_received_at = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.product_name} ({self.quantity} {self.unit_of_measure})"
