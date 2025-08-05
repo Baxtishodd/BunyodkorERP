@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'index' %}">BunyodCore</a>
+    <a class="navbar-brand" href="{% url 'index' %}">BunyodkorERP</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,6 +8,20 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
         {% if user.is_authenticated %}
+
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="talabnomaDropdown" role="button" data-bs-toggle="dropdown">
+            Buyurtmalar
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="talabnomaDropdown">
+            <li><a class="dropdown-item" href="">➕ Yangi Buyurtma</a></li>
+            <li><a class="dropdown-item" href="">📋 Barcha Buyurtmalar</a></li>
+            <li><a class="dropdown-item" href="">🕓 Tastiqlashda</a></li>
+            <li><a class="dropdown-item" href="">✅ Tastiqlangan</a></li>
+            <li><a class="dropdown-item" href="">❌ Rad etilgan</a></li>
+          </ul>
+        </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             HR Management
@@ -24,39 +38,40 @@
             </li>
           </ul>
         </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            SALES
+            Savdo
          </a>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="{% url 'contact_list' %}">
-                Contacts
+              <a class="dropdown-item" href="#">
+                Yangi so'rovlar
               </a>
             </li>
             <li>
-              <a class="dropdown-item" href="">
-                Leads
+              <a class="dropdown-item" href="#">
+                Savdolar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'contact_list' %}">
+                Kontaktlar
               </a>
             </li>
             <li>
               <a class="dropdown-item" href="{% url  'account_list' %}">
-                Accounts
+                Mijozlar
               </a>
             </li>
             <li>
               <a class="dropdown-item" href="">
-                Tasks
+                Vazifalar
               </a>
             </li>
             <li>
               <a class="dropdown-item" href="">
-                Meetings
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="">
-                Calls
+                Uchrashuvlar
               </a>
             </li>
           </ul>
@@ -79,7 +94,6 @@
 
         {% else %}
       <div class="ms-5 text-end">
-        <a class="btn btn-warning" href="{% url 'accounts:signup' %}">Sign up</a>
         <a class="btn btn-outline-light me-2" href="{% url 'accounts:login' %}">Login</a>
       </div>
       {% endif %}

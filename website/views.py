@@ -67,13 +67,13 @@ def index_page(request):
 
 	return render(request, 'index.html', context)
 
-# Xodimlar ro`yhati
+# Xodimlar ro`yhati view
 @login_required
 def records_view(request):
 	# Check to see if logging in
 	if request.user.has_perm('website.view_record'):
 		records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
-		paginator = Paginator(records, 15)  # Show 30 records per page
+		paginator = Paginator(records, 15)  # Show 15 records per page
 
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)  # Get the current page records

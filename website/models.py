@@ -517,3 +517,84 @@ class Deal(models.Model):
 
 	def __str__(self):
 		return self.name
+
+# Buyurtmanoma yaratish modeli Bo`lim boshliqlari yaratadi.
+class Requisition(models.Model):
+	STATUS = [
+		('director_approved', 'Director Tastiqladi'),
+		('prices_added', 'Narh qo`shildi'),
+		('leader_approved', 'Rahbar Tastiqladi'),
+		('finance_approved', 'Moliya Tastiqladi'),
+		('purchased', 'Xarid qilindi'),
+		('delivered', 'Omborga Yetkazildi'),
+	]
+	UNIT_CHOICES = [
+		('kg', 'Kilogram (kg)'),
+		('g', 'Gram (g)'),
+		('tonna', 'Tonna'),
+		('l', 'Litr (l)'),
+		('ml', 'Millilitr (ml)'),
+		('dona', 'Dona'),
+		('karopka', 'Karopka'),
+		('metr', 'Metr'),
+		('sm', 'Santimetr'),
+		('rulon', 'Rulon'),
+		('set', 'To‘plam (Set)'),
+		('pachka', 'Pachka'),
+		('quti', 'Quti'),
+		('juft', 'Juft'),
+		('list', 'List'),
+		('bo‘lak', 'Bo‘lak'),
+	]
+
+	created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='requisitions_created'
+    )
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	product_image = models.ImageField(upload_to='requisition_images/', null=True, blank=True)
+	product_name = models.CharField(max_length=255)
+	product_model = models.CharField(max_length=255, blank=True)
+	usage_location = models.CharField(max_length=255)
+
+	unit_of_measure = models.CharField(
+		max_length=20,
+		choices=UNIT_CHOICES,
+		default='dona',
+		help_text="O‘lchov birligini tanlang"
+	)
+
+	quantity = models.PositiveIntegerField()
+
+	#Ta`minot bo`limi tastiqlashi uchun
+	previous_price = models.TextField(
+		blank=True,
+		help_text="Avvalgi xarid narxi va u bilan bog‘liq manba yoki joy haqida ma’lumot"
+	)
+	offer_prices1 = models.TextField(
+		blank=True,
+		help_text="Yangi taklif narxlari, ularning manbalari yoki joylari haqida ma’lumot"
+	)
+	offer_prices2 = models.TextField(
+		blank=True,
+		help_text="Yangi taklif narxlari, ularning manbalari yoki joylari haqida ma’lumot"
+	)
+	other_offers = models.TextField(blank=True, help_text="Qo'shimcha takliflar bo‘lsa, bu yerga yozing.")
+
+	#Ombor bo`limi tastiqlashi uchun
+	is_delivered = models.BooleanField(default=False)
+	transferred_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+
+	# Rahbaryat, Direktor va Moliya rahbari tastiqlashi uchun
+	director_approved = models.BooleanField(default=False)
+	leader_approved = models.BooleanField(default=False)
+	finance_approved = models.BooleanField(default=False)
+
+	status = models.CharField(max_length=50, choices=STATUS, default='draft')
+
+	def __str__(self):
+		return f"{self.product_name} ({self.quantity} {self.unit_of_measure})"

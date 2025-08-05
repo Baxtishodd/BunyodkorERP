@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Record, Contact, Account, Lead, Deal, Product
+from .models import Record, Contact, Account, Lead, Deal, Product, Requisition
 
 # from django.contrib.auth.admin import UserAdmin
 
@@ -100,3 +100,45 @@ class ProductAdmin(admin.ModelAdmin):
 
     thumbnail.short_description = 'Picture'
 
+
+@admin.register(Requisition)
+class RequisitionAdmin(admin.ModelAdmin):
+    list_display = (
+        'product_name', 'product_model', 'quantity', 'unit_of_measure',
+        'created_by', 'created_at', 'status',
+        'director_approved', 'leader_approved', 'finance_approved', 'is_delivered'
+    )
+    list_filter = (
+        'status', 'unit_of_measure', 'created_at',
+        'director_approved', 'leader_approved', 'finance_approved', 'is_delivered'
+    )
+    search_fields = ('product_name', 'product_model', 'usage_location', 'created_by__username')
+
+    readonly_fields = ('created_at', 'created_by')
+
+    fieldsets = (
+        ('Mahsulot haqida ma’lumot', {
+            'fields': (
+                'product_image', 'product_name', 'product_model',
+                'usage_location', 'unit_of_measure', 'quantity'
+            )
+        }),
+        ('Narx va Takliflar', {
+            'fields': (
+                'previous_price', 'offer_prices1', 'offer_prices2', 'other_offers'
+            )
+        }),
+        ('Ombor va Xarid', {
+            'fields': (
+                'is_delivered', 'transferred_amount'
+            )
+        }),
+        ('Tastiqlar', {
+            'fields': (
+                'director_approved', 'leader_approved', 'finance_approved', 'status'
+            )
+        }),
+        ('Yaratilgan', {
+            'fields': ('created_by', 'created_at')
+        }),
+    )
