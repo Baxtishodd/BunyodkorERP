@@ -540,6 +540,7 @@ class Requisition(models.Model):
 		('bo‘lak', 'Bo‘lak'),
 	]
 
+	# Bo`lim boshliqlari zayavka yaratadi
 	created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -560,7 +561,6 @@ class Requisition(models.Model):
 		default='dona',
 		help_text="O‘lchov birligini tanlang"
 	)
-
 	quantity = models.PositiveIntegerField()
 
 	#Ta`minot bo`limi tastiqlashi uchun
@@ -590,15 +590,16 @@ class Requisition(models.Model):
 		('rad_etildi', 'Rad etildi'),
 	]
 	director_status = models.CharField(max_length=20, choices=DIRECTOR_STATUS_CHOICES, default='kutishda')
-	director_approved_at = models.DateTimeField(null=True, blank=True)
+	deputy_director_approved_at = models.DateTimeField(null=True, blank=True)
 
 	# Ta’minot bo‘limi statusi
 	SUPPLY_STATUS_CHOICES = [
 		('jarayonda', 'Jarayonda'),
-		('bajarildi', 'To‘liq bajarildi'),
+		('tugallandi', 'To‘liq bajarildi'),
 		('bekor_qilindi', 'Bekor qilindi'),
 	]
 	supply_status = models.CharField(max_length=20, choices=SUPPLY_STATUS_CHOICES, default='jarayonda')
+	supply_manager_completed_at = models.DateTimeField(null=True, blank=True)
 
 	# Moliya bo‘limi statusi
 	FINANCE_STATUS_CHOICES = [
@@ -622,11 +623,36 @@ class Requisition(models.Model):
 
 	# Ombor statusi
 	WAREHOUSE_STATUS_CHOICES = [
-		('yetib_keldi', 'Yetib keldi'),
+		('yetib_kelmagan', 'Yetib kelmagan'),
 		('qabul_qilindi', 'Qabul qilindi'),
 	]
 	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_keldi')
 	warehouse_received_at = models.DateTimeField(null=True, blank=True)
+
+	def approve_by_deputy_director(self):
+		self.deputy_director_status = 'tasdiqlandi'
+		self.deputy_director_approved_at = timezone.now()
+		self.save()
+
+	def complete_by_supply_manager(self):
+		self.supply_manager_status = 'tugallandi'
+		self.supply_manager_completed_at = timezone.now()
+		self.save()
+
+	def approve_by_finance(self):
+		self.finance_status = 'tasdiqlandi'
+		self.finance_approved_at = timezone.now()
+		self.save()
+
+	def approve_by_leader(self):
+		self.leader_status = 'tasdiqlandi'
+		self.leader_approved_at = timezone.now()
+		self.save()
+
+	def receive_by_warehouse(self):
+		self.warehouse_status = 'yetib_kelmagan'
+		self.warehouse_received_at = timezone.now()
+		self.save()
 
 	def __str__(self):
 		return f"{self.product_name} ({self.quantity} {self.unit_of_measure})"

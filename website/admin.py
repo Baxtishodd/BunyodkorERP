@@ -105,15 +105,15 @@ class ProductAdmin(admin.ModelAdmin):
 class RequisitionAdmin(admin.ModelAdmin):
     list_display = (
         'product_name', 'product_model', 'quantity', 'unit_of_measure',
-        'created_by', 'created_at', 'status',
-        'director_approved', 'leader_approved', 'finance_approved', 'is_delivered'
+        'created_by', 'created_at',
+        'director_status', 'supply_status', 'finance_status', 'leader_status',  'warehouse_status'
     )
     list_filter = (
-        'status', 'unit_of_measure', 'created_at',
-        'director_approved', 'leader_approved', 'finance_approved', 'is_delivered'
+        'unit_of_measure', 'created_at',
+        'director_status', 'supply_status', 'finance_status', 'leader_status', 'warehouse_status'
     )
-    search_fields = ('product_name', 'product_model', 'usage_location', 'created_by__username')
-
+    search_fields = ('product_name', 'product_model', 'created_by__username')
+    ordering = ('-created_at',)
     readonly_fields = ('created_at', 'created_by')
 
     fieldsets = (
@@ -128,14 +128,9 @@ class RequisitionAdmin(admin.ModelAdmin):
                 'previous_price', 'offer_prices1', 'offer_prices2', 'other_offers'
             )
         }),
-        ('Ombor va Xarid', {
-            'fields': (
-                'is_delivered', 'transferred_amount'
-            )
-        }),
         ('Tastiqlar', {
             'fields': (
-                'director_approved', 'leader_approved', 'finance_approved', 'status'
+                'director_status', 'supply_status', 'finance_status', 'leader_status', 'warehouse_status'
             )
         }),
         ('Yaratilgan', {
