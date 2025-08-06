@@ -6,9 +6,9 @@ from .models import Record, Contact, Account, Lead, Deal, Product, Requisition
 # from django.contrib.auth.admin import UserAdmin
 
 # Change the title and header
-admin.site.site_header = "BunyodCore Platform"
-admin.site.site_title = "BunyodCore Platform"
-admin.site.index_title = "BunyodCore Platform | created by Bakhtishod"
+admin.site.site_header = "BunyodkorERP Platform"
+admin.site.site_title = "BunyodkorERP Platform"
+admin.site.index_title = "BunyodkorERP Platform | created by TEAMS"
 
 
 @admin.register(Record)
@@ -120,7 +120,7 @@ class RequisitionAdmin(admin.ModelAdmin):
         ('Mahsulot haqida ma’lumot', {
             'fields': (
                 'product_image', 'product_name', 'product_model',
-                'usage_location', 'unit_of_measure', 'quantity'
+                'usage_location', 'usage_object', 'unit_of_measure', 'quantity'
             )
         }),
         ('Narx va Takliflar', {
@@ -137,3 +137,9 @@ class RequisitionAdmin(admin.ModelAdmin):
             'fields': ('created_by', 'created_at')
         }),
     )
+
+    # Automatically assign 'created_by' to the current user on save
+    def save_model(self, request, obj, form, change):
+        if not change:  # If it's a new object
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)

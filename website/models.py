@@ -540,6 +540,13 @@ class Requisition(models.Model):
 		('bo‘lak', 'Bo‘lak'),
 	]
 
+	USAGE_LOCATION = [
+		("koson_fashion","Koson Fashion MCHJ"),
+		("bunyodkor", "Bunyodkor MCHJ"),
+		("texnopark", "Bunyodkor Industrial Texnopark"),
+
+	]
+
 	# Bo`lim boshliqlari zayavka yaratadi
 	created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -553,7 +560,8 @@ class Requisition(models.Model):
 	product_image = models.ImageField(upload_to='requisition_images/', null=True, blank=True)
 	product_name = models.CharField(max_length=255)
 	product_model = models.CharField(max_length=255, blank=True)
-	usage_location = models.CharField(max_length=255)
+	usage_location = models.CharField(max_length=255, choices=USAGE_LOCATION, default='bunyodkor')
+	usage_object = models.CharField(max_length=255, null=True, blank=True)
 
 	unit_of_measure = models.CharField(
 		max_length=20,
@@ -578,10 +586,6 @@ class Requisition(models.Model):
 	)
 	other_offers = models.TextField(blank=True, help_text="Qo'shimcha takliflar bo‘lsa, bu yerga yozing.")
 
-	#Ombor bo`limi tastiqlashi uchun
-	is_delivered = models.BooleanField(default=False)
-	transferred_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-
 	# Direktor o'rinbosari (boshlang‘ich rahbar) statusi
 	DIRECTOR_STATUS_CHOICES = [
 		('tasdiqlashda', 'Tasdiqlash jarayonida'),
@@ -589,7 +593,7 @@ class Requisition(models.Model):
 		('kutishda', 'Kutishda'),
 		('rad_etildi', 'Rad etildi'),
 	]
-	director_status = models.CharField(max_length=20, choices=DIRECTOR_STATUS_CHOICES, default='kutishda')
+	director_status = models.CharField(max_length=20, choices=DIRECTOR_STATUS_CHOICES, default='tasdiqlashda')
 	deputy_director_approved_at = models.DateTimeField(null=True, blank=True)
 
 	# Ta’minot bo‘limi statusi
@@ -608,7 +612,7 @@ class Requisition(models.Model):
 		('kutishda', 'Kutishda'),
 		('bekor_qilindi', 'Bekor qilindi'),
 	]
-	finance_status = models.CharField(max_length=20, choices=FINANCE_STATUS_CHOICES, default='kutishda')
+	finance_status = models.CharField(max_length=20, choices=FINANCE_STATUS_CHOICES, default='tasdiqlashda')
 	finance_approved_at = models.DateTimeField(null=True, blank=True)
 
 	# Rahbar statusi
@@ -618,15 +622,16 @@ class Requisition(models.Model):
 		('kutishda', 'Kutishda'),
 		('rad_etildi', 'Rad etildi'),
 	]
-	leader_status = models.CharField(max_length=20, choices=LEADER_STATUS_CHOICES, default='kutishda')
+	leader_status = models.CharField(max_length=20, choices=LEADER_STATUS_CHOICES, default='tasdiqlashda')
 	leader_approved_at = models.DateTimeField(null=True, blank=True)
 
-	# Ombor statusi
+	# 	#Ombor bo`limi tastiqlashi uchun
 	WAREHOUSE_STATUS_CHOICES = [
 		('yetib_kelmagan', 'Yetib kelmagan'),
 		('qabul_qilindi', 'Qabul qilindi'),
 	]
-	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_keldi')
+	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_kelmagan')
+	transferred_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 	warehouse_received_at = models.DateTimeField(null=True, blank=True)
 
 	def approve_by_deputy_director(self):
@@ -650,9 +655,28 @@ class Requisition(models.Model):
 		self.save()
 
 	def receive_by_warehouse(self):
-		self.warehouse_status = 'yetib_kelmagan'
+		self.warehouse_status = 'qabul_qilindi'
 		self.warehouse_received_at = timezone.now()
 		self.save()
 
 	def __str__(self):
 		return f"{self.product_name} ({self.quantity} {self.unit_of_measure})"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

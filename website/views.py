@@ -9,15 +9,14 @@ from django.utils import timezone
 from .utils import get_random_color
 
 # my imports
-from .forms import AddRecordForm, ContactForm, AccountForm
-from .models import Record, Contact, Account
+from .forms import AddRecordForm, ContactForm, AccountForm, RequisitionForm
+from .models import Record, Contact, Account, Requisition
 
 from django.views.generic import ListView
 
 per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
-
 
 
 # Bosh sahifa
@@ -391,9 +390,33 @@ class AccountListView(LoginRequiredMixin, ListView):
 
 		return queryset
 
+# Zayavkalarni boshqarish view CRUD
+
+# <a href="{% url 'requisition_detail' req.pk %}" class="btn btn-sm btn-info">Batafsil</a>
+@login_required
+def requisition_create(request):
+	if not request.user.has_perm('website.add_requisition'):
+		messages.error(request, "Sizda yangi buyurtma kiritish huquqi yo'q!")
+		return redirect('index')
+
+	if request.method == 'POST':
+		form = RequisitionForm(request.POST, request.FILES)
+		if form.is_valid():
+			requisition = form.save(commit=False)
+			requisition.created_by = request.user
+			requisition.save()
+			messages.success(request, "Yangi buyurtma muvaffaqiyatli qo`shildi!")
+			return redirect('requisition_list')  # Boshqa joyga o‘zgartiring agar kerak bo‘lsa
+	else:
+		form = RequisitionForm()
+
+	return render(request, 'requisitions/creator/requisition_create.html', {'form': form})
 
 
-
+@login_required
+def requisition_list(request):
+	requisitions = Requisition.objects.all().order_by('-created_at')  # Eng yangi yuqorida
+	return render(request, 'requisitions/creator/requisition_list.html', {'requisitions': requisitions})
 
 
 

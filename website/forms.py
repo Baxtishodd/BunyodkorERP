@@ -1,5 +1,5 @@
 from django import forms
-from .models import Record, Contact, Account # Product
+from .models import Record, Contact, Account, Requisition # Product
 
 
 
@@ -156,3 +156,13 @@ class AccountForm(forms.ModelForm):
 			'address': forms.Textarea(attrs={'rows': 2}),
 		}
 		exclude = ['account_manager']  # Exclude 'account_manager' from the form
+
+
+class RequisitionForm(forms.ModelForm):
+	class Meta:
+		model = Requisition
+		fields = [
+			'product_name', 'product_model', 'usage_location', 'usage_object',
+			'unit_of_measure', 'quantity', 'product_image', 'previous_price',
+			'offer_prices1', 'offer_prices2', 'other_offers', 'warehouse_status'
+	]
