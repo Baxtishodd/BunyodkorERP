@@ -11,57 +11,39 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data" class="border p-4 rounded shadow-sm">
+    <form method="POST" class="border p-4 rounded shadow-sm" action="{% url 'requisition_create' %}" enctype="multipart/form-data">{% csrf_token %}
         {% csrf_token %}
         <div class="row g-3">
-            <div class="col-md-6">
-                <label for="id_product_image" class="form-label">Mahsulot rasmi</label>
-                {{ form.product_image }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_product_name" class="form-label">Mahsulot nomi</label>
+
+            <div class="col-md-4">
+                <label class="form-label">Mahsulot nomi</label>
                 {{ form.product_name }}
             </div>
-            <div class="col-md-6">
-                <label for="id_model" class="form-label">Model / Turi</label>
+            <div class="col-md-4">
+                <label class="form-label">Model / Turi</label>
                 {{ form.product_model }}
             </div>
-            <div class="col-md-6">
-                <label for="id_usage_location" class="form-label">Foydalanish joyi</label>
+            <div class="col-md-4">
+                <label class="form-label">Mahsulot rasmi</label>
+                {{ form.product_image }}
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Foydalanish joyi</label>
                 {{ form.usage_location }}
             </div>
             <div class="col-md-4">
-                <label for="id_unit_of_measure" class="form-label">O‘lchov birligi</label>
-                {{ form.unit_of_measure }}
-            </div>
-            <div class="col-md-4">
-                <label for="id_quantity" class="form-label">Miqdori</label>
+                <label class="form-label">Miqdori</label>
                 {{ form.quantity }}
             </div>
-            <div class="col-md-4">
-                <label for="id_previous_price" class="form-label">Oldingi narx (so'mda)</label>
-                {{ form.previous_price }}
+            <div class="col-md-3">
+                <label class="form-label">O‘lchov birligi</label>
+                {{ form.unit_of_measure }}
             </div>
-            <div class="col-md-6">
-                <label for="id_offered_price_1" class="form-label">Taklif narxi 1</label>
-                {{ form.offer_prices1 }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_offered_price_2" class="form-label">Taklif narxi 2</label>
-                {{ form.offer_prices2 }}
-            </div>
-            <div class="col-md-6">
-                <label for="id_is_arrived" class="form-label">Omborga yetib kelganmi?</label>
 
-            </div>
-            <div class="col-md-6">
-                <label for="id_transferred_amount" class="form-label">O‘tkazilgan summa (so'mda)</label>
-
-            </div>
         </div>
 
         <div class="mt-4 text-end">
-            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <button type="submit" class="btn btn-primary">Yuborish</button>
             <a href="{% url 'requisition_list' %}" class="btn btn-secondary">Bekor qilish</a>
         </div>
     </form>

@@ -166,3 +166,20 @@ class RequisitionForm(forms.ModelForm):
 			'unit_of_measure', 'quantity', 'product_image', 'previous_price',
 			'offer_prices1', 'offer_prices2', 'other_offers', 'warehouse_status'
 	]
+		widgets = {
+			'product_name': forms.TextInput(attrs={'class': 'form-control'}),
+			'product_model': forms.TextInput(attrs={'class': 'form-control'}),
+			'usage_object': forms.TextInput(attrs={'class': 'form-control'}),
+			'quantity1': forms.TextInput(attrs={'class': 'form-control'}),
+			'usage_location': forms.Select(choices=Requisition.USAGE_LOCATION, attrs={'class': 'form-select'}),
+			'unit_of_measure': forms.Select(choices=Requisition.UNIT_CHOICES, attrs={'class': 'form-select'}),
+			'product_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+
+			'quantity': forms.NumberInput(attrs={
+				'class': 'form-control',
+				'min': '1',
+				'step': '1',
+				'inputmode': 'numeric',  # Mobil qurilmalar uchun
+			}),
+
+		}
