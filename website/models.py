@@ -547,6 +547,15 @@ class Requisition(models.Model):
 
 	]
 
+	# Direktorlar ro`yahti
+	DIRECTOR_CHOICES = [
+		# ('USERNAME', 'Fullname'),
+		('Jamshidbek', 'Jamshidbek Saidaliev'),
+		('Mujahid', 'Mujahid Iqbal'),
+		('Pirnazarov', 'Pirnazarov Laziz'),
+		('Saidaxror', 'Rakhimov Saidakhror'),
+	]
+
 	# Bo`lim boshliqlari zayavka yaratadi
 	created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -630,7 +639,7 @@ class Requisition(models.Model):
 		('yetib_kelmagan', 'Yetib kelmagan'),
 		('qabul_qilindi', 'Qabul qilindi'),
 	]
-	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_kelmagan')
+	warehouse_status = models.CharField(max_length=20, choices=WAREHOUSE_STATUS_CHOICES, default='yetib_kelmagan', blank=True, null=True)
 	transferred_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 	warehouse_received_at = models.DateTimeField(null=True, blank=True)
 

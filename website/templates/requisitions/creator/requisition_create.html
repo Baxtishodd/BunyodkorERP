@@ -10,6 +10,17 @@
             <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field|capfirst }}</strong>: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
     <form method="POST" class="border p-4 rounded shadow-sm" action="{% url 'requisition_create' %}" enctype="multipart/form-data">{% csrf_token %}
         {% csrf_token %}

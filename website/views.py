@@ -406,7 +406,9 @@ def requisition_create(request):
 			requisition.created_by = request.user
 			requisition.save()
 			messages.success(request, "Yangi buyurtma muvaffaqiyatli qo`shildi!")
-			return redirect('requisition_list')  # Boshqa joyga o‘zgartiring agar kerak bo‘lsa
+			return redirect('requisition_list')
+		else:
+			messages.error(request, "Formada xatoliklar mavjud. Iltimos, qayta tekshirib yuboring.")
 	else:
 		form = RequisitionForm()
 
