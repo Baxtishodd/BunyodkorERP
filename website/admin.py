@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Record, Contact, Account, Lead, Deal, Product, Requisition
+from .models import Record, Contact, Account, Lead, Deal, Product, Requisition, Branch, IncomePayment
 
 # from django.contrib.auth.admin import UserAdmin
 
@@ -143,3 +143,28 @@ class RequisitionAdmin(admin.ModelAdmin):
         if not change:  # If it's a new object
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+@admin.register(Branch)
+class BranchAdmin(admin.ModelAdmin):
+    list_display = ("name", "address")  # o‘zingizdagi fieldlarni yozing
+
+
+@admin.register(IncomePayment)
+class IncomePaymentAdmin(admin.ModelAdmin):
+    list_display = (
+        'created_by',
+        'created_at',
+        'payment_date',
+        'company_name',
+        'inn',
+        'currency',
+        'amount',
+        'payment_purpose',
+        'bank_payment_purpose',
+        'our_branch',
+        'account_number',
+        'exchange_rate',
+        'amount_in_uzs',
+    )
+    list_filter = ('currency', 'our_branch', 'payment_date')
+    search_fields = ('company_name', 'inn', 'payment_purpose')

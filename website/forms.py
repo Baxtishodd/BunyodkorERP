@@ -1,5 +1,6 @@
 from django import forms
-from .models import Record, Contact, Account, Requisition # Product
+from .models import Record, Contact, Account, Requisition, IncomePayment
+# Product
 
 
 
@@ -182,4 +183,33 @@ class RequisitionForm(forms.ModelForm):
 				'inputmode': 'numeric',  # Mobil qurilmalar uchun
 			}),
 
+		}
+
+
+class IncomePaymentForm(forms.ModelForm):
+	class Meta:
+		model = IncomePayment
+		fields = [
+			"payment_date",
+			"company_name",
+			"inn",
+			"currency",
+			"amount",
+			"payment_purpose",
+			"bank_payment_purpose",
+			"our_branch",
+			"account_number",
+			"exchange_rate",
+		]
+		widgets = {
+			"payment_date": forms.DateInput(attrs={'class': 'form-control'}),
+			"company_name": forms.TextInput(attrs={'class': 'form-control'}),
+			"inn": forms.NumberInput(attrs={'class': 'form-control'}),
+			"currency": forms.Select(attrs={'class': 'form-control'}),
+			"amount": forms.NumberInput(attrs={'class': 'form-control'}),
+			"payment_purpose": forms.TextInput(attrs={'class': 'form-control'}),
+			"bank_payment_purpose": forms.Textarea(attrs={'class': 'form-control'}),
+			"our_branch": forms.Select(attrs={'class': 'form-control'}),
+			"account_number": forms.NumberInput(attrs={'class': 'form-control'}),
+			"exchange_rate": forms.NumberInput(attrs={'class': 'form-control'}),
 		}

@@ -9,19 +9,61 @@
 
         {% if user.is_authenticated %}
 
-          <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="talabnomaDropdown" role="button" data-bs-toggle="dropdown">
-            Buyurtmalar
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="talabnomaDropdown">
-            <li><a class="dropdown-item" href="{% url 'requisition_create' %}">➕ Yangi Buyurtma</a></li>
-            <li><a class="dropdown-item" href="{% url 'requisition_list' %}">📋 Barcha Buyurtmalar</a></li>
-            <li><a class="dropdown-item" href="">🕓 Tastiqlashda</a></li>
-            <li><a class="dropdown-item" href="">✅ Tastiqlangan</a></li>
-            <li><a class="dropdown-item" href="">❌ Rad etilgan</a></li>
+<!--          <li class="nav-item dropdown">-->
+<!--          <a class="nav-link dropdown-toggle" href="#" id="talabnomaDropdown" role="button" data-bs-toggle="dropdown">-->
+<!--            Buyurtmalar-->
+<!--          </a>-->
+<!--          <ul class="dropdown-menu" aria-labelledby="talabnomaDropdown">-->
+<!--            <li><a class="dropdown-item" href="{% url 'requisition_create' %}">➕ Yangi Buyurtma</a></li>-->
+<!--            <li><a class="dropdown-item" href="{% url 'requisition_list' %}">📋 Barcha Buyurtmalar</a></li>-->
+<!--            <li><a class="dropdown-item" href="">🕓 Tastiqlashda</a></li>-->
+<!--            <li><a class="dropdown-item" href="">✅ Tastiqlangan</a></li>-->
+<!--            <li><a class="dropdown-item" href="">❌ Rad etilgan</a></li>-->
+<!--          </ul>-->
+<!--        </li>-->
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Savdo
+         </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item disabled" href="#">
+                Yangi so'rovlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="#" aria-disabled="true">
+                Savdolar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="">
+                Kelgan pullar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="{% url 'contact_list' %}">
+                Kontaktlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="{% url  'account_list' %}">
+                Mijozlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="">
+                Vazifalar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="">
+                Uchrashuvlar
+              </a>
+            </li>
           </ul>
         </li>
-
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             HR Management
@@ -39,48 +81,7 @@
           </ul>
         </li>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Savdo
-         </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="#">
-                Yangi so'rovlar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                Savdolar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'contact_list' %}">
-                Kelgan pullar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'contact_list' %}">
-                Kontaktlar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url  'account_list' %}">
-                Mijozlar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="">
-                Vazifalar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="">
-                Uchrashuvlar
-              </a>
-            </li>
-          </ul>
-        </li>
+
       </ul>
       <div class="text-end">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">

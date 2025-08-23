@@ -9,8 +9,8 @@ from django.utils import timezone
 from .utils import get_random_color
 
 # my imports
-from .forms import AddRecordForm, ContactForm, AccountForm, RequisitionForm
-from .models import Record, Contact, Account, Requisition
+from .forms import AddRecordForm, ContactForm, AccountForm, RequisitionForm, IncomePaymentForm
+from .models import Record, Contact, Account, Requisition, IncomePayment
 
 from django.views.generic import ListView
 
@@ -420,5 +420,26 @@ def requisition_list(request):
 	requisitions = Requisition.objects.all().order_by('-created_at')  # Eng yangi yuqorida
 	return render(request, 'requisitions/creator/requisition_list.html', {'requisitions': requisitions})
 
+
+@login_required
+def create_payment(request):
+	if request.method == "POST":
+		form = IncomePaymentForm(request.POST)
+		if form.is_valid():
+			payment = form.save(commit=False)
+			# avtomatik hisoblash so‘mdagi qiymati
+			if payment.exchange_rate and payment.amount:
+				payment.amount_in_uzs = payment.amount * payment.exchange_rate
+			payment.save()
+			return redirect("payment_list")  # boshqa sahifaga yo‘naltirish
+	else:
+		form = IncomePaymentForm()
+	return render(request, "sales/payments/create_payment.html", {"form": form})
+
+
+@login_required
+def payment_list(request):
+	payments = IncomePayment.objects.all().order_by('-created_at')  # eng oxirgi to‘lovlar birinchi chiqadi
+	return render(request, 'sales/payments/payment_list.html', {'payments': payments})
 
 

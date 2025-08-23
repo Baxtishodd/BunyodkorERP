@@ -23,6 +23,9 @@ urlpatterns = [
     path('requisition_create/', views.requisition_create, name='requisition_create'),
     path('requisition_list/', views.requisition_list, name='requisition_list'),
 
+    path('payments/', views.payment_list, name='payment_list'),
+    path('payments/create', views.create_payment, name='create_payment'),
+
 
     path('dashboard/', views.dashboard_view, name='dashboard'),
 
