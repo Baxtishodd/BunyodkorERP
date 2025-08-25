@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # third party apps
     'crispy_forms',
     'crispy_bootstrap5',
+    'django.contrib.humanize',
 
     # my apps
     'accounts',

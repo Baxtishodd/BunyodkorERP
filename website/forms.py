@@ -1,5 +1,10 @@
 from django import forms
-from .models import Record, Contact, Account, Requisition, IncomePayment
+from .models import (Record,
+					 Contact,
+					 Account,
+					 Requisition,
+					 IncomePayment
+					 )
 # Product
 
 
@@ -207,7 +212,7 @@ class IncomePaymentForm(forms.ModelForm):
 			"inn": forms.NumberInput(attrs={'class': 'form-control'}),
 			"currency": forms.Select(attrs={'class': 'form-control'}),
 			"amount": forms.NumberInput(attrs={'class': 'form-control'}),
-			"payment_purpose": forms.TextInput(attrs={'class': 'form-control'}),
+			"payment_purpose": forms.Select(attrs={'class': 'form-control'}),
 			"bank_payment_purpose": forms.Textarea(attrs={'class': 'form-control'}),
 			"our_branch": forms.Select(attrs={'class': 'form-control'}),
 			"account_number": forms.NumberInput(attrs={'class': 'form-control'}),

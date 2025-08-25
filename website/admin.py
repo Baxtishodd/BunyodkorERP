@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Record, Contact, Account, Lead, Deal, Product, Requisition, Branch, IncomePayment
+from .models import Record, Contact, Account, Lead, Deal, Product, Requisition, Branch, IncomePayment, PaymentPurpose
 
 # from django.contrib.auth.admin import UserAdmin
 
@@ -148,6 +148,10 @@ class RequisitionAdmin(admin.ModelAdmin):
 class BranchAdmin(admin.ModelAdmin):
     list_display = ("name", "address")  # o‘zingizdagi fieldlarni yozing
 
+@admin.register(PaymentPurpose)
+class PaymentPurposeAdmin(admin.ModelAdmin):
+    list_display = ("title", "created_at")  # o‘zingizdagi fieldlarni yozing
+
 
 @admin.register(IncomePayment)
 class IncomePaymentAdmin(admin.ModelAdmin):
@@ -166,5 +170,5 @@ class IncomePaymentAdmin(admin.ModelAdmin):
         'exchange_rate',
         'amount_in_uzs',
     )
-    list_filter = ('currency', 'our_branch', 'payment_date')
-    search_fields = ('company_name', 'inn', 'payment_purpose')
+    list_filter = ('currency', 'payment_purpose', 'our_branch', 'payment_date')
+    search_fields = ('company_name', 'inn')

@@ -38,7 +38,7 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" href="">
+              <a class="dropdown-item" href="{% url 'payment_list' %}">
                 Kelgan pullar
               </a>
             </li>
@@ -99,9 +99,6 @@
       </div>
 
         {% else %}
-      <div class="ms-5 text-end">
-        <a class="btn btn-outline-light me-2" href="{% url 'accounts:login' %}">Login</a>
-      </div>
       {% endif %}
 
     </div>

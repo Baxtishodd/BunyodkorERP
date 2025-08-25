@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,10 +19,23 @@ per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
 
-# Bosh sahifa
+# Bosh sahifa Dashboard
 @login_required
 def index_page(request):
-	now = timezone.now()
+	# bugungi sana
+	today = timezone.now()
+	current_month = today.month
+	current_year = today.year
+
+	# Hozirgi oy uchun tushumlarni olish
+	payments = IncomePayment.objects.filter(
+		payment_date__year=current_year,
+		payment_date__month=current_month
+	)
+
+	# Jami tushum
+	total_income = payments.aggregate(total=Sum('amount_in_uzs'))['total'] or 0
+
 
 	contact_count = Contact.objects.count()  # Count all contacts
 	# Count all contacts in this month
@@ -37,6 +50,8 @@ def index_page(request):
 	account_count = Account.objects.count()
 	accounts_this_month = Account.objects.filter(
 		created_at__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)).count()
+
+
 
 
 	if request.method == 'POST':
@@ -54,6 +69,10 @@ def index_page(request):
 
 
 	context = {
+		'test': today,
+
+		'total_income': total_income,
+
 		'contact_count': contact_count,
 		'record_count': record_count,
 		'account_count': account_count,
@@ -427,6 +446,10 @@ def create_payment(request):
 		form = IncomePaymentForm(request.POST)
 		if form.is_valid():
 			payment = form.save(commit=False)
+			payment.created_by = request.user
+			payment.save()
+			messages.success(request, "Ma`lumotlar qo`shildi!")
+			payment = form.save(commit=False)
 			# avtomatik hisoblash so‘mdagi qiymati
 			if payment.exchange_rate and payment.amount:
 				payment.amount_in_uzs = payment.amount * payment.exchange_rate
@@ -441,5 +464,38 @@ def create_payment(request):
 def payment_list(request):
 	payments = IncomePayment.objects.all().order_by('-created_at')  # eng oxirgi to‘lovlar birinchi chiqadi
 	return render(request, 'sales/payments/payment_list.html', {'payments': payments})
+
+@login_required
+def delete_payment(request, pk):
+	payment = get_object_or_404(IncomePayment, pk=pk)
+	if request.method == "POST":
+		payment.delete()
+		return redirect('payment_list')  # to‘g‘ri url nomini yozasiz
+	return render(request, 'sales/payments/delete_payment.html', {'payment': payment})
+
+@login_required
+def edit_payment(request, pk):
+	payment = get_object_or_404(IncomePayment, pk=pk)
+	if request.method == "POST":
+		form = IncomePaymentForm(request.POST, instance=payment)
+		if form.is_valid():
+			form.save()
+			return redirect('payment_list')  # o‘zingizning url name ga moslang
+	else:
+		form = IncomePaymentForm(instance=payment)
+	return render(request, "sales/payments/edit_payment.html", {"form": form})
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -683,7 +683,12 @@ class Branch(models.Model):
 
 
 # To`lov maqsadi modeli
+class PaymentPurpose(models.Model):
+	title = models.CharField(max_length=255, verbose_name="To`lov maqsadi")
+	created_at = models.DateTimeField(auto_now_add=True)
 
+	def __str__(self):
+		return self.title
 
 
 # Kelgan pullar modeli
@@ -708,11 +713,11 @@ class IncomePayment(models.Model):
 	inn = models.CharField(max_length=20, verbose_name="INN")
 	currency = models.CharField(max_length=10, choices=PAYMENT_CURRENCIES, verbose_name="Pul birligi")
 	amount = models.DecimalField(max_digits=18, decimal_places=2, verbose_name="Summasi")
-	payment_purpose = models.CharField(max_length=255, verbose_name="To‘lov maqsadi")
+	payment_purpose = models.ForeignKey("PaymentPurpose", on_delete=models.CASCADE, verbose_name="To`lov maqsadi")
 	bank_payment_purpose = models.TextField(verbose_name="Bank to‘lov maqsadi")
 	our_branch = models.ForeignKey("Branch", on_delete=models.CASCADE, verbose_name="Filial")
 	account_number = models.CharField(max_length=50, verbose_name="Hisob raqami")
-	exchange_rate = models.DecimalField(max_digits=18, decimal_places=4, verbose_name="Valyuta kursi")
+	exchange_rate = models.DecimalField(max_digits=18, decimal_places=2, verbose_name="Valyuta kursi")
 	amount_in_uzs = models.DecimalField(max_digits=18, decimal_places=2, verbose_name="So‘mdagi qiymati", blank=True, null=True)
 
 	def save(self, *args, **kwargs):
