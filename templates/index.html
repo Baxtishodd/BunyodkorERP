@@ -14,16 +14,15 @@
 
   <div class="row gy-3">
 
-    <div class="col-md-3  col-sm-6">
+    <div class="col-md-4  col-sm-6">
       <div class="card widget-card border-light shadow-sm">
         <div class="card-body p-4">
           <div class="row">
             <div class="col-8">
-              <h5 class="card-title widget-card-title mb-3">
-                <a href="{% url 'payment_list' %}" class="text-decoration-none">Tushumlar</a>
-                <a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
-              </h5>
-              <h5 class="card-subtitle text-body-secondary m-0">{{ total_income|floatformat:2|intcomma }} So'm</h5>
+              <div class="card-title widget-card-title mb-3">
+                <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Daromad </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
+              </div>
+              <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>
             </div>
             <div class="col-4">
               <div class="d-flex justify-content-end">
@@ -35,22 +34,29 @@
           </div>
 
           <div class="row">
-              <div class="col-12">
+
+             <div class="col-6">
                 <div class="d-flex align-items-center mt-3">
-                  <span class="lh-1 me-3 bg-success-subtle text-success rounded-circle p-1 d-flex align-items-center justify-content-center">
-                    <i class="bi bi-arrow-up-right"></i>
-                  </span>
                   <div>
-                    <p class="fs-7 mb-0 text-success">+{{ total_income|floatformat:2|intcomma }} So'm</p>
-                    <p class="fs-7 mb-0 text-secondary">bu oyda</p>
+                    <p class="fs-7 mb-0 text-secondary">Kecha</p>
+                    <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>
+                    <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>
                   </div>
                 </div>
               </div>
-            </div>
+          </div>
 
         </div>
       </div>
     </div>
+
 
     <div class="col-md-3  col-sm-6">
       <div class="card widget-card border-light shadow-sm">

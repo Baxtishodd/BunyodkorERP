@@ -18,24 +18,38 @@ per_del_mess = "Sizda ma`lumotlarni o`chirish huquqi mavjud emas!"
 per_add_mess = "Sizda ma`lumotlar qo`shish huquqi mavjud emas!"
 per_upd_mess = "Sizda ma`lumotlarni o`zgartirish huquqi mavjud emas!"
 
+month_uz = {
+    1: "Yanvar", 2: "Fevral", 3: "Mart", 4: "Aprel",
+    5: "May", 6: "Iyun", 7: "Iyul", 8: "Avgust",
+    9: "Sentyabr", 10: "Oktyabr", 11: "Noyabr", 12: "Dekabr"
+}
 
 # Bosh sahifa Dashboard
 @login_required
 def index_page(request):
 	# bugungi sana
 	today = timezone.now()
+	yesterday = today - timezone.timedelta(days=1)  # kechagi sana
 	current_month = today.month
 	current_year = today.year
+
+	current_month_uz = month_uz[current_month]
 
 	# Hozirgi oy uchun tushumlarni olish
 	payments = IncomePayment.objects.filter(
 		payment_date__year=current_year,
 		payment_date__month=current_month
 	)
-
 	# Jami tushum
 	total_income = payments.aggregate(total=Sum('amount_in_uzs'))['total'] or 0
 
+	# Bugungi tushumlar
+	today_incomes = IncomePayment.objects.filter(payment_date=today)
+	today_total = today_incomes.aggregate(total=Sum('amount_in_uzs'))['total'] or 0
+
+	# Kechagi tushumlar (payment_date = yesterday)
+	yesterday_incomes = IncomePayment.objects.filter(payment_date=yesterday)
+	yesterday_total = yesterday_incomes.aggregate(total=Sum('amount_in_uzs'))['total'] or 0
 
 	contact_count = Contact.objects.count()  # Count all contacts
 	# Count all contacts in this month
@@ -71,7 +85,11 @@ def index_page(request):
 	context = {
 		'test': today,
 
+		'current_month_uz': current_month_uz,
+
 		'total_income': total_income,
+		'today_income': today_total,
+		'yesterday_income': yesterday_total,
 
 		'contact_count': contact_count,
 		'record_count': record_count,
@@ -91,7 +109,7 @@ def records_view(request):
 	# Check to see if logging in
 	if request.user.has_perm('website.view_record'):
 		records = Record.objects.all().order_by('-created_at') # Fetch all records from the database
-		paginator = Paginator(records, 15)  # Show 15 records per page
+		paginator = Paginator(records, 10)  # Show 15 records per page
 
 		page_number = request.GET.get('page')
 		page_obj = paginator.get_page(page_number)  # Get the current page records
@@ -440,6 +458,7 @@ def requisition_list(request):
 	return render(request, 'requisitions/creator/requisition_list.html', {'requisitions': requisitions})
 
 
+# Tushumlar view
 @login_required
 def create_payment(request):
 	if request.method == "POST":
@@ -462,8 +481,27 @@ def create_payment(request):
 
 @login_required
 def payment_list(request):
+
 	payments = IncomePayment.objects.all().order_by('-created_at')  # eng oxirgi to‘lovlar birinchi chiqadi
-	return render(request, 'sales/payments/payment_list.html', {'payments': payments})
+	paginator = Paginator(payments, 10)  # har bir sahifada 15 ta
+
+	page_number = request.GET.get('page')  # URL'dan ?page=2 kabi olinadi
+	page_obj = paginator.get_page(page_number)
+
+	context = {
+
+		'page_obj': page_obj
+	}
+	# search method
+	query = request.GET.get('q')  # Get the search query from the URL
+
+	if query:
+		page_obj = IncomePayment.objects.filter(company_name__icontains=query)
+
+		return render(request, 'sales/payments/payment_list.html', {'page_obj': page_obj})
+
+	else:
+		return render(request, 'sales/payments/payment_list.html', {'page_obj': page_obj})
 
 @login_required
 def delete_payment(request, pk):
