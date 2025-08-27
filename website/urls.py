@@ -28,6 +28,9 @@ urlpatterns = [
     path('payments/<int:pk>/delete/', views.delete_payment, name='delete_payment'),
     path('payments/<int:pk>/edit/', views.edit_payment, name='edit_payment'),
 
+    # path("export-income-payments/", views.export_income_payments_excel, name="export_income_payments"),
+    path("export-income-payments/", views.export_payments_excel, name="export_income_payments"),
+
 
     path('dashboard/', views.dashboard_view, name='dashboard'),
 

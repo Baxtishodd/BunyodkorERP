@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .utils import get_random_color
+from django.http import HttpResponse
+import openpyxl
 
 # my imports
 from .forms import AddRecordForm, ContactForm, AccountForm, RequisitionForm, IncomePaymentForm
@@ -525,6 +527,99 @@ def edit_payment(request, pk):
 
 
 
+# Excel export for payments
+# <a href="{% url 'export_income_payments' %}" class="btn btn-success">
+#                 <i class="bi bi-download"></i>  Excel</a>
+
+# def export_income_payments_excel(request):
+# 	# Excel fayl yaratamiz
+# 	workbook = openpyxl.Workbook()
+# 	sheet = workbook.active
+# 	sheet.title = "Income Payments"
+#
+# 	# Sarlavhalar
+# 	sheet.append(["Sana", "Tashkilot nomi", "INN", "Kirim summasi", "Valyuta", "To`lov maqsadi", "Bank to`lov maqsadi",
+# 				  "Filial",  "Valyuta narhi", "Jami (UZS)"])
+#
+# 	# Ma’lumotlarni DB dan olish
+# 	payments = IncomePayment.objects.all().order_by("created_at")
+#
+# 	for p in payments:
+# 		sheet.append([
+# 			p.payment_date.strftime("%Y-%m-%d"),
+# 			str(p.company_name),
+# 			p.inn,
+# 			p.amount,
+# 			str(p.currency),
+# 			str(p.our_branch),
+# 			str(p.bank_payment_purpose if p.bank_payment_purpose else ""),
+# 			str(p.payment_purpose),
+# 			p.exchange_rate,
+# 			p.amount_in_uzs
+#
+# 		])
+#
+# 	# Javob sifatida qaytarish
+# 	response = HttpResponse(
+# 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+# 	)
+# 	response["Content-Disposition"] = 'attachment; filename="income_payments.xlsx"'
+# 	workbook.save(response)
+# 	return response
+
+from io import BytesIO
+from django.http import HttpResponse
+from .forms import PaymentExportForm
+from .models import IncomePayment
+import openpyxl
+
+def export_payments_excel(request):
+	form = PaymentExportForm(request.GET or None)
+	if form.is_valid():
+		from_date = form.cleaned_data['from_date']
+		to_date = form.cleaned_data['to_date']
+
+		payments = IncomePayment.objects.filter(payment_date__range=[from_date, to_date])
+
+		wb = openpyxl.Workbook()
+		ws = wb.active
+		ws.title = "Payments"
+
+		# Sarlavhalar
+		headers = [
+			"To‘lov sanasi", "Kompaniya nomi", "INN", "Miqdor",
+			"Valyuta", "Bizning filial", "Bank to‘lov maqsadi",
+			"To‘lov maqsadi", "Valyuta kursi", "UZSdagi miqdor"
+		]
+		ws.append(headers)
+
+		# Ma’lumotlar
+		for p in payments:
+			ws.append([
+				p.payment_date.strftime("%Y-%m-%d") if p.payment_date else "",
+				str(p.company_name) if p.company_name else "",
+				p.inn or "",
+				p.amount or 0,
+				str(p.currency) if p.currency else "",
+				str(p.our_branch) if p.our_branch else "",
+				str(p.bank_payment_purpose) if p.bank_payment_purpose else "",
+				str(p.payment_purpose) if p.payment_purpose else "",
+				p.exchange_rate or 0,
+				p.amount_in_uzs or 0
+			])
+
+		output = BytesIO()
+		wb.save(output)
+		output.seek(0)
+
+		response = HttpResponse(
+			output,
+			content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+		)
+		response['Content-Disposition'] = f'attachment; filename=payments_{from_date}_to_{to_date}.xlsx'
+		return response
+
+	return HttpResponse("Noto‘g‘ri sana tanlandi!")
 
 
 

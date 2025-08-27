@@ -7,7 +7,7 @@
 <div class="col-4 col-md-6 col-lg-4 offset-md-2 offset-lg-4">
     <form method="POST">{% csrf_token %}
 
-        <div class="card shadow-lg mt-5">
+        <div class="card shadow-lg mt-5 login-card" data-aos="zoom-in">
             <div class="card-header">Login</div>
             <div class="card-body">
                 <div class="input-group mb-3">
@@ -25,6 +25,11 @@
         </div>
     </form>
 </div>
+
+
+<script>
+  AOS.init();
+</script>
 
 <footer class="py-3 my-4">
   <p class="text-center text-body-secondary border-bottom pb-3">© 2025 Bunyodkor Textile ERP | All rights reserved</p>

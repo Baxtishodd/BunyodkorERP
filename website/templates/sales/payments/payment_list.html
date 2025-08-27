@@ -17,6 +17,31 @@
         <div class="col-md-2">
             <button class="btn btn-outline-primary" type="submit">Izlash</button>
         </div>
+        <div class="col-md-4">
+            <form id="exportForm">
+                <label>dan: </label>
+                <input type="date" id="from_date" name="from_date" required>
+                <label>gacha: </label>
+                <input type="date" id="to_date" name="to_date" required>
+                <a href="#" id="downloadBtn" class="btn btn-success"><i class="bi bi-download"></i></a>
+            </form>
+
+            <script>
+            document.getElementById("downloadBtn").addEventListener("click", function() {
+                let fromDate = document.getElementById("from_date").value;
+                let toDate = document.getElementById("to_date").value;
+                if (fromDate && toDate) {
+                    window.location.href = "{% url 'export_income_payments' %}?from_date=" + fromDate + "&to_date=" + toDate;
+                } else {
+                    alert("Iltimos, sanalarni tanlang!");
+                }
+            });
+            </script>
+
+        </div>
+
+
+
     </div>
 </form>
 
@@ -29,7 +54,7 @@
                 <thead class="table-light">
                     <tr>
                         <th class="text-center">#</th>
-                        <th><i class="bi bi-building"></i> Korxona nomi</th>
+                        <th><i class="bi bi-building"></i> Tashkilot nomi</th>
                         <th class="text-end"><i class="bi bi-cash-stack"></i> Summasi</th>
                         <th class="text-center">Valyuta</th>
                         <th class="text-end">Jami (UZS)</th>

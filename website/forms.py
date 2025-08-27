@@ -218,3 +218,15 @@ class IncomePaymentForm(forms.ModelForm):
 			"account_number": forms.NumberInput(attrs={'class': 'form-control'}),
 			"exchange_rate": forms.NumberInput(attrs={'class': 'form-control'}),
 		}
+
+class PaymentExportForm(forms.Form):
+	from_date = forms.DateField(
+		widget=forms.DateInput(attrs={'type': 'date'}),
+		required=True,
+		label="Boshlanish sanasi"
+	)
+	to_date = forms.DateField(
+		widget=forms.DateInput(attrs={'type': 'date'}),
+		required=True,
+		label="Tugash sanasi"
+	)

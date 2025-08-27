@@ -21,10 +21,15 @@
 <!--            <li><a class="dropdown-item" href="">❌ Rad etilgan</a></li>-->
 <!--          </ul>-->
 <!--        </li>-->
-
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'index' %}" role="button" aria-expanded="false">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+        <!-- Savdo start -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Savdo
+            <i class="bi bi-bar-chart-fill"></i> Savdo
          </a>
           <ul class="dropdown-menu">
             <li>
@@ -35,11 +40,6 @@
             <li>
               <a class="dropdown-item disabled" href="#" aria-disabled="true">
                 Savdolar
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'payment_list' %}">
-                Kelgan pullar
               </a>
             </li>
             <li>
@@ -64,6 +64,19 @@
             </li>
           </ul>
         </li>
+        <!-- Moliya start -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="moliya" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-percent"></i> Moliya
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="moliya">
+            <li>
+              <a class="dropdown-item" href="{% url 'payment_list' %}">
+                Kelgan pullar
+              </a>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             HR Management
@@ -80,6 +93,7 @@
             </li>
           </ul>
         </li>
+
 
 
       </ul>
