@@ -526,52 +526,12 @@ def edit_payment(request, pk):
 	return render(request, "sales/payments/edit_payment.html", {"form": form})
 
 
-
-# Excel export for payments
-# <a href="{% url 'export_income_payments' %}" class="btn btn-success">
-#                 <i class="bi bi-download"></i>  Excel</a>
-
-# def export_income_payments_excel(request):
-# 	# Excel fayl yaratamiz
-# 	workbook = openpyxl.Workbook()
-# 	sheet = workbook.active
-# 	sheet.title = "Income Payments"
-#
-# 	# Sarlavhalar
-# 	sheet.append(["Sana", "Tashkilot nomi", "INN", "Kirim summasi", "Valyuta", "To`lov maqsadi", "Bank to`lov maqsadi",
-# 				  "Filial",  "Valyuta narhi", "Jami (UZS)"])
-#
-# 	# Ma’lumotlarni DB dan olish
-# 	payments = IncomePayment.objects.all().order_by("created_at")
-#
-# 	for p in payments:
-# 		sheet.append([
-# 			p.payment_date.strftime("%Y-%m-%d"),
-# 			str(p.company_name),
-# 			p.inn,
-# 			p.amount,
-# 			str(p.currency),
-# 			str(p.our_branch),
-# 			str(p.bank_payment_purpose if p.bank_payment_purpose else ""),
-# 			str(p.payment_purpose),
-# 			p.exchange_rate,
-# 			p.amount_in_uzs
-#
-# 		])
-#
-# 	# Javob sifatida qaytarish
-# 	response = HttpResponse(
-# 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-# 	)
-# 	response["Content-Disposition"] = 'attachment; filename="income_payments.xlsx"'
-# 	workbook.save(response)
-# 	return response
-
 from io import BytesIO
 from django.http import HttpResponse
 from .forms import PaymentExportForm
 from .models import IncomePayment
 import openpyxl
+from openpyxl.styles import Font
 
 def export_payments_excel(request):
 	form = PaymentExportForm(request.GET or None)
@@ -587,15 +547,17 @@ def export_payments_excel(request):
 
 		# Sarlavhalar
 		headers = [
-			"To‘lov sanasi", "Kompaniya nomi", "INN", "Miqdor",
+			"#", "To‘lov sanasi", "Kompaniya nomi", "INN", "Miqdor",
 			"Valyuta", "Bizning filial", "Bank to‘lov maqsadi",
-			"To‘lov maqsadi", "Valyuta kursi", "UZSdagi miqdor"
+			"To‘lov maqsadi", "Valyuta kursi", "UZSdagi miqdor", "Amalyot yaratilgan vaqti"
 		]
+			# .font = Font(bold=True, size=16)
 		ws.append(headers)
 
 		# Ma’lumotlar
-		for p in payments:
+		for row_num, p in enumerate(payments, 1):
 			ws.append([
+				row_num, # Tartib raqam
 				p.payment_date.strftime("%Y-%m-%d") if p.payment_date else "",
 				str(p.company_name) if p.company_name else "",
 				p.inn or "",
@@ -605,7 +567,8 @@ def export_payments_excel(request):
 				str(p.bank_payment_purpose) if p.bank_payment_purpose else "",
 				str(p.payment_purpose) if p.payment_purpose else "",
 				p.exchange_rate or 0,
-				p.amount_in_uzs or 0
+				p.amount_in_uzs or 0,
+				p.created_at.strftime("%Y-%m-%d %H:%M:%S") if p.payment_date else ""
 			])
 
 		output = BytesIO()

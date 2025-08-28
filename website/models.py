@@ -711,7 +711,7 @@ class IncomePayment(models.Model):
 	payment_date = models.DateField(verbose_name="Pul kelgan sana")
 	company_name = models.CharField(max_length=255, verbose_name="Korxona nomi")
 	inn = models.CharField(max_length=20, verbose_name="INN")
-	currency = models.CharField(max_length=10, choices=PAYMENT_CURRENCIES, verbose_name="Pul birligi")
+	currency = models.CharField(max_length=10, choices=PAYMENT_CURRENCIES, verbose_name="Pul birligi", default="UZS")
 	amount = models.DecimalField(max_digits=18, decimal_places=2, verbose_name="Summasi")
 	payment_purpose = models.ForeignKey("PaymentPurpose", on_delete=models.CASCADE, verbose_name="To`lov maqsadi")
 	bank_payment_purpose = models.TextField(verbose_name="Bank to‘lov maqsadi")
