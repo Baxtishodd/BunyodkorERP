@@ -3,6 +3,9 @@
 import os
 import sys
 
+# import socket
+# print(socket.gethostname())
+#
 
 def main():
     """Run administrative tasks."""

@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,13 +12,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jcxge@8cwms-4-$&qia^6p+^8-qwrsw7vey#0e6e326apg3mvo'
-
+# SECRET_KEY = 'django-insecure-jcxge@8cwms-4-$&qia^6p+^8-qwrsw7vey#0e6e326apg3mvo'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+# DEBUG = True
 
 ALLOWED_HOSTS = ['bakhtech.uz', 'www.bakhtech.uz', 'localhost', '127.0.0.1']
-# '192.168.101.14', 192.168.88.226:8000
+
+
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+DEBUG = env("DEBUG")
 
 # Application definition
 
@@ -84,25 +94,26 @@ WSGI_APPLICATION = 'dcrm.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'new_db',
-        'USER': 'root',
-        'PASSWORD': '12345',
+        'ENGINE': env("ENGINE"),
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': env("PORT"),
     }
 }
 
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'bakhtech_crm',
-#         'USER': 'bakhtech_user',
-#         'PASSWORD': 'Baxtishod.6',
+#         'NAME': 'new_db',
+#         'USER': 'root',
+#         'PASSWORD': '12345',
 #         'HOST': 'localhost',
 #         'PORT': '3306',
 #     }
 # }
+
 
 
 # Password validation
