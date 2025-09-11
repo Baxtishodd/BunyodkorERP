@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # DEBUG = True
 
-ALLOWED_HOSTS = ['bakhtech.uz', 'www.bakhtech.uz', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76']
 
 
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # my apps
     'accounts',
     'website',
+    'plm',
 ]
 
 INSTALLED_APPS += ['django.contrib.sites']
