@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel
-from .forms import ProductModelForm  # form yaratamiz
+from .forms import ProductModelForm, EmployeeForm
+from django.shortcuts import render, redirect
+from .models import ProductionLine, Employee, HourlyWork, WorkType, Order
+from datetime import time
 
 # Model kartalar ro‘yxati
 @login_required
@@ -54,3 +57,87 @@ def productmodel_delete(request, pk):
         product.delete()
         return redirect("plm:productmodel_list")
     return render(request, "plm/productmodel_confirm_delete.html", {"product": product})
+
+
+def hourly_work_table(request, line_id, order_id):
+    line = get_object_or_404(ProductionLine, id=line_id)
+    employees = Employee.objects.filter(line=line)
+    work_types = WorkType.objects.all()
+
+    # Vaqt oralig‘i qo‘lda
+    hours = [
+        ("08:00", "09:00"),
+        ("09:00", "10:00"),
+        ("10:00", "11:00"),
+        ("11:00", "12:00"),
+        ("12:00", "13:00"),
+        ("13:00", "14:00"),
+        ("14:00", "15:00"),
+        ("15:00", "16:00"),
+        ("16:00", "17:00"),
+        ("17:00", "17:45"),
+    ]
+
+    if request.method == "POST":
+        for emp in employees:
+            work_type_id = request.POST.get(f"emp{emp.id}_worktype")
+            work_type = WorkType.objects.get(id=work_type_id) if work_type_id else None
+            for idx, (start, end) in enumerate(hours):
+                qty = request.POST.get(f"emp{emp.id}_slot{idx}", 0)
+                if qty and int(qty) > 0:
+                    # ✅ Yangi yozuvni bazaga saqlash
+                    HourlyWork.objects.create(
+                        employee=emp,
+                        order_id=order_id,
+                        work_type=work_type,
+                        start_time=start,
+                        end_time=end,
+                        quantity=int(qty),
+                    )
+        return render(request, "sewing/hourly_work_success.html", {"line": line, "order_id": order_id})
+
+    return render(request, "sewing/hourly_work_table.html", {
+        "line": line,
+        "order_id": order_id,
+        "employees": employees,
+        "work_types": work_types,
+        "time_slots": hours,
+    })
+
+
+def employee_list(request):
+    employees = Employee.objects.select_related("line").all()
+    return render(request, "employee/employee_list.html", {"employees": employees})
+
+
+def employee_create(request):
+    if request.method == "POST":
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:employee_list')  # saqlangandan keyin list sahifaga yo'naltiradi
+    else:
+        form = EmployeeForm()
+    return render(request, 'employee/employee_create.html', {'form': form})
+
+
+def worktype_list(request):
+    worktypes = WorkType.objects.all()
+    return render(request, "sewing/worktype_list.html", {"worktypes": worktypes})
+
+def productionline_list(request):
+    lines = ProductionLine.objects.all()
+    return render(request, "sewing/productionline_list.html", {"lines": lines})
+
+
+
+
+
+
+
+
+
+
+
+
+

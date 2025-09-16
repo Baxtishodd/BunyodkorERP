@@ -1,0 +1,134 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'index' %}">BunyodkorERP</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        {% if user.is_authenticated %}
+
+<!--          <li class="nav-item dropdown">-->
+<!--          <a class="nav-link dropdown-toggle" href="#" id="talabnomaDropdown" role="button" data-bs-toggle="dropdown">-->
+<!--            Buyurtmalar-->
+<!--          </a>-->
+<!--          <ul class="dropdown-menu" aria-labelledby="talabnomaDropdown">-->
+<!--            <li><a class="dropdown-item" href="{% url 'requisition_create' %}">➕ Yangi Buyurtma</a></li>-->
+<!--            <li><a class="dropdown-item" href="{% url 'requisition_list' %}">📋 Barcha Buyurtmalar</a></li>-->
+<!--            <li><a class="dropdown-item" href="">🕓 Tastiqlashda</a></li>-->
+<!--            <li><a class="dropdown-item" href="">✅ Tastiqlangan</a></li>-->
+<!--            <li><a class="dropdown-item" href="">❌ Rad etilgan</a></li>-->
+<!--          </ul>-->
+<!--        </li>-->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'index' %}" role="button" aria-expanded="false">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+        <!-- Savdo start -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bar-chart-fill"></i> Savdo
+         </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item disabled" href="#">
+                Yangi so'rovlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="#" aria-disabled="true">
+                Savdolar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="{% url 'contact_list' %}">
+                Kontaktlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="{% url  'account_list' %}">
+                Mijozlar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="">
+                Vazifalar
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item disabled" href="">
+                Uchrashuvlar
+              </a>
+            </li>
+          </ul>
+        </li>
+        <!-- Moliya start -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="moliya" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-percent"></i> Moliya
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="moliya">
+            <li>
+              <a class="dropdown-item" href="{% url 'payment_list' %}">
+                Kelgan pullar
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            HR Management
+         </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'add_record' %}">
+                <i class="bi bi-person-plus"></i> Xodim qo`shish
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="{% url 'records' %}"> Xodimlar ro'yhati</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Model boshqaruvi
+         </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'plm:productmodel_list' %}">
+                Modellar
+              </a>
+            </li>
+          </ul>
+        </li>
+
+
+
+      </ul>
+      <div class="text-end">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ request.user.username }}
+         </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'accounts:profile' user.id  %}">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item " href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        </ul>
+      </div>
+
+        {% else %}
+      {% endif %}
+
+    </div>
+  </div>
+</nav>

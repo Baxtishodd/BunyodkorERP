@@ -103,7 +103,7 @@ def index_page(request):
 	}
 
 
-	return render(request, 'index.html', context)
+	return render(request, 'index1.html', context)
 
 # Xodimlar ro`yhati view
 @login_required

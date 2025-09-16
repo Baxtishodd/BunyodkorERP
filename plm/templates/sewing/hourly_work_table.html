@@ -1,0 +1,84 @@
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Patok ishi</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Model boshqaruvi</a></li>
+          <li class="breadcrumb-item" aria-current="page">Patok</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+    <h2>{{ line.name }} uchun ish jadvali {{ order.name }}</h2>
+
+<div class="col-xl-12 col-md-12">
+  <div class="card User-Activity table-card">
+    <div class="card-header">
+      <h5>Patok: {{ line.name }} | Buyurtma: {{ order.name }}</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 align-middle text-center">
+            <thead>
+              <tr>
+                <th>Ishchi</th>
+                <th>Ish turi</th>
+                {% for start, end in time_slots %}
+                  <th>{{ start }} - {{ end }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for emp in employees %}
+              <tr>
+                <td class="text-start">
+                  <h6 class="m-0 d-flex align-items-center">
+                    {{ emp.full_name }}
+                  </h6>
+                </td>
+                <td>
+                  <select class="form-select form-select-sm" name="emp{{ emp.id }}_worktype">
+                    {% for wt in work_types %}
+                    <option value="{{ wt.id }}">{{ wt.name }} ({{ wt.price }} so'm)</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                {% for start, end in time_slots %}
+                <td>
+                  <input type="number" min="0" value="0"
+                         name="emp{{ emp.id }}_slot{{ forloop.counter0 }}"
+                         class="form-control form-control-sm text-center">
+                </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-success">
+            <i class="ti ti-device-floppy"></i> Saqlash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </div>
+
+{% endblock %}

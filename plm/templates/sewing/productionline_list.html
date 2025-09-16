@@ -1,0 +1,45 @@
+
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Patok ishi</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Model boshqaruvi</a></li>
+          <li class="breadcrumb-item" aria-current="page">Patok</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Patok nomi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in lines %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ line.name }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Hozircha patoklar mavjud emas</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

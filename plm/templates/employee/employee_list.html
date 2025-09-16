@@ -1,0 +1,56 @@
+
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Xodimlar</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Xodimlar</a></li>
+          <li class="breadcrumb-item" aria-current="page">Xodimlar ro'yhati</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+    <a class="btn btn-success m-2" href="{% url 'plm:employee_add' %}">Xodim qo`shish</a>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>ID</th>
+                <th>Ismi</th>
+                <th>Patok (Line)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.full_name }}</td>
+                    <td>
+                        {% if employee.line %}
+                            {{ employee.line.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Hozircha hodimlar mavjud emas</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+     </table>
+  </div>
+</div>
+
+{% endblock %}

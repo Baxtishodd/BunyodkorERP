@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductModel
+from .models import ProductModel, Employee
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -24,3 +24,20 @@ class ProductModelForm(forms.ModelForm):
             "qadoq": forms.NumberInput(attrs={"class": "form-control", "placeholder": "0"}),
             "model_picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
+
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['full_name', 'line']
+
+        widgets = {
+            "full_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ism familiya"}),
+            "line": forms.Select(choices=Employee.line,
+                         attrs={'class': 'form-select'})
+        }
+
+
+
+
+

@@ -34,3 +34,63 @@ class ProductModel(models.Model):
 
     def __str__(self):
         return f"{self.artikul} - {self.mijoz}"
+
+
+
+class ProductionLine(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Patok nomi")
+
+    def __str__(self):
+        return self.name
+
+
+class Order(models.Model):
+    name = models.CharField(max_length=200, verbose_name="Buyurtma nomi")
+    quantity = models.PositiveIntegerField(verbose_name="Miqdori (dona)")
+    line = models.ForeignKey(
+        ProductionLine,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Patok",
+        default="Tanlang"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.quantity} dona)"
+
+
+class Employee(models.Model):
+    full_name = models.CharField(max_length=200, verbose_name="Ism familiya")
+    line = models.ForeignKey(ProductionLine, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.full_name
+
+
+class WorkType(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Ish turi")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Narxi (so‘m/dona)")
+
+    def __str__(self):
+        return f"{self.name} ({self.price} so‘m)"
+
+
+class HourlyWork(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="hourly_works")
+    line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE, null=True, blank=True)
+    work_type = models.ForeignKey(WorkType, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="hourly_works")
+
+    date = models.DateField(auto_now_add=True)
+    start_time = models.TimeField(verbose_name="Boshlanish vaqti")   # masalan 08:00
+    end_time = models.TimeField(verbose_name="Tugash vaqti")         # masalan 09:00
+    quantity = models.PositiveIntegerField(verbose_name="Qilingan ish soni")
+
+    @property
+    def total_amount(self):
+        return self.quantity * self.work_type.price
+
+    def __str__(self):
+        return f"{self.employee.full_name} | {self.work_type.name} | {self.start_time}-{self.end_time}"

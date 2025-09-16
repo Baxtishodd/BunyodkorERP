@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProductModel
+from .models import ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork
 from django.utils.html import format_html
 
 
@@ -35,3 +35,56 @@ class ProductAdmin(admin.ModelAdmin):
         return "Rasm yo‘q"
 
     image_preview.short_description = "Model rasmi"
+
+
+
+class ProductionLineInline(admin.TabularInline):
+    model = ProductionLine
+    extra = 1
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "quantity", "line", "created_at")
+    search_fields = ("name",)
+
+
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ("id", "full_name", "line")
+    search_fields = ("full_name",)
+    list_filter = ("line",)
+
+
+class WorkTypeAdmin(admin.ModelAdmin):
+    list_display = ("name", "price")
+    search_fields = ("name",)
+
+
+class HourlyWorkAdmin(admin.ModelAdmin):
+    list_display = (
+        "employee",
+        "work_type",
+        "order",
+        "date",
+        "start_time",
+        "end_time",
+        "quantity",
+        "total_amount_display",
+    )
+    list_filter = ("date", "work_type", "order")
+    search_fields = ("employee__full_name",)
+
+    def total_amount_display(self, obj):
+        return f"{obj.total_amount:,.0f} so‘m"
+    total_amount_display.short_description = "Jami summa"
+
+class ProductionLineAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+    search_fields = ("name", "order__name")
+    list_filter = ("order",)
+
+
+admin.site.register(Order, OrderAdmin)
+admin.site.register(ProductionLine, ProductionLineAdmin)
+admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(WorkType, WorkTypeAdmin)
+admin.site.register(HourlyWork, HourlyWorkAdmin)
