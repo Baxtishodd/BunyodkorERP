@@ -1,0 +1,48 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">{{ order.client }} {% if order.artikul %} ({{ order.artikul }}){% endif %}</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'plm:order_list' %}">Buyurtma</a></li>
+          <li class="breadcrumb-item" aria-current="page">{{ order.client }} {% if order.artikul %} ({{ order.artikul }}){% endif %}</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+      <div class="row">
+
+          <div class="col-md-6">
+              <ul class="list-group">
+                <li class="list-group-item"><strong>Mijoz:</strong> {{ order.client }}</li>
+                <li class="list-group-item"><strong>Artikul:</strong> {{ order.artikul }}</li>
+                <li class="list-group-item"><strong>Miqdor:</strong> {{ order.quantity }} dona</li>
+                <li class="list-group-item"><strong>Rang:</strong> {{ order.rangi }}</li>
+                <li class="list-group-item"><strong>Yuklanish vaqti:</strong> {{ order.deadline|date:"d.m.Y H:i" }}</li>
+                <li class="list-group-item"><strong>Yaratgan:</strong> {{ order.created_by }}</li>
+                <li class="list-group-item"><strong>Yaratilgan vaqti:</strong> {{ order.created_at|date:"d.m.Y H:i" }}</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+              {% if order.model_picture %}
+                <div class="mt-3">
+                    <img src="{{ order.model_picture.url }}" class="img-fluid rounded shadow-sm" style="max-width:300px;">
+                </div>
+              {% endif %}
+          </div>
+      </div>
+
+    <a href="{% url 'plm:order_update' order.pk %}" class="btn btn-primary mt-3">✏️ Tahrirlash</a>
+    <a href="{% url 'plm:order_delete' order.pk %}" class="btn btn-danger mt-3">🗑️ O'chirish</a>
+    <a href="{% url 'plm:order_list' %}" class="btn btn-secondary mt-3">⬅️ Orqaga</a>
+
+{% endblock %}
+
+
+
+

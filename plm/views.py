@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel
-from .forms import ProductModelForm, EmployeeForm
+from .forms import ProductModelForm, EmployeeForm, OrderForm
 from django.shortcuts import render, redirect
 from .models import ProductionLine, Employee, HourlyWork, WorkType, Order
 from datetime import time
@@ -94,9 +94,9 @@ def hourly_work_table(request, line_id, order_id):
                         end_time=end,
                         quantity=int(qty),
                     )
-        return render(request, "sewing/hourly_work_success.html", {"line": line, "order_id": order_id})
+        return render(request, "planning/hourly_work_success.html", {"line": line, "order_id": order_id})
 
-    return render(request, "sewing/hourly_work_table.html", {
+    return render(request, "planning/hourly_work_table.html", {
         "line": line,
         "order_id": order_id,
         "employees": employees,
@@ -123,14 +123,60 @@ def employee_create(request):
 
 def worktype_list(request):
     worktypes = WorkType.objects.all()
-    return render(request, "sewing/worktype_list.html", {"worktypes": worktypes})
+    return render(request, "planning/worktype_list.html", {"worktypes": worktypes})
 
 def productionline_list(request):
     lines = ProductionLine.objects.all()
-    return render(request, "sewing/productionline_list.html", {"lines": lines})
+    return render(request, "planning/productionline_list.html", {"lines": lines})
 
 
+# Order view start ----------------
+@login_required
+def order_list(request):
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, "orders/order_list.html", {"orders": orders})
 
+# Detail
+@login_required
+def order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    return render(request, "orders/order_detail.html", {"order": order})
+
+# Create
+@login_required
+def order_create(request):
+    if request.method == "POST":
+        form = OrderForm(request.POST, request.FILES)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.created_by = request.user
+            order.save()
+            return redirect('plm:order_list')
+    else:
+        form = OrderForm()
+    return render(request, "orders/order_form.html", {"form": form})
+
+# Update
+@login_required
+def order_update(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if request.method == "POST":
+        form = OrderForm(request.POST, request.FILES, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:order_detail', pk=order.pk)
+    else:
+        form = OrderForm(instance=order)
+    return render(request, "orders/order_form.html", {"form": form, "order": order})
+
+# Delete
+@login_required
+def order_delete(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if request.method == "POST":
+        order.delete()
+        return redirect('plm:order_list')
+    return render(request, "orders/order_confirm_delete.html", {"order": order})
 
 
 

@@ -45,20 +45,31 @@ class ProductionLine(models.Model):
 
 
 class Order(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Buyurtma nomi")
+    client = models.CharField(max_length=200, verbose_name="Mijoz nomi", blank=True, null=True)
+    artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True,)
     quantity = models.PositiveIntegerField(verbose_name="Miqdori (dona)")
-    line = models.ForeignKey(
-        ProductionLine,
+    rangi = models.CharField(max_length=100, verbose_name="Rangi", blank=True, null=True, )
+
+    deadline = models.DateTimeField(blank=True, null=True, verbose_name="Yuklanish vaqti")
+
+
+    # Model rasmi
+    model_picture = models.ImageField(upload_to="orders/", blank=True, null=True, verbose_name="Model rasmi")
+
+    # Kim tomonidan yaratilgani
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Patok",
-        default="Tanlang"
+        verbose_name="Yaratgan foydalanuvchi"
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
 
     def __str__(self):
-        return f"{self.name} ({self.quantity} dona)"
+        return f"{self.client} {self.artikul} ({self.quantity} dona)"
 
 
 class Employee(models.Model):
@@ -94,3 +105,37 @@ class HourlyWork(models.Model):
 
     def __str__(self):
         return f"{self.employee.full_name} | {self.work_type.name} | {self.start_time}-{self.end_time}"
+
+
+# class DailyWork(models.Model):
+#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="daily_works")
+#     line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE, null=True, blank=True)
+#     work_type = models.ForeignKey(WorkType, on_delete=models.CASCADE)
+#     date = models.DateField()
+#
+#     work_08_09 = models.IntegerField(default=0)   # 08:00 - 09:00
+#     work_09_10 = models.IntegerField(default=0)
+#     work_10_11 = models.IntegerField(default=0)
+#     work_11_12 = models.IntegerField(default=0)
+#     work_12_13 = models.IntegerField(default=0)
+#     work_13_14 = models.IntegerField(default=0)
+#     work_14_15 = models.IntegerField(default=0)
+#     work_15_16 = models.IntegerField(default=0)
+#     work_16_17 = models.IntegerField(default=0)
+#     work_17_1745 = models.IntegerField(default=0)
+#
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     def total_work(self):
+#         """Kunlik jami ishlab chiqilgan mahsulotlar soni"""
+#         return (
+#             self.work_08_09 + self.work_09_10 + self.work_10_11 +
+#             self.work_11_12 + self.work_12_13 + self.work_13_14 +
+#             self.work_14_15 + self.work_15_16 + self.work_16_17 +
+#             self.work_17_1745
+#         )
+#
+#     def __str__(self):
+#         return f"{self.employee.full_name} - {self.date} - {self.total_work()} dona"
+
+

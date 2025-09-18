@@ -1,0 +1,26 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Xodimlar</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url 'plm:order_list' }}">Buyurtmalar</a></li>
+          <li class="breadcrumb-item" aria-current="page">Buyurtmalar ro'yhati</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+
+     <div class="alert alert-danger" role="alert">❗ Siz bu buyurtmani o‘chirmoqchimisiz?</div>
+    <h2 class="m-2"><strong>{{ order.client }} {{ order.artikul }}</strong> ({{ order.quantity }} dona)</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑️ Ha, o‘chirish</button>
+        <a href="{% url 'plm:order_list' %}" class="btn btn-secondary">Bekor qilish</a>
+    </form>
+{% endblock %}

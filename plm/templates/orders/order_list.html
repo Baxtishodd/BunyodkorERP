@@ -1,0 +1,61 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Buyurtmalar ro`yhati</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{ url 'plm:order_list' }">Buyurtmalar</a></li>
+          <li class="breadcrumb-item" aria-current="page">Buyurtmalar ro'yhati</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+    <a href="{% url 'plm:order_create' %}" class="btn btn-success mb-3">➕ Yangi buyurtma</a>
+      <div class="pc-component">
+          <div class="card shadow-sm border-0 rounded-3">
+              <div class="card-body p-0">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Rasmi</th>
+                            <th>Mijoz</th>
+                            <th>Artikul</th>
+                            <th>Miqdor</th>
+                            <th>Rang</th>
+                            <th>Yuklanish vaqti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                {% if order.model_picture %}
+                                    <img src="{{ order.model_picture.url }}" alt="Rasm" width="60" height="60">
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ order.client }}</td>
+                            <td><a href="{% url 'plm:order_detail' order.pk %}" class="text-primary">{{ order.artikul }}</a></td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.rangi }}</td>
+                            <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted">Buyurtmalar yo‘q</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+         </div>
+    </div>
+
+
+{% endblock %}

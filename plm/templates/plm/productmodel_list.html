@@ -3,85 +3,82 @@
 {% block content %}
 
 <!-- [ Main Content ] start -->
-<div class="pc-container">
-  <div class="pc-content">
+
     <!-- [ breadcrumb ] start -->
-    <div class="page-header">
-      <div class="page-block">
-        <div class="page-header-title">
-          <h5 class="mb-0 font-medium">Mahsulot modellari ro‘yxati</h5>
-        </div>
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Model boshqaruvi</a></li>
-          <li class="breadcrumb-item" aria-current="page">Modellar</li>
-        </ul>
-      </div>
+<div class="page-header">
+  <div class="page-block">
+    <div class="page-header-title">
+      <h5 class="mb-0 font-medium">Mahsulot modellari ro‘yxati</h5>
     </div>
-    <!-- [ breadcrumb ] end -->
-
-    <a href="{% url 'plm:productmodel_create' %}" class="btn btn-success mb-3">+ Yangi model qo‘shish</a>
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-    {% if products %}
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-
-                    <th>Model rasmi</th>
-                    <th>ID</th>
-                    <th>Artikul</th>
-                    <th>Mijoz</th>
-                    <th>Ish soni</th>
-                    <th>Bajarilgan</th>
-                    <th>Kesim</th>
-                    <th>Pechat</th>
-                    <th>Tasnif</th>
-                    <th>Tikim</th>
-                    <th>Dazmol</th>
-                    <th>Sifat N</th>
-                    <th>Qadoq</th>
-                    <th>Yaratgan</th>
-                    <th>Yaratilgan vaqti</th>
-                    <th>Amallar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for model in products %}
-                <tr>
-                    <td>
-                        {% if model.model_picture %}
-                            <img src="{{ model.model_picture.url }}" alt="Rasm" width="60" height="60">
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{ model.id }}</td>
-                    <td>
-                        <a href="{% url 'plm:productmodel_update' model.pk %}">
-                            {{ model.artikul|default:"-" }}</a>
-                    </td>
-                    <td>{{ model.mijoz }}</td>
-                    <td>{{ model.ish_soni }}</td>
-                    <td>{{ model.bajarilgan }}</td>
-                    <td>{{ model.kesim }}</td>
-                    <td>{{ model.pechat }}</td>
-                    <td>{{ model.tasnif }}</td>
-                    <td>{{ model.tikim }}</td>
-                    <td>{{ model.dazmol }}</td>
-                    <td>{{ model.sifat_nazorati }}</td>
-                    <td>{{ model.qadoq }}</td>
-                    <td>{{ model.created_by|default:"-" }}</td>
-                    <td>{{ model.created_at|date:"Y-m-d H:i" }}</td>
-                    <td></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info">Hozircha hech qanday mahsulot modeli mavjud emas.</div>
-    {% endif %}
-        </div>
-    </div>
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Model boshqaruvi</a></li>
+      <li class="breadcrumb-item" aria-current="page">Modellar</li>
+    </ul>
   </div>
+</div>
+<!-- [ breadcrumb ] end -->
+
+<a href="{% url 'plm:productmodel_create' %}" class="btn btn-success mb-3">+ Yangi model qo‘shish</a>
+<div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+{% if products %}
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+
+                <th>Model rasmi</th>
+                <th>ID</th>
+                <th>Artikul</th>
+                <th>Mijoz</th>
+                <th>Ish soni</th>
+                <th>Bajarilgan</th>
+                <th>Kesim</th>
+                <th>Pechat</th>
+                <th>Tasnif</th>
+                <th>Tikim</th>
+                <th>Dazmol</th>
+                <th>Sifat N</th>
+                <th>Qadoq</th>
+                <th>Yaratgan</th>
+                <th>Yaratilgan vaqti</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for model in products %}
+            <tr>
+                <td>
+                    {% if model.model_picture %}
+                        <img src="{{ model.model_picture.url }}" alt="Rasm" width="60" height="60">
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ model.id }}</td>
+                <td>
+                    <a href="{% url 'plm:productmodel_update' model.pk %}">
+                        {{ model.artikul|default:"-" }}</a>
+                </td>
+                <td>{{ model.mijoz }}</td>
+                <td>{{ model.ish_soni }}</td>
+                <td>{{ model.bajarilgan }}</td>
+                <td>{{ model.kesim }}</td>
+                <td>{{ model.pechat }}</td>
+                <td>{{ model.tasnif }}</td>
+                <td>{{ model.tikim }}</td>
+                <td>{{ model.dazmol }}</td>
+                <td>{{ model.sifat_nazorati }}</td>
+                <td>{{ model.qadoq }}</td>
+                <td>{{ model.created_by|default:"-" }}</td>
+                <td>{{ model.created_at|date:"Y-m-d H:i" }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">Hozircha hech qanday mahsulot modeli mavjud emas.</div>
+{% endif %}
+    </div>
 </div>
 {% endblock %}

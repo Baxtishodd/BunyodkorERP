@@ -43,9 +43,22 @@ class ProductionLineInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "quantity", "line", "created_at")
-    search_fields = ("name",)
+    list_display = ("client", "artikul", "quantity", "rangi", "deadline", "created_by", "created_at", "updated_at")
+    list_filter = ("rangi", "deadline", "created_at")
+    search_fields = ("client", "artikul", "rangi")
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at", "updated_at")
+
+    fieldsets = (
+        ("Buyurtma ma'lumotlari", {
+            "fields": ("client", "artikul", "quantity", "rangi", "deadline", "model_picture")
+        }),
+        ("Tizim ma'lumotlari", {
+            "fields": ("created_by", "created_at", "updated_at"),
+        }),
+    )
 
 
 class EmployeeAdmin(admin.ModelAdmin):
@@ -79,11 +92,9 @@ class HourlyWorkAdmin(admin.ModelAdmin):
 
 class ProductionLineAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
-    search_fields = ("name", "order__name")
-    list_filter = ("order",)
+    search_fields = ("name",)
 
 
-admin.site.register(Order, OrderAdmin)
 admin.site.register(ProductionLine, ProductionLineAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(WorkType, WorkTypeAdmin)

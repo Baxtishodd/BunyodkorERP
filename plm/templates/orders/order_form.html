@@ -1,0 +1,26 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h3>{% if order %}Buyurtmani tahrirlash{% else %}Yangi buyurtma{% endif %}</h3>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Buyurtma</a></li>
+          <li class="breadcrumb-item" aria-current="page">{% if order %}Buyurtmani tahrirlash{% else %}Yangi buyurtma{% endif %}</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card p-4 shadow-sm">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success mt-2">💾 Saqlash</button>
+            <a href="{% url 'plm:order_list' %}" class="btn btn-secondary mt-2">Bekor qilish</a>
+        </div>
+    </form>
+{% endblock %}

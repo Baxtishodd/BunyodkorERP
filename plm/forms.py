@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductModel, Employee
+from .models import ProductModel, Employee, Order
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -38,6 +38,21 @@ class EmployeeForm(forms.ModelForm):
         }
 
 
+class OrderForm(forms.ModelForm):
+    deadline = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Order
+        fields = ['client', 'artikul', 'quantity', 'rangi', 'deadline', 'model_picture']
+        widgets = {
+            'client': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mijoz nomi'}),
+            'artikul': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Artikul'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Miqdor'}),
+            'rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rang'}),
+            'model_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
 
 
 
