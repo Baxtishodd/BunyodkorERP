@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductModel, Employee, Order
+from .models import ProductModel, Employee, Order, WorkType
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -53,6 +53,37 @@ class OrderForm(forms.ModelForm):
             'rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rang'}),
             'model_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+class WorkTypeForm(forms.ModelForm):
+    class Meta:
+        model = WorkType
+        fields = ['name', 'price']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel
-from .forms import ProductModelForm, EmployeeForm, OrderForm
+from .forms import ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm
 from django.shortcuts import render, redirect
 from .models import ProductionLine, Employee, HourlyWork, WorkType, Order
 from datetime import time
@@ -122,8 +122,21 @@ def employee_create(request):
 
 
 def worktype_list(request):
-    worktypes = WorkType.objects.all()
+    worktypes = WorkType.objects.all().order_by('-id')  # oxirgi qo‘shilganlar birinchi chiqadi
     return render(request, "planning/worktype_list.html", {"worktypes": worktypes})
+
+
+def worktype_create(request):
+    if request.method == 'POST':
+        form = WorkTypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:worktype_list')  # create tugagandan keyin list sahifasiga qaytadi
+    else:
+        form = WorkTypeForm()
+
+    return render(request, 'planning/create_worktype.html', {'form': form})
+
 
 def productionline_list(request):
     lines = ProductionLine.objects.all()

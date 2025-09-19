@@ -18,6 +18,7 @@ urlpatterns = [
     path('orders/<int:pk>/edit/', views.order_update, name='order_update'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
 
+    path('worktypes/create/', views.worktype_create, name='worktype_create'),
     path("worktypes/", views.worktype_list, name="worktype_list"),
 
     path("production-lines/", views.productionline_list, name="productionline_list"),
