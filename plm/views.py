@@ -5,6 +5,8 @@ from .forms import ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm
 from django.shortcuts import render, redirect
 from .models import ProductionLine, Employee, HourlyWork, WorkType, Order
 from datetime import time
+from django.contrib import messages
+from django.db.models import Sum
 
 # Model kartalar ro‘yxati
 @login_required
@@ -140,8 +142,59 @@ def worktype_create(request):
 
 def productionline_list(request):
     lines = ProductionLine.objects.all()
-    return render(request, "planning/productionline_list.html", {"lines": lines})
 
+
+    line_data = []
+    for line in lines:
+        employees_count = line.employee_set.count()  # hodimlar soni
+
+        # Biriktirilgan model (oxirgisi yoki bir nechta bo‘lsa eng so‘nggisi)
+        assigned = line.modelassigned_set.last()
+        artikul = assigned.model_name.artikul if assigned else None
+        client = assigned.model_name.client if assigned else None
+        order_id = assigned.model_name.id if assigned else None
+        quantity = assigned.model_name.quantity if assigned else 0
+
+        # Normativ (oxirgisi)
+        norm = line.norm_set.last()
+        daily_norm = norm.daily_norm if norm else 0
+        hourly_norm = norm.hourly_norm if norm else 0
+
+        # Tikilgan mahsulot (masalan HourlyWork orqali)
+        tikildi = line.hourlywork_set.aggregate(total=Sum("quantity"))["total"] or 0
+
+        # Progress % (tikilgan / umumiy reja)
+        progress = int((tikildi / quantity) * 100) if quantity else 0
+
+        line_data.append({
+            "pk": line.pk,
+            "name": line.name,
+            "client": client,
+            "order_id": order_id,
+            "employees_count": employees_count,
+            "artikul": artikul,
+            "quantity": quantity,
+            "daily_norm": daily_norm,
+            "hourly_norm": hourly_norm,
+            "tikildi": tikildi,
+            "progress": progress,
+        })
+
+
+    return render(request, "planning/productionline_list.html", {"lines": line_data})
+
+def productionline_detail(request, pk):
+    line = get_object_or_404(ProductionLine, pk=pk)
+    employees = line.employee_set.all()
+    models_assigned = line.modelassigned_set.all()
+    norms = line.norm_set.all().order_by('-created_at')
+
+    return render(request, "planning/productionline_detail.html", {
+        "line": line,
+        "employees": employees,
+        "models_assigned": models_assigned,
+        "norms": norms,
+    })
 
 # Order view start ----------------
 @login_required
@@ -188,7 +241,9 @@ def order_delete(request, pk):
     order = get_object_or_404(Order, pk=pk)
     if request.method == "POST":
         order.delete()
+        messages.success(request, "Buyurtma muvaffaqiyatli o‘chirildi ✅")
         return redirect('plm:order_list')
+
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
 

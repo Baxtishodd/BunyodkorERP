@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork
+from .models import ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned
 from django.utils.html import format_html
 
 
@@ -93,6 +93,22 @@ class HourlyWorkAdmin(admin.ModelAdmin):
 class ProductionLineAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
     search_fields = ("name",)
+
+
+@admin.register(ModelAssigned)
+class ModelAssignedAdmin(admin.ModelAdmin):
+    list_display = ("model_name", "line", "assigned_date")
+    search_fields = ("model_name", "line__name")
+    list_filter = ("line", "assigned_date")
+    ordering = ("-assigned_date",)
+
+
+@admin.register(Norm)
+class NormAdmin(admin.ModelAdmin):
+    list_display = ("line", "daily_norm", "hourly_norm", "created_at")
+    search_fields = ("line__name",)
+    list_filter = ("line", "created_at")
+    ordering = ("-created_at",)
 
 
 admin.site.register(ProductionLine, ProductionLineAdmin)

@@ -1,0 +1,110 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container my-4">
+
+  <!-- Line Header -->
+  <div class="row mb-4">
+    <div class="col-md-8 d-flex align-items-center">
+      <h2 class="fw-bold text-primary mb-0">{{ line.name }}</h2>
+      <span class="badge bg-info fs-6 ms-3">
+        Hodimlar soni: {{ employees|length }}
+      </span>
+
+      {% if models_assigned and models_assigned.0.model_name.model_picture %}
+        <!-- Thumbnail -->
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modelImageModal">
+          <img src="{{ models_assigned.0.model_name.model_picture.url }}"
+               alt="Model rasmi"
+               class="ms-3 img-thumbnail"
+               style="width: 60px; height: 60px; object-fit: cover;">
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Employees & Models -->
+    <div class="col-md-6">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-dark fw-bold border-bottom">
+          <i class="bi bi-people-fill me-2 text-primary"></i> Hodimlar
+        </div>
+        <ul class="list-group list-group-flush">
+          {% for emp in employees %}
+            <li class="list-group-item">
+              <i class="bi bi-person-circle text-primary me-2"></i>
+              <strong>{{ emp.full_name }}</strong>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">Hodim biriktirilmagan</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-white text-dark fw-bold border-bottom">
+          <i class="bi bi-box-seam me-2 text-success"></i> Biriktirilgan modellar
+        </div>
+        <ul class="list-group list-group-flush">
+          {% for m in models_assigned %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ m.model_name }}</span>
+              <span class="badge bg-secondary">{{ m.assigned_date|date:"Y-m-d" }}</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">Model berilmagan</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Norms -->
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white text-dark fw-bold border-bottom">
+          <i class="bi bi-clipboard-check me-2 text-warning"></i> Normativlar
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Sana</th>
+                <th>Kunlik norma</th>
+                <th>Soatlik norma</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for n in norms %}
+              <tr>
+                <td>{{ n.created_at|date:"Y-m-d H:i" }}</td>
+                <td><span class="badge bg-success">{{ n.daily_norm }}</span></td>
+                <td><span class="badge bg-warning text-dark">{{ n.hourly_norm }}</span></td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3" class="text-center text-muted">Norma belgilanmagan</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modelImageModal" tabindex="-1" aria-labelledby="modelImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        {% if models_assigned and models_assigned.0.model_name.model_picture %}
+          <img src="{{ models_assigned.0.model_name.model_picture.url }}"
+               alt="Model rasmi"
+               class="img-fluid rounded">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

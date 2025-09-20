@@ -22,6 +22,7 @@ urlpatterns = [
     path("worktypes/", views.worktype_list, name="worktype_list"),
 
     path("production-lines/", views.productionline_list, name="productionline_list"),
+    path("productionline/<int:pk>/", views.productionline_detail, name="productionline_detail"),
 
     path("employees/", views.employee_list, name="employee_list"),
     path('employees/add/', views.employee_create, name='employee_add'),

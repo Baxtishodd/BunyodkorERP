@@ -23,6 +23,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
+                            <th>Id</th>
                             <th>Rasmi</th>
                             <th>Mijoz</th>
                             <th>Artikul</th>
@@ -35,6 +36,7 @@
                         {% for order in orders %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
+                            <td>{{ order.id }}</td>
                             <td>
                                 {% if order.model_picture %}
                                     <img src="{{ order.model_picture.url }}" alt="Rasm" width="60" height="60">

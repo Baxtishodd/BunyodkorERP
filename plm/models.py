@@ -37,13 +37,6 @@ class ProductModel(models.Model):
 
 
 
-class ProductionLine(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Patok nomi")
-
-    def __str__(self):
-        return self.name
-
-
 class Order(models.Model):
     client = models.CharField(max_length=200, verbose_name="Mijoz nomi", blank=True, null=True)
     artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True,)
@@ -69,7 +62,44 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
 
     def __str__(self):
-        return f"{self.client} {self.artikul} ({self.quantity} dona)"
+        client_name = self.client if self.client else "Noma'lum mijoz"
+        artikul_name = self.artikul if self.artikul else "Artikul yo‘q"
+        return f"{client_name} - {artikul_name} ({self.quantity} dona)"
+
+
+
+class ProductionLine(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Patok nomi")
+
+    def __str__(self):
+        return self.name
+
+    # Hodimlar sonini hisoblash
+    def employee_count(self):
+        return self.employee_set.count()
+
+    # Normani olish (so‘nggi qo‘shilgan norma)
+    def current_norm(self):
+        return self.norm_set.last()
+
+
+class ModelAssigned(models.Model):
+    line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE)
+    model_name = models.ForeignKey("Order", on_delete=models.CASCADE, verbose_name="Buyurtma (Artikul)")
+    assigned_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.model_name} ({self.line.name})"
+
+
+class Norm(models.Model):
+    line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE)
+    daily_norm = models.PositiveIntegerField(verbose_name="Kunlik norma (dona)")
+    hourly_norm = models.PositiveIntegerField(verbose_name="Soatlik norma (dona)")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.line.name} - {self.daily_norm} dona/kun"
 
 
 class Employee(models.Model):
@@ -105,6 +135,8 @@ class HourlyWork(models.Model):
 
     def __str__(self):
         return f"{self.employee.full_name} | {self.work_type.name} | {self.start_time}-{self.end_time}"
+
+
 
 
 # class DailyWork(models.Model):

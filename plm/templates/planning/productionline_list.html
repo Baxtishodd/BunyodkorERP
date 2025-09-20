@@ -23,14 +23,16 @@
       <div class="col-md-4 ">
         <div class="pc-component">
           <div class="card">
-            <h5 class="card-header">{{ line.name }}</h5>
+            <h5 class="card-header">
+                <a href="{% url 'plm:productionline_detail' line.pk %}" class="btn btn-sm btn-primary">{{ line.name }}</a>
+            </h5>
             <div class="card-body">
               <div class="row">
                   <div class="col-md-10">
                     <p class="card-title">Ishchilar soni:</p>
                   </div>
                   <div class="col-md-2 text-end">
-                    <span class="badge rounded-pill text-bg-success">10</span>
+                    <span class="badge rounded-pill text-bg-success">{{ line.employees_count }}</span>
                   </div>
               </div>
                 <div class="row">
@@ -38,13 +40,13 @@
                     <p class="card-title">Art:</p>
                   </div>
                   <div class="col-md-4">
-                    <p class="card-title text-end">WEBR01</p>
+                    <p class="card-title text-end"><a href="#">{{ line.client }}{{ line.artikul }}</a></p>
                   </div>
                   <div class="col-md-4">
                     <p class="card-title">Ish soni:</p>
                   </div>
                   <div class="col-md-2 text-end">
-                    <span class="badge rounded-pill text-bg-primary">10000</span>
+                    <span class="badge rounded-pill text-bg-primary">{{ line.quantity }}</span>
                   </div>
                 </div>
                 <div class="row">
@@ -52,13 +54,13 @@
                     <p class="card-title">Kunlik norma:</p>
                   </div>
                   <div class="col-md-2 text-end">
-                    <span class="badge rounded-pill text-bg-warning">700</span>
+                    <span class="badge rounded-pill text-bg-warning">{{ line.daily_norm }}</span>
                   </div>
                   <div class="col-md-4">
                     <p class="card-title ">Soatlik norma:</p>
                   </div>
                   <div class="col-md-2 text-end">
-                    <span class="badge rounded-pill text-bg-warning">80</span>
+                    <span class="badge rounded-pill text-bg-warning">{{ line.hourly_norm }}</span>
                   </div>
                 </div>
                 <div class="row">
@@ -66,7 +68,7 @@
                     <p class="card-title"> Tikildi:</p>
                   </div>
                   <div class="col-md-3 text-end">
-                      <span class="badge rounded-pill text-bg-primary ">2500</span>
+                      <span class="badge rounded-pill text-bg-primary ">{{ line.tikildi }}</span>
                   </div>
                   <div class="col-md-6 text-end">
                     <div class="progress mb-4" style="height: 20px">
@@ -74,7 +76,6 @@
                     </div>
                   </div>
                  </div>
-
             </div>
           </div>
         </div>

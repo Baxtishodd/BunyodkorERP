@@ -39,52 +39,52 @@
   <!-- [Body] Start -->
 
   <body>
-    <!-- [ Pre-loader ] start -->
-<div class="loader-bg fixed inset-0 bg-white dark:bg-themedark-cardbg z-[1034]">
-  <div class="loader-track h-[5px] w-full inline-block absolute overflow-hidden top-0">
-    <div class="loader-fill w-[300px] h-[5px] bg-primary-500 absolute top-0 left-0 animate-[hitZak_0.6s_ease-in-out_infinite_alternate]"></div>
-  </div>
-</div>
-<!-- [ Pre-loader ] End -->
+        <!-- [ Pre-loader ] start -->
+    <div class="loader-bg fixed inset-0 bg-white dark:bg-themedark-cardbg z-[1034]">
+      <div class="loader-track h-[5px] w-full inline-block absolute overflow-hidden top-0">
+        <div class="loader-fill w-[300px] h-[5px] bg-primary-500 absolute top-0 left-0 animate-[hitZak_0.6s_ease-in-out_infinite_alternate]"></div>
+      </div>
+    </div>
+    <!-- [ Pre-loader ] End -->
 
- <!-- [ Sidebar Menu ] start -->
-{% include 'sidebar.html' %}
-<!-- [ Sidebar Menu ] end -->
+     <!-- [ Sidebar Menu ] start -->
+    {% include 'sidebar.html' %}
+    <!-- [ Sidebar Menu ] end -->
 
-    <!-- [ Header Topbar ] start -->
-{% include 'navbar.html' %}
- <!-- [ Header Topbar ] start -->
+        <!-- [ Header Topbar ] start -->
+    {% include 'navbar.html' %}
+     <!-- [ Header Topbar ] start -->
 
-<!-- [ Main Content ] start -->
+    <!-- [ Main Content ] start -->
 
-<div class="pc-container">
-  <div class="pc-content">
-    {% block content %}
-    {% endblock %}
-  </div>
-</div>
+    <div class="pc-container">
+      <div class="pc-content">
 
-<!-- [ Main Content ] end -->
+          {% if messages %}
 
-    <!-- [ Main Content ] end -->
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
 
-<!--    <footer class="pc-footer">-->
-<!--      <div class="footer-wrapper container-fluid mx-10">-->
-<!--        <div class="grid grid-cols-12 gap-1.5">-->
-<!--          <div class="col-span-12 sm:col-span-6 my-1">-->
-<!--            <p class="m-0"></p>-->
-<!--              <a href="https://bunyodkortex.com/"-->
-<!--                 class="text-theme-bodycolor dark:text-themedark-bodycolor hover:text-primary-500 dark:hover:text-primary-500"-->
-<!--                 target="_blank">bunyodkortex.com</a>-->
-<!--              , Bunyodkor.-->
-<!--            </p>-->
-<!--          </div>-->
-<!--          <div class="col-span-12 sm:col-span-6 my-1 justify-self-end">-->
-<!--&lt;!&ndash;                   <p class="inline-block max-sm:mr-3 sm:ml-2">Distributed by <a href="https://themewagon.com" target="_blank">Themewagon</a></p>&ndash;&gt;-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </footer>-->
+            {% endif %}
+        {% block content %}
+        {% endblock %}
+      </div>
+    </div>
+
+    <script>
+      // 3 soniyadan keyin avtomatik yopiladi
+      setTimeout(function() {
+        let alertNode = document.querySelector('.alert');
+        if (alertNode) {
+          let alert = new bootstrap.Alert(alertNode);
+          alert.close();
+        }
+      }, 5000);
+    </script>
+
 
     <!-- Required Js -->
     <script src="{% static 'assets/js/plugins/simplebar.min.js' %}"></script>
@@ -129,7 +129,7 @@
       main_layout_change('vertical');
     </script>
 
-  <script>
+     <script>
       document.addEventListener("DOMContentLoaded", function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
