@@ -10,15 +10,6 @@
         Hodimlar soni: {{ employees|length }}
       </span>
 
-      {% if models_assigned and models_assigned.0.model_name.model_picture %}
-        <!-- Thumbnail -->
-        <a href="#" data-bs-toggle="modal" data-bs-target="#modelImageModal">
-          <img src="{{ models_assigned.0.model_name.model_picture.url }}"
-               alt="Model rasmi"
-               class="ms-3 img-thumbnail"
-               style="width: 60px; height: 60px; object-fit: cover;">
-        </a>
-      {% endif %}
     </div>
   </div>
 
@@ -43,11 +34,22 @@
 
       <div class="card shadow-sm">
         <div class="card-header bg-white text-dark fw-bold border-bottom">
-          <i class="bi bi-box-seam me-2 text-success"></i> Biriktirilgan modellar
+          <i class="bi bi-box-seam me-2 text-success"></i> Biriktirilgan model
         </div>
         <ul class="list-group list-group-flush">
           {% for m in models_assigned %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>
+                  {% if models_assigned and models_assigned.0.model_name.model_picture %}
+                    <!-- Thumbnail -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#modelImageModal">
+                      <img src="{{ models_assigned.0.model_name.model_picture.url }}"
+                           alt="Model rasmi"
+                           class="ms-3 img-thumbnail"
+                           style="width: 60px; height: 60px; object-fit: cover;">
+                    </a>
+                  {% endif %}
+              </span>
               <span>{{ m.model_name }}</span>
               <span class="badge bg-secondary">{{ m.assigned_date|date:"Y-m-d" }}</span>
             </li>

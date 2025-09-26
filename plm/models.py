@@ -137,8 +137,6 @@ class HourlyWork(models.Model):
         return f"{self.employee.full_name} | {self.work_type.name} | {self.start_time}-{self.end_time}"
 
 
-
-
 # class DailyWork(models.Model):
 #     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="daily_works")
 #     line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE, null=True, blank=True)
@@ -169,5 +167,64 @@ class HourlyWork(models.Model):
 #
 #     def __str__(self):
 #         return f"{self.employee.full_name} - {self.date} - {self.total_work()} dona"
+
+
+class FabricArrival(models.Model):
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="fabric_arrival", verbose_name="Qaysi buyurtma uchun")
+    fabric_name = models.CharField(max_length=200, verbose_name="Mato nomi")
+    measure_value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdori",  null=True, blank=True)  # yangi qo‘shildi
+    measure_unit = models.CharField(
+        max_length=10,
+        choices=[('kg', 'Kilogram'), ('m', 'Metr')],
+        verbose_name="O‘lchov birligi",  null=True, blank=True
+    )
+    gramaj = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Gramaj")
+    arrival_date = models.DateField(verbose_name="Qachon kelganligi")
+    factory_name = models.CharField(max_length=200, verbose_name="Qaysi fabrikadan kelganligi")
+    is_confirmed = models.BooleanField(default=False, verbose_name="Tasdiqlandi")
+
+    def __str__(self):
+        return f"{self.fabric_name} → {self.order}"
+
+
+class Accessory(models.Model):
+    UNIT_CHOICES = [
+        ('dona', 'Dona'),
+        ('kg', 'Kg'),
+        ('metr', 'Metr'),
+        ('pachka', 'Pachka'),
+        ('paket', 'Paket'),
+        ('quti', 'Quti'),
+        ('litr', 'Litr'),
+    ]
+
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name="accessories", verbose_name="Buyurtma")
+    name = models.CharField(max_length=200, verbose_name="Aksessuar nomi")
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Soni")
+    unit = models.CharField(max_length=20, choices=UNIT_CHOICES, default='dona', verbose_name="Birligi")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.quantity} {self.unit})"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

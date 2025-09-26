@@ -87,25 +87,4 @@
       {% endfor %}
       </div>
 
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Patok nomi</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for line in lines %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ line.name }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center">Hozircha patoklar mavjud emas</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
 {% endblock %}

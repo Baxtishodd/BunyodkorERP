@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned
+from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
+                     FabricArrival, Accessory)
 from django.utils.html import format_html
 
 
@@ -35,7 +36,6 @@ class ProductAdmin(admin.ModelAdmin):
         return "Rasm yo‘q"
 
     image_preview.short_description = "Model rasmi"
-
 
 
 class ProductionLineInline(admin.TabularInline):
@@ -109,6 +109,59 @@ class NormAdmin(admin.ModelAdmin):
     search_fields = ("line__name",)
     list_filter = ("line", "created_at")
     ordering = ("-created_at",)
+
+
+@admin.register(FabricArrival)
+class FabricArrivalAdmin(admin.ModelAdmin):
+    list_display = ("fabric_name", "order", "measure_value", "measure_unit", "gramaj", "arrival_date", "factory_name", "is_confirmed")
+    list_filter = ("is_confirmed", "measure_unit", "arrival_date", "factory_name")
+    search_fields = ("fabric_name", "factory_name", "order__id")
+    ordering = ("-arrival_date",)
+    list_editable = ("is_confirmed",)
+
+
+@admin.register(Accessory)
+class AccessoryAdmin(admin.ModelAdmin):
+    list_display = ('order', 'name', 'quantity', 'unit', 'created_at')
+    list_filter = ('unit', 'order')
+    search_fields = ('name', 'order__account_name')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 admin.site.register(ProductionLine, ProductionLineAdmin)

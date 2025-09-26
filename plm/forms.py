@@ -1,5 +1,7 @@
 from django import forms
-from .models import ProductModel, Employee, Order, WorkType
+from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory
+
+
 
 class ProductModelForm(forms.ModelForm):
     class Meta:
@@ -64,9 +66,39 @@ class WorkTypeForm(forms.ModelForm):
         }
 
 
+class FabricArrivalForm(forms.ModelForm):
+    class Meta:
+        model = FabricArrival
+        fields = ['order', 'fabric_name', 'measure_value', 'measure_unit', 'gramaj', 'arrival_date', 'factory_name']
+        widgets = {
+            'order': forms.Select(attrs={'class': 'form-select'}),
+            'fabric_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mato nomi'}),
+            'measure_value': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Miqdori'}),
+            'measure_unit': forms.Select(attrs={'class': 'form-select'}),
+            'gramaj': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Gramaj'}),
+            'arrival_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'factory_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fabrika nomi'}),
+        }
+        labels = {
+            'order': 'Buyurtma',
+            'fabric_name': 'Mato nomi',
+            'measure_value': 'Miqdori',
+            'measure_unit': 'O‘lchov birligi',
+            'gramaj': 'Gramaj',
+            'arrival_date': 'Kelgan sana',
+            'factory_name': 'Fabrika',
+        }
 
 
-
+class AccessoryForm(forms.ModelForm):
+    class Meta:
+        model = Accessory
+        fields = ['name', 'quantity', 'unit']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Aksessuar nomi'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Soni'}),
+            'unit': forms.Select(attrs={'class': 'form-select'}),
+        }
 
 
 

@@ -1,0 +1,48 @@
+{% extends "base1.html" %}
+{% block content %}
+<h3>Kelgan matolar ro‘yxati</h3><br>
+<a href="{% url 'plm:fabric_create' %}" class="btn btn-success mb-3">+ Mato qo‘shish</a>
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Buyurtma</th>
+            <th>Mato nomi</th>
+            <th>Miqdor</th>
+            <th>Gramaj</th>
+            <th>Kelgan sana</th>
+            <th>Fabrika</th>
+            <th>Status</th>
+            <th>Amal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fabric in fabrics %}
+        <tr>
+            <td>{{ fabric.order }}</td>
+            <td>{{ fabric.fabric_name }}</td>
+            <td>{{ fabric.measure_value }} {{ fabric.measure_unit }}</td>
+            <td>{{ fabric.gramaj }}</td>
+            <td>{{ fabric.arrival_date }}</td>
+            <td>{{ fabric.factory_name }}</td>
+            <td>
+                {% if fabric.is_confirmed %}
+                    <span class="badge bg-success">Tasdiqlangan</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Kutilmoqda</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not fabric.is_confirmed %}
+                    <a href="{% url 'plm:fabric_confirm' fabric.pk %}" class="btn btn-success btn-sm">Tasdiqlash</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center text-muted">❌ Hozircha mato kelgani yo‘q</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

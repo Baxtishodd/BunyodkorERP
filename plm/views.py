@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel
-from .forms import ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm
+from .forms import ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm
 from django.shortcuts import render, redirect
-from .models import ProductionLine, Employee, HourlyWork, WorkType, Order
+from .models import ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned
 from datetime import time
 from django.contrib import messages
 from django.db.models import Sum
@@ -247,10 +247,70 @@ def order_delete(request, pk):
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
 
+# Mato tastiqlanish Ro‘yxat
+def fabric_list(request):
+    fabrics = FabricArrival.objects.select_related('order').order_by('-id')
+    return render(request, 'planning/fabric/fabric_list.html', {'fabrics': fabrics})
+
+# Yangi qo‘shish
+def fabric_create(request):
+    if request.method == 'POST':
+        form = FabricArrivalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:fabric_list')
+    else:
+        form = FabricArrivalForm()
+    return render(request, 'planning/fabric/fabric_form.html', {'form': form})
+
+# Tasdiqlash
+def fabric_confirm(request, pk):
+    fabric = get_object_or_404(FabricArrival, pk=pk)
+    fabric.is_confirmed = True
+    fabric.save()
+    return redirect('plm:fabric_list')
 
 
 
+# Aksessuarlar ro‘yxati — har bir buyurtmaga guruhlab chiqarish
+# Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
+def accessory_list(request):
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('accessories')
 
+    return render(request, 'planning/accessory/accessory_list.html', {'orders': confirmed_orders})
+
+def accessory_add_to_order(request, order_id):
+    # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+    order = get_object_or_404(Order, pk=order_id)
+
+    if not is_confirmed:
+        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
+        return redirect('plm:accessory_list')
+
+    if request.method == "POST":
+        form = AccessoryForm(request.POST)
+        if form.is_valid():
+            accessory = form.save(commit=False)
+            accessory.order = order
+            accessory.save()
+            return redirect('plm:accessory_list')
+    else:
+        form = AccessoryForm()
+    return render(request, 'planning/accessory/accessory_form.html', {'form': form, 'order': order})
+
+# Aksessuar qo‘shish
+def accessory_create(request):
+    if request.method == 'POST':
+        form = AccessoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:accessory_list')
+    else:
+        form = AccessoryForm()
+    return render(request, 'planning/accessory/accessory_form.html', {'form': form})
 
 
 
