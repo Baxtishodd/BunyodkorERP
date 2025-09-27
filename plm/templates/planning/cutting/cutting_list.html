@@ -1,0 +1,65 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+<h3>Tasdiqlangan Buyurtmalar uchun Pastallar ro‘yxati</h3><br>
+
+{% for order, jami_pastal in orders_with_totals %}
+    <div class="card mb-5">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}">{{ order }}</a></strong>
+            <a href="{% url 'plm:cutting_add_to_order' order.id %}" class="btn btn-sm btn-success">
+                + Pastal qo‘shish
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pastal soni</th>
+                        <th>O'lchami</th>
+                        <th>Sana</th>
+                        <th>Yangilash</th>
+                        <th>Avtor</th>
+                        <th>Amal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cutting in order.cuttings.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ cutting.pastal_soni }}</td>
+                        <td>{{ cutting.pastal_olchami }}</td>
+                        <td>{{ cutting.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ cutting.updated_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ cutting.author }}</td>
+                        <td>
+                            <a href="{% url 'plm:cutting_update' cutting.pk %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pen-fill"></i>
+                            </a>
+                            <a href="{% url 'plm:cutting_delete' cutting.pk %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Pastal qo‘shilmagan</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold">
+                        <td colspan="7" class="text-end">
+                            Jami pastal: {{ jami_pastal }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+{% empty %}
+    <p>Hozircha tasdiqlangan buyurtmalar mavjud emas</p>
+{% endfor %}
+
+{% endblock %}

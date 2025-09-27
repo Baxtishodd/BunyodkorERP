@@ -1,13 +1,29 @@
+
 {% extends "base1.html" %}
 {% block content %}
+<h3>{{ order }} buyurtmasi uchun Mato qo‘shish</h3><br>
 
-<h2>Yangi mato qo‘shish</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <br>
+    <div class="mb-3">
+        {{ form.fabric_name.label_tag }} {{ form.fabric_name }}
+    </div>
+    <div class="mb-3">
+        {{ form.measure_value.label_tag }} {{ form.measure_value }}
+    </div>
+    <div class="mb-3">
+        {{ form.measure_unit.label_tag }} {{ form.measure_unit }}
+    </div>
+    <div class="mb-3">
+        {{ form.gramaj.label_tag }} {{ form.gramaj }}
+    </div>
+    <div class="mb-3">
+        {{ form.factory_name.label_tag }} {{ form.factory_name }}
+    </div>
+    <div class="mb-3">
+        {{ form.unit.label_tag }} {{ form.unit }}
+    </div>
     <button type="submit" class="btn btn-primary">Saqlash</button>
-    <a href="{% url 'plm:fabric_list' %}" class="btn btn-secondary">Orqaga</a>
+    <a href="#" class="btn btn-secondary">Orqaga</a>
 </form>
-
 {% endblock %}

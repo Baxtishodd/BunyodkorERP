@@ -1,0 +1,12 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+<h3>Kesimni o‘chirish</h3>
+<p>Rostdan ham "{{ cutting }}" ni o‘chirmoqchimisiz?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ha, o‘chirish</button>
+    <a href="{% url 'plm:cutting_list' %}" class="btn btn-secondary">Yo‘q</a>
+</form>
+
+{% endblock %}

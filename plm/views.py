@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel
-from .forms import ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm
+from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
+                    CuttingForm)
+
+from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
+                     Cutting)
 from django.shortcuts import render, redirect
-from .models import ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned
 from datetime import time
 from django.contrib import messages
 from django.db.models import Sum
+from collections import Counter
 
 # Model kartalar ro‘yxati
 @login_required
@@ -14,13 +18,11 @@ def productmodel_list(request):
     products = ProductModel.objects.all()
     return render(request, "plm/productmodel_list.html", {"products": products})
 
-
 # Bitta model kartani ko‘rish
 @login_required
 def productmodel_detail(request, pk):
     product = get_object_or_404(ProductModel, pk=pk)
     return render(request, "plm/productmodel_detail.html", {"product": product})
-
 
 # Yangi model qo‘shish
 @login_required
@@ -36,7 +38,6 @@ def productmodel_create(request):
         form = ProductModelForm()
     return render(request, "plm/productmodel_form.html", {"form": form})
 
-
 # Modelni yangilash
 @login_required
 def productmodel_update(request, pk):
@@ -50,7 +51,6 @@ def productmodel_update(request, pk):
         form = ProductModelForm(instance=product)
     return render(request, "plm/productmodel_form.html", {"form": form})
 
-
 # Modelni o‘chirish
 @login_required
 def productmodel_delete(request, pk):
@@ -60,7 +60,7 @@ def productmodel_delete(request, pk):
         return redirect("plm:productmodel_list")
     return render(request, "plm/productmodel_confirm_delete.html", {"product": product})
 
-
+@login_required
 def hourly_work_table(request, line_id, order_id):
     line = get_object_or_404(ProductionLine, id=line_id)
     employees = Employee.objects.filter(line=line)
@@ -106,12 +106,12 @@ def hourly_work_table(request, line_id, order_id):
         "time_slots": hours,
     })
 
-
+@login_required
 def employee_list(request):
     employees = Employee.objects.select_related("line").all()
     return render(request, "employee/employee_list.html", {"employees": employees})
 
-
+@login_required
 def employee_create(request):
     if request.method == "POST":
         form = EmployeeForm(request.POST)
@@ -122,12 +122,12 @@ def employee_create(request):
         form = EmployeeForm()
     return render(request, 'employee/employee_create.html', {'form': form})
 
-
+@login_required
 def worktype_list(request):
     worktypes = WorkType.objects.all().order_by('-id')  # oxirgi qo‘shilganlar birinchi chiqadi
     return render(request, "planning/worktype_list.html", {"worktypes": worktypes})
 
-
+@login_required
 def worktype_create(request):
     if request.method == 'POST':
         form = WorkTypeForm(request.POST)
@@ -139,7 +139,7 @@ def worktype_create(request):
 
     return render(request, 'planning/create_worktype.html', {'form': form})
 
-
+@login_required
 def productionline_list(request):
     lines = ProductionLine.objects.all()
 
@@ -183,6 +183,7 @@ def productionline_list(request):
 
     return render(request, "planning/productionline_list.html", {"lines": line_data})
 
+@login_required
 def productionline_detail(request, pk):
     line = get_object_or_404(ProductionLine, pk=pk)
     employees = line.employee_set.all()
@@ -196,7 +197,6 @@ def productionline_detail(request, pk):
         "norms": norms,
     })
 
-# Order view start ----------------
 @login_required
 def order_list(request):
     orders = Order.objects.all().order_by('-created_at')
@@ -248,11 +248,44 @@ def order_delete(request, pk):
 
 
 # Mato tastiqlanish Ro‘yxat
-def fabric_list(request):
+@login_required
+def fabric_list1(request):
     fabrics = FabricArrival.objects.select_related('order').order_by('-id')
     return render(request, 'planning/fabric/fabric_list.html', {'fabrics': fabrics})
 
+@login_required
+def fabric_list(request):
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('fabric_arrival')
+
+    return render(request, 'planning/fabric/fabric_list.html', {'orders': confirmed_orders})
+
+@login_required
+def fabric_add_to_order(request, order_id):
+    # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+    order = get_object_or_404(Order, pk=order_id)
+
+    if not is_confirmed:
+        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
+        return redirect('plm:fabric_list')
+
+    if request.method == "POST":
+        form = FabricArrivalForm(request.POST)
+        if form.is_valid():
+            fabric = form.save(commit=False)
+            fabric.order = order
+            fabric.author = request.user
+            fabric.save()
+            return redirect('plm:fabric_list')
+    else:
+        form = FabricArrival()
+    return render(request, 'planning/fabric/fabric_form.html', {'form': form, 'order': order})
+
+
 # Yangi qo‘shish
+@login_required
 def fabric_create(request):
     if request.method == 'POST':
         form = FabricArrivalForm(request.POST)
@@ -264,6 +297,7 @@ def fabric_create(request):
     return render(request, 'planning/fabric/fabric_form.html', {'form': form})
 
 # Tasdiqlash
+@login_required
 def fabric_confirm(request, pk):
     fabric = get_object_or_404(FabricArrival, pk=pk)
     fabric.is_confirmed = True
@@ -274,6 +308,8 @@ def fabric_confirm(request, pk):
 
 # Aksessuarlar ro‘yxati — har bir buyurtmaga guruhlab chiqarish
 # Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
+
+@login_required
 def accessory_list(request):
     confirmed_orders = Order.objects.filter(
         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
@@ -281,6 +317,7 @@ def accessory_list(request):
 
     return render(request, 'planning/accessory/accessory_list.html', {'orders': confirmed_orders})
 
+@login_required
 def accessory_add_to_order(request, order_id):
     # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
     is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
@@ -302,6 +339,7 @@ def accessory_add_to_order(request, order_id):
     return render(request, 'planning/accessory/accessory_form.html', {'form': form, 'order': order})
 
 # Aksessuar qo‘shish
+@login_required
 def accessory_create(request):
     if request.method == 'POST':
         form = AccessoryForm(request.POST)
@@ -311,6 +349,111 @@ def accessory_create(request):
     else:
         form = AccessoryForm()
     return render(request, 'planning/accessory/accessory_form.html', {'form': form})
+
+
+@login_required
+def cutting_list(request):
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('cuttings')
+
+    orders_with_totals = []
+    for order in confirmed_orders:
+        jami_pastal = sum(c.pastal_soni for c in order.cuttings.all())
+        orders_with_totals.append((order, jami_pastal))
+
+    return render(
+        request,
+        'planning/cutting/cutting_list.html',
+        {
+            'orders_with_totals': orders_with_totals
+        }
+    )
+
+@login_required
+def cutting_add_to_order(request, order_id):
+    # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+    order = get_object_or_404(Order, pk=order_id)
+
+    if not is_confirmed:
+        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
+        return redirect('plm:cutting_list')
+
+    if request.method == "POST":
+        form = CuttingForm(request.POST)
+        if form.is_valid():
+            cutting = form.save(commit=False)
+            cutting.order = order
+            cutting.author = request.user
+            cutting.save()
+            return redirect('plm:cutting_list')
+    else:
+        form = CuttingForm()
+    return render(request, 'planning/cutting/cutting_form.html', {'form': form, 'order': order})
+
+
+@login_required
+def cutting_update(request, pk):
+    cutting = get_object_or_404(Cutting, pk=pk)
+    if request.method == 'POST':
+        form = CuttingForm(request.POST, instance=cutting)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:cutting_list')
+    else:
+        form = CuttingForm(instance=cutting)
+    return render(request, 'planning/cutting/cutting_form.html', {'form': form})
+
+@login_required
+def cutting_delete(request, pk):
+    cutting = get_object_or_404(Cutting, pk=pk)
+    if request.method == 'POST':
+        cutting.delete()
+        return redirect('plm:cutting_list')
+    return render(request, 'planning/cutting/cutting_confirm_delete.html', {'cutting': cutting})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

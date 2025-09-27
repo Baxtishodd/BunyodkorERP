@@ -28,10 +28,16 @@ urlpatterns = [
     path('fabrics/', views.fabric_list, name='fabric_list'),
     path('fabrics/create/', views.fabric_create, name='fabric_create'),
     path('fabrics/<int:pk>/confirm/', views.fabric_confirm, name='fabric_confirm'),
+    path('fabrics/add/<int:order_id>/', views.fabric_add_to_order, name='fabric_add_to_order'),
 
     path('accessories/', views.accessory_list, name='accessory_list'),
     path('accessories/create/', views.accessory_create, name='accessory_create'),
     path('accessories/add/<int:order_id>/', views.accessory_add_to_order, name='accessory_add_to_order'),
+
+    path('cuttings/', views.cutting_list, name='cutting_list'),
+    path('cuttings/<int:pk>/edit/', views.cutting_update, name='cutting_update'),
+    path('cuttings/<int:pk>/delete/', views.cutting_delete, name='cutting_delete'),
+    path('cuttings/add/<int:order_id>/', views.cutting_add_to_order, name='cutting_add_to_order'),
 
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),
