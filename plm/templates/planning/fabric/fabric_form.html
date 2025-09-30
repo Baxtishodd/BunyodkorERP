@@ -5,25 +5,32 @@
 
 <form method="post">
     {% csrf_token %}
-    <div class="mb-3">
-        {{ form.fabric_name.label_tag }} {{ form.fabric_name }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.fabric_name.label_tag }} {{ form.fabric_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.measure_value.label_tag }} {{ form.measure_value }}
+            </div>
+            <div class="mb-3">
+                {{ form.measure_unit.label_tag }} {{ form.measure_unit }}
+            </div>
+            <div class="mb-3">
+                {{ form.gramaj.label_tag }} {{ form.gramaj }}
+            </div>
+            <div class="mb-3">
+                {{ form.arrival_date.label_tag }} {{ form.arrival_date }}
+            </div>
+            <div class="mb-3">
+                {{ form.factory_name.label_tag }} {{ form.factory_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.unit.label_tag }} {{ form.unit }}
+            </div>
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <a href="{% url 'plm:fabric_list' %}" class="btn btn-secondary">Orqaga</a>
+        </div>
     </div>
-    <div class="mb-3">
-        {{ form.measure_value.label_tag }} {{ form.measure_value }}
-    </div>
-    <div class="mb-3">
-        {{ form.measure_unit.label_tag }} {{ form.measure_unit }}
-    </div>
-    <div class="mb-3">
-        {{ form.gramaj.label_tag }} {{ form.gramaj }}
-    </div>
-    <div class="mb-3">
-        {{ form.factory_name.label_tag }} {{ form.factory_name }}
-    </div>
-    <div class="mb-3">
-        {{ form.unit.label_tag }} {{ form.unit }}
-    </div>
-    <button type="submit" class="btn btn-primary">Saqlash</button>
-    <a href="#" class="btn btn-secondary">Orqaga</a>
 </form>
 {% endblock %}

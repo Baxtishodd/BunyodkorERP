@@ -6,7 +6,7 @@
 {% for order, jami_pastal in orders_with_totals %}
     <div class="card mb-5">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}">{{ order }}</a></strong>
+            <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></strong>
             <a href="{% url 'plm:cutting_add_to_order' order.id %}" class="btn btn-sm btn-success">
                 + Pastal qo‘shish
             </a>

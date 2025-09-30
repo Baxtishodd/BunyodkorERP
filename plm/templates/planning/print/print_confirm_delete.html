@@ -1,0 +1,14 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+<h3>Pechatni o‘chirish</h3>
+<br>
+<h4>Rostdan ham "{{ print }}" ni o‘chirmoqchimisiz?</h4>
+<br>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ha, o‘chirish</button>
+    <a href="{% url 'plm:print_list' %}" class="btn btn-secondary">Yo‘q</a>
+</form>
+
+{% endblock %}

@@ -40,7 +40,15 @@
                     <p class="card-title">Art:</p>
                   </div>
                   <div class="col-md-4">
-                    <p class="card-title text-end"><a href="#">{{ line.client }}{{ line.artikul }}</a></p>
+                    <p class="card-title text-end">
+                      <a href="#"  >
+                        {% if line.client or line.artikul %}
+                          {{ line.client|default:"" }} {{ line.artikul|default:"" }}
+                        {% else %}
+                          Model biriktirilmagan
+                        {% endif %}
+                      </a>
+                    </p>
                   </div>
                   <div class="col-md-4">
                     <p class="card-title">Ish soni:</p>

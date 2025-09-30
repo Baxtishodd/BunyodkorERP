@@ -1,0 +1,20 @@
+
+{% extends "base1.html" %}
+{% block content %}
+<h3>{{ order }} buyurtmasi uchun pechatga ish qo‘shish</h3><br>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            {{ form.quantity.label_tag }} {{ form.quantity }}
+        </div>
+        <div class="mb-3 col-md-3">
+            {{ form.daily_work_date.label_tag }} {{ form.daily_work_date }}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Saqlash</button>
+    <a href="{% url 'plm:print_list' %}" class="btn btn-secondary">Orqaga</a>
+</form>
+{% endblock %}

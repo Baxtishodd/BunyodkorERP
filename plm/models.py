@@ -176,11 +176,11 @@ class FabricArrival(models.Model):
     measure_value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdori",  null=True, blank=True)  # yangi qo‘shildi
     measure_unit = models.CharField(
         max_length=10,
-        choices=[('kg', 'Kilogram'), ('m', 'Metr')],
+        choices=[('kg', 'Kilogram'), ('m', 'Metr')], default='kg',
         verbose_name="O‘lchov birligi",  null=True, blank=True
     )
-    gramaj = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Gramaj")
-    arrival_date = models.DateField(verbose_name="Qachon kelganligi")
+    gramaj = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Gramaj", null=True, blank=True,)
+    arrival_date = models.DateTimeField(verbose_name="Qachon kelganligi")
     factory_name = models.CharField(max_length=200, verbose_name="Qaysi fabrikadan kelganligi")
     is_confirmed = models.BooleanField(default=False, verbose_name="Tasdiqlandi")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
@@ -262,6 +262,18 @@ class Cutting(models.Model):
         return f"{self.order} - {self.pastal_soni} dona ({self.pastal_olchami})"
 
 
+class Printing(models.Model):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name="prints", verbose_name="Buyurtma")
+    quantity = models.PositiveIntegerField(verbose_name="Soni")
+    daily_work_date = models.DateField(verbose_name="Kunlik bosilgan pechat")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                               verbose_name="Muallif")
+
+    def __str__(self):
+        return f"{self.order} modeli  ({self.quantity}) dona pechat ishi"
 
 
 

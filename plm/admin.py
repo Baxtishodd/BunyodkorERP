@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting)
+                     FabricArrival, Accessory, Cutting, Printing)
 from django.utils.html import format_html
 
 
@@ -134,6 +134,11 @@ class CuttingAdmin(admin.ModelAdmin):
     search_fields = ('order__order_name', 'author__username')
 
 
+@admin.register(Printing)
+class PrintingAdmin(admin.ModelAdmin):
+    list_display = ('order', 'quantity', 'daily_work_date', 'created_at', 'updated_at', 'created_by')
+    list_filter = ('order', 'created_by')
+    search_fields = ('order__order_name', 'order__account_name')
 
 
 

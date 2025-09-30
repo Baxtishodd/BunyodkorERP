@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import accessory_update
 
 app_name = "plm"
 
@@ -32,12 +33,21 @@ urlpatterns = [
 
     path('accessories/', views.accessory_list, name='accessory_list'),
     path('accessories/create/', views.accessory_create, name='accessory_create'),
+    path('accessories/<int:pk>/edit/', views.accessory_update, name='accessory_update'),
+    path('accessories/<int:pk>/delete/', views.accessory_delete, name='accessory_delete'),
     path('accessories/add/<int:order_id>/', views.accessory_add_to_order, name='accessory_add_to_order'),
 
     path('cuttings/', views.cutting_list, name='cutting_list'),
     path('cuttings/<int:pk>/edit/', views.cutting_update, name='cutting_update'),
     path('cuttings/<int:pk>/delete/', views.cutting_delete, name='cutting_delete'),
     path('cuttings/add/<int:order_id>/', views.cutting_add_to_order, name='cutting_add_to_order'),
+
+    path('prints/', views.print_list, name='print_list'),
+    # path('prints/create/', views.print_create, name='print_create'),
+    path('prints/<int:pk>/edit/', views.print_update, name='print_update'),
+    path('prints/<int:pk>/delete/', views.print_delete, name='print_delete'),
+    path('prints/add/<int:order_id>/', views.print_add_to_order, name='print_add_to_order'),
+
 
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),

@@ -15,6 +15,6 @@
         {{ form.unit.label_tag }} {{ form.unit }}
     </div>
     <button type="submit" class="btn btn-primary">Saqlash</button>
-    <a href="#" class="btn btn-secondary">Orqaga</a>
+    <a href="{% url 'plm:accessory_list' %}" class="btn btn-secondary">Orqaga</a>
 </form>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting
+from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing
 
 
 
@@ -69,13 +69,13 @@ class WorkTypeForm(forms.ModelForm):
 class FabricArrivalForm(forms.ModelForm):
     class Meta:
         model = FabricArrival
-        fields = ['fabric_name', 'measure_value', 'measure_unit', 'gramaj', 'factory_name']
+        fields = ['fabric_name', 'measure_value', 'measure_unit', 'gramaj', 'arrival_date', 'factory_name']
         widgets = {
             'fabric_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mato nomi'}),
             'measure_value': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Miqdori'}),
             'measure_unit': forms.Select(attrs={'class': 'form-select'}),
             'gramaj': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Gramaj'}),
-            'arrival_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'arrival_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
             'factory_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fabrika nomi'}),
         }
 
@@ -102,7 +102,15 @@ class CuttingForm(forms.ModelForm):
         }
 
 
+class PrintForm(forms.ModelForm):
+    class Meta:
+        model = Printing
+        fields = ['quantity', 'daily_work_date']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Soni'}),
+            'daily_work_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
 
+        }
 
 
 

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import ProductModel
+from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm)
+                    CuttingForm, PrintForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
                      Cutting)
@@ -181,7 +181,7 @@ def productionline_list(request):
         })
 
 
-    return render(request, "planning/productionline_list.html", {"lines": line_data})
+    return render(request, "planning/line/productionline_list.html", {"lines": line_data})
 
 @login_required
 def productionline_detail(request, pk):
@@ -190,7 +190,7 @@ def productionline_detail(request, pk):
     models_assigned = line.modelassigned_set.all()
     norms = line.norm_set.all().order_by('-created_at')
 
-    return render(request, "planning/productionline_detail.html", {
+    return render(request, "planning/line/productionline_detail.html", {
         "line": line,
         "employees": employees,
         "models_assigned": models_assigned,
@@ -280,7 +280,7 @@ def fabric_add_to_order(request, order_id):
             fabric.save()
             return redirect('plm:fabric_list')
     else:
-        form = FabricArrival()
+        form = FabricArrivalForm()
     return render(request, 'planning/fabric/fabric_form.html', {'form': form, 'order': order})
 
 
@@ -352,6 +352,30 @@ def accessory_create(request):
 
 
 @login_required
+def accessory_update(request, pk):
+    accessory = get_object_or_404(Accessory, pk=pk)
+    order = accessory.order
+
+    if request.method == 'POST':
+        form = AccessoryForm(request.POST, instance=accessory)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:accessory_list')
+    else:
+        form = AccessoryForm(instance=accessory)
+    return render(request, 'planning/accessory/accessory_form.html', {'form': form, 'order':order})
+
+@login_required
+def accessory_delete(request, pk):
+    accessory = get_object_or_404(Accessory, pk=pk)
+    if request.method == 'POST':
+        accessory.delete()
+        return redirect('plm:accessory_list')
+    return render(request, 'planning/accessory/accessory_confirm_delete.html', {'accessory': accessory})
+
+
+
+@login_required
 def cutting_list(request):
     confirmed_orders = Order.objects.filter(
         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
@@ -396,6 +420,8 @@ def cutting_add_to_order(request, order_id):
 @login_required
 def cutting_update(request, pk):
     cutting = get_object_or_404(Cutting, pk=pk)
+    order = cutting.order
+
     if request.method == 'POST':
         form = CuttingForm(request.POST, instance=cutting)
         if form.is_valid():
@@ -403,7 +429,7 @@ def cutting_update(request, pk):
             return redirect('plm:cutting_list')
     else:
         form = CuttingForm(instance=cutting)
-    return render(request, 'planning/cutting/cutting_form.html', {'form': form})
+    return render(request, 'planning/cutting/cutting_form.html', {'form': form, 'order':order})
 
 @login_required
 def cutting_delete(request, pk):
@@ -414,9 +440,85 @@ def cutting_delete(request, pk):
     return render(request, 'planning/cutting/cutting_confirm_delete.html', {'cutting': cutting})
 
 
+# Printing view
+@login_required
+def print_list(request):
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('prints')
+
+    orders_with_totals = []
+    for order in confirmed_orders:
+        jami_pechat = sum(c.quantity for c in order.prints.all())
+        orders_with_totals.append((order, jami_pechat))
+
+    return render(
+        request,
+        'planning/print/print_list.html',
+        {
+            'orders_with_totals': orders_with_totals
+        }
+    )
+    # return render(request, 'planning/print/print_list.html', {'orders': confirmed_orders})
+
+@login_required
+def print_add_to_order(request, order_id):
+    # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+    order = get_object_or_404(Order, pk=order_id)
+
+    if not is_confirmed:
+        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
+        return redirect('plm:print_list')
+
+    if request.method == "POST":
+        form = PrintForm(request.POST)
+        if form.is_valid():
+            print = form.save(commit=False)
+            print.order = order
+            print.created_by = request.user
+            print.save()
+            return redirect('plm:print_list')
+    else:
+        form = PrintForm()
+    return render(request, 'planning/print/print_form.html', {'form': form, 'order': order})
 
 
+# # Aksessuar qo‘shish
+# @login_required
+# def print_create(request):
+#     if request.method == 'POST':
+#         form = PrintForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('plm:print_list')
+#     else:
+#         form = PrintForm()
+#     return render(request, 'planning/print/print_form.html', {'form': form})
 
+
+@login_required
+def print_update(request, pk):
+    print_obj = get_object_or_404(Printing, pk=pk)
+    order = print_obj.order
+
+    if request.method == 'POST':
+        form = PrintForm(request.POST, instance=print_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:print_list')
+    else:
+        form = PrintForm(instance=print_obj)
+    return render(request, 'planning/print/print_form.html', {'form': form, 'order': order})
+
+
+@login_required
+def print_delete(request, pk):
+    print = get_object_or_404(Printing, pk=pk)
+    if request.method == 'POST':
+        print.delete()
+        return redirect('plm:print_list')
+    return render(request, 'planning/print/print_confirm_delete.html', {'print': print})
 
 
 
