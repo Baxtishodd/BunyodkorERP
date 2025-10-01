@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting, Printing)
+                     FabricArrival, Accessory, Cutting, Printing, OrderSize)
 from django.utils.html import format_html
 
 
@@ -59,6 +59,12 @@ class OrderAdmin(admin.ModelAdmin):
             "fields": ("created_by", "created_at", "updated_at"),
         }),
     )
+
+@admin.register(OrderSize)
+class OrderSizeAdmin(admin.ModelAdmin):
+    list_display = ("order", "size", "quantity", "author", "created_at", "updated_at")
+    list_filter = ("size", "created_at", "updated_at")
+    search_fields = ("order__id", "size", "author__username")
 
 
 class EmployeeAdmin(admin.ModelAdmin):

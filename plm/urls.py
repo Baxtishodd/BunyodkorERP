@@ -20,6 +20,11 @@ urlpatterns = [
     path('orders/<int:pk>/edit/', views.order_update, name='order_update'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
 
+    path("ordersize/", views.ordersize_list, name="ordersize_list"),
+    path("ordersize/<int:pk>/update/", views.ordersize_update, name="ordersize_update"),
+    path("ordersize/<int:pk>/delete/", views.ordersize_delete, name="ordersize_delete"),
+    path('ordersize/add/<int:pk>/', views.ordersize_add_to_order, name='ordersize_add_to_order'),
+
     path('worktypes/create/', views.worktype_create, name='worktype_create'),
     path("worktypes/", views.worktype_list, name="worktype_list"),
 

@@ -44,8 +44,6 @@ class Order(models.Model):
     rangi = models.CharField(max_length=100, verbose_name="Rangi", blank=True, null=True, )
 
     deadline = models.DateTimeField(blank=True, null=True, verbose_name="Yuklanish vaqti")
-
-
     # Model rasmi
     model_picture = models.ImageField(upload_to="orders/", blank=True, null=True, verbose_name="Model rasmi")
 
@@ -66,7 +64,61 @@ class Order(models.Model):
         artikul_name = self.artikul if self.artikul else "Artikul yo‘q"
         return f"{client_name} - {artikul_name} ({self.quantity} dona)"
 
+class OrderSize(models.Model):
+    SIZE_CHOICES = [
+        ('oversize', 'Oversize'),
+        ('XXS', 'XXS'),
+        ('XS', 'XS'),
+        ('S', 'S'),
+        ('M', 'M'),
+        ('L', 'L'),
+        ('XL', 'XL'),
+        ('XXL', 'XXL'),
+        ('XXXL', 'XXXL'),
+        ('4XL', '4XL'),
+        ('5XL', '5XL'),
+        ('6XL', '6XL'),
+        ('7XL', '7XL'),
+        ('8XL', '8XL'),
+        ('9XL', '9XL'),
+        ('10XL', '10XL'),
+        ('11XL', '11XL'),
+        ('12XL', '12XL'),
+        ('40', '40'),
+        ('42', '42'),
+        ('44', '44'),
+        ('46', '46'),
+        ('48', '48'),
+        ('50', '50'),
+        ('52', '52'),
+        ('54', '54'),
+        ('56', '56'),
+        ('58', '58'),
+        ('60', '60'),
+        ('62', '62'),
+        ('64', '64'),
+        ('66', '66'),
+        ('68', '68'),
+        ('70', '70'),
+        ('42-44','42-44'),
+        ('46-48','46-48'),
+        ('50-52','50-52'),
+        ('54-56','54-56'),
+        ('58-60','58-60'),
+        ('62-64','62-64'),
+        ('66-68','66-68'),
+        ('70-72','70-72'),
+    ]
 
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ordersize", verbose_name="Buyurtma")
+    quantity = models.PositiveIntegerField(verbose_name="Soni")
+    size = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize", verbose_name="O‘lchami")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Muallif")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
+
+    def __str__(self):
+        return f"{self.order} - {self.quantity}-{self.size}"
 
 class ProductionLine(models.Model):
     name = models.CharField(max_length=100, verbose_name="Patok nomi")
@@ -249,6 +301,14 @@ class Cutting(models.Model):
         ('66', '66'),
         ('68', '68'),
         ('70', '70'),
+        ('42-44','42-44'),
+        ('46-48','46-48'),
+        ('50-52','50-52'),
+        ('54-56','54-56'),
+        ('58-60','58-60'),
+        ('62-64','62-64'),
+        ('66-68','66-68'),
+        ('70-72','70-72'),
     ]
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="cuttings", verbose_name="Buyurtma")

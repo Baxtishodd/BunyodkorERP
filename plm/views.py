@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm)
+                    CuttingForm, PrintForm, OrderSizeForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting)
+                     Cutting, OrderSize)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -246,6 +246,54 @@ def order_delete(request, pk):
 
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
+@login_required
+def ordersize_list(request):
+    orders = Order.objects.prefetch_related("ordersize")
+    return render(request, "orders/order_detail.html", {"orders": orders})
+
+@login_required
+def ordersize_add_to_order(request, pk):
+
+    order = get_object_or_404(Order, pk=pk)
+
+    if request.method == "POST":
+        form = OrderSizeForm(request.POST)
+        if form.is_valid():
+            ordersize = form.save(commit=False)
+            ordersize.order = order
+            ordersize.author = request.user
+            ordersize.save()
+            return redirect('plm:order_detail', pk=order.pk)
+    else:
+        form = OrderSizeForm()
+    return render(request, 'orders/ordersize/ordersize_form.html', {'form': form, 'order': order})
+
+
+@login_required
+def ordersize_update(request, pk):
+    ordersize = get_object_or_404(OrderSize, pk=pk)
+    order = ordersize.order
+
+    if request.method == "POST":
+        form = OrderSizeForm(request.POST, instance=ordersize)
+        if form.is_valid():
+            form.save()
+            return redirect("plm:order_detail", pk=order.pk)
+    else:
+        form = OrderSizeForm(instance=ordersize)
+    return render(request, "orders/ordersize/ordersize_form.html", {"form": form, "title": "O‘lchamni tahrirlash"})
+
+
+@login_required
+def ordersize_delete(request, pk):
+    ordersize = get_object_or_404(OrderSize, pk=pk)
+    order = ordersize.order
+
+    if request.method == "POST":
+        ordersize.delete()
+        messages.success(request, "Buyurtma o'lchami muvaffaqiyatli o‘chirildi ✅")
+        return redirect("plm:order_detail", pk=order.pk)
+    return render(request, "orders/ordersize/ordersize_confirm_delete.html", {"ordersize": ordersize})
 
 # Mato tastiqlanish Ro‘yxat
 @login_required

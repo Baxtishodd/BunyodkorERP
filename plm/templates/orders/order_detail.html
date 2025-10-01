@@ -17,18 +17,56 @@
     <!-- [ breadcrumb ] end -->
       <div class="row">
 
-          <div class="col-md-6">
+          <div class="col-md-4">
               <ul class="list-group">
                 <li class="list-group-item"><strong>Mijoz:</strong> {{ order.client }}</li>
                 <li class="list-group-item"><strong>Artikul:</strong> {{ order.artikul }}</li>
-                <li class="list-group-item"><strong>Miqdor:</strong> {{ order.quantity }} dona</li>
+                <li class="list-group-item"><strong>Miqdor:</strong> {{ order.quantity }} dona </li>
                 <li class="list-group-item"><strong>Rang:</strong> {{ order.rangi }}</li>
                 <li class="list-group-item"><strong>Yuklanish vaqti:</strong> {{ order.deadline|date:"d.m.Y H:i" }}</li>
                 <li class="list-group-item"><strong>Yaratgan:</strong> {{ order.created_by }}</li>
                 <li class="list-group-item"><strong>Yaratilgan vaqti:</strong> {{ order.created_at|date:"d.m.Y H:i" }}</li>
             </ul>
           </div>
-          <div class="col-md-6">
+
+         <div class="card col-md-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Miqdor va o'lchamlari:</strong> <a href="{% url 'plm:ordersize_add_to_order' order.id %}" class="btn btn-primary ">o'lcham qo'shish</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Soni</th>
+                            <th>O'lchami</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ordersize in order.ordersize.all %}
+                        <tr>
+                            <td>{{ ordersize.quantity }}</td>
+                            <td>{{ ordersize.size }}</td>
+                            <td>
+                                <a href="{% url 'plm:ordersize_update' ordersize.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pen-fill"></i>
+                                </a>
+                                <a href="{% url 'plm:ordersize_delete' ordersize.pk %}" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Hozircha o'lcham qo‘shilmagan</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+          <div class="col-md-4">
               {% if order.model_picture %}
                 <div>
                     <img src="{{ order.model_picture.url }}" class="img-fluid rounded shadow-sm" style="max-width:300px;">

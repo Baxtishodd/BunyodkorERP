@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing
+from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize
 
 
 
@@ -55,6 +55,16 @@ class OrderForm(forms.ModelForm):
             'rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rang'}),
             'model_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+class OrderSizeForm(forms.ModelForm):
+    class Meta:
+        model = OrderSize
+        fields = ['quantity', 'size']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'size': forms.Select(attrs={'class': 'form-control'}),
+        }
+
 
 class WorkTypeForm(forms.ModelForm):
     class Meta:
