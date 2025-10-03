@@ -21,7 +21,7 @@
                         <th>Sana</th>
                         <th>Yangilash</th>
                         <th>Avtor</th>
-                        <th>Amal</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,7 +33,7 @@
                         <td>{{ cutting.created_at|date:"d.m.Y H:i" }}</td>
                         <td>{{ cutting.updated_at|date:"d.m.Y H:i" }}</td>
                         <td>{{ cutting.author }}</td>
-                        <td>
+                        <td class="text-end">
                             <a href="{% url 'plm:cutting_update' cutting.pk %}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-pen-fill"></i>
                             </a>
@@ -50,7 +50,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="fw-bold">
-                        <td colspan="7" class="text-end">
+                        <td colspan="7" class="text-start">
                             Jami pastal: {{ jami_pastal }}
                         </td>
                     </tr>

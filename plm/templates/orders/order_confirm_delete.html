@@ -17,7 +17,7 @@
     <!-- [ breadcrumb ] end -->
 
      <div class="alert alert-danger" role="alert">❗ Siz bu buyurtmani o‘chirmoqchimisiz?</div>
-    <h2 class="m-2"><strong>{{ order.client }} {{ order.artikul }}</strong> ({{ order.quantity }} dona)</h2>
+    <h2 class="m-2"><strong>{{ order.client }} {{ order.artikul }}</strong> ({{ order.sum_order_size }} dona)</h2>
     <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">🗑️ Ha, o‘chirish</button>

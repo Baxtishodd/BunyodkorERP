@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting, Printing, OrderSize)
+                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching)
 from django.utils.html import format_html
 
 
@@ -45,7 +45,7 @@ class ProductionLineInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("client", "artikul", "quantity", "rangi", "deadline", "created_by", "created_at", "updated_at")
+    list_display = ("client", "artikul", "rangi", "deadline", "created_by", "created_at", "updated_at")
     list_filter = ("rangi", "deadline", "created_at")
     search_fields = ("client", "artikul", "rangi")
     ordering = ("-created_at",)
@@ -53,7 +53,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Buyurtma ma'lumotlari", {
-            "fields": ("client", "artikul", "quantity", "rangi", "deadline", "model_picture")
+            "fields": ("client", "artikul", "rangi", "deadline", "model_picture")
         }),
         ("Tizim ma'lumotlari", {
             "fields": ("created_by", "created_at", "updated_at"),
@@ -147,7 +147,12 @@ class PrintingAdmin(admin.ModelAdmin):
     search_fields = ('order__order_name', 'order__account_name')
 
 
-
+@admin.register(Stitching)
+class StitchingAdmin(admin.ModelAdmin):
+    list_display = ("ordersize", "quantity", "status", "date", "created_at", "updated_at")
+    list_filter = ("status", "date", "created_at")
+    search_fields = ("ordersize__order__client", "ordersize__order__artikul", "ordersize__size")
+    ordering = ("-date", "-created_at")
 
 
 

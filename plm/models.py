@@ -1,6 +1,50 @@
 from django.db import models
 from django.conf import settings
 
+SIZE_CHOICES = [
+        ('oversize', 'Oversize'),
+        ('XXS', 'XXS'),
+        ('XS', 'XS'),
+        ('S', 'S'),
+        ('M', 'M'),
+        ('L', 'L'),
+        ('XL', 'XL'),
+        ('XXL', 'XXL'),
+        ('XXXL', 'XXXL'),
+        ('4XL', '4XL'),
+        ('5XL', '5XL'),
+        ('6XL', '6XL'),
+        ('7XL', '7XL'),
+        ('8XL', '8XL'),
+        ('9XL', '9XL'),
+        ('10XL', '10XL'),
+        ('11XL', '11XL'),
+        ('12XL', '12XL'),
+        ('40', '40'),
+        ('42', '42'),
+        ('44', '44'),
+        ('46', '46'),
+        ('48', '48'),
+        ('50', '50'),
+        ('52', '52'),
+        ('54', '54'),
+        ('56', '56'),
+        ('58', '58'),
+        ('60', '60'),
+        ('62', '62'),
+        ('64', '64'),
+        ('66', '66'),
+        ('68', '68'),
+        ('70', '70'),
+        ('42-44','42-44'),
+        ('46-48','46-48'),
+        ('50-52','50-52'),
+        ('54-56','54-56'),
+        ('58-60','58-60'),
+        ('62-64','62-64'),
+        ('66-68','66-68'),
+        ('70-72','70-72'),
+    ]
 
 class ProductModel(models.Model):
     artikul = models.CharField(max_length=100, verbose_name="Artikul", blank=True, null=True,)
@@ -36,11 +80,9 @@ class ProductModel(models.Model):
         return f"{self.artikul} - {self.mijoz}"
 
 
-
 class Order(models.Model):
     client = models.CharField(max_length=200, verbose_name="Mijoz nomi", blank=True, null=True)
     artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True,)
-    quantity = models.PositiveIntegerField(verbose_name="Miqdori (dona)")
     rangi = models.CharField(max_length=100, verbose_name="Rangi", blank=True, null=True, )
 
     deadline = models.DateTimeField(blank=True, null=True, verbose_name="Yuklanish vaqti")
@@ -62,7 +104,11 @@ class Order(models.Model):
     def __str__(self):
         client_name = self.client if self.client else "Noma'lum mijoz"
         artikul_name = self.artikul if self.artikul else "Artikul yo‘q"
-        return f"{client_name} - {artikul_name} ({self.quantity} dona)"
+        return f"{client_name} - {artikul_name} ({self.sum_order_size()} dona)"
+
+    def sum_order_size(self):
+        return sum(c.quantity or 0 for c in self.ordersize.all())
+
 
 class OrderSize(models.Model):
     SIZE_CHOICES = [
@@ -119,6 +165,7 @@ class OrderSize(models.Model):
 
     def __str__(self):
         return f"{self.order} - {self.quantity}-{self.size}"
+
 
 class ProductionLine(models.Model):
     name = models.CharField(max_length=100, verbose_name="Patok nomi")
@@ -189,38 +236,6 @@ class HourlyWork(models.Model):
         return f"{self.employee.full_name} | {self.work_type.name} | {self.start_time}-{self.end_time}"
 
 
-# class DailyWork(models.Model):
-#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="daily_works")
-#     line = models.ForeignKey(ProductionLine, on_delete=models.CASCADE, null=True, blank=True)
-#     work_type = models.ForeignKey(WorkType, on_delete=models.CASCADE)
-#     date = models.DateField()
-#
-#     work_08_09 = models.IntegerField(default=0)   # 08:00 - 09:00
-#     work_09_10 = models.IntegerField(default=0)
-#     work_10_11 = models.IntegerField(default=0)
-#     work_11_12 = models.IntegerField(default=0)
-#     work_12_13 = models.IntegerField(default=0)
-#     work_13_14 = models.IntegerField(default=0)
-#     work_14_15 = models.IntegerField(default=0)
-#     work_15_16 = models.IntegerField(default=0)
-#     work_16_17 = models.IntegerField(default=0)
-#     work_17_1745 = models.IntegerField(default=0)
-#
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def total_work(self):
-#         """Kunlik jami ishlab chiqilgan mahsulotlar soni"""
-#         return (
-#             self.work_08_09 + self.work_09_10 + self.work_10_11 +
-#             self.work_11_12 + self.work_12_13 + self.work_13_14 +
-#             self.work_14_15 + self.work_15_16 + self.work_16_17 +
-#             self.work_17_1745
-#         )
-#
-#     def __str__(self):
-#         return f"{self.employee.full_name} - {self.date} - {self.total_work()} dona"
-
-
 class FabricArrival(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="fabric_arrival", verbose_name="Qaysi buyurtma uchun")
@@ -266,50 +281,6 @@ class Accessory(models.Model):
 
 
 class Cutting(models.Model):
-    SIZE_CHOICES = [
-        ('oversize', 'Oversize'),
-        ('XXS', 'XXS'),
-        ('XS', 'XS'),
-        ('S', 'S'),
-        ('M', 'M'),
-        ('L', 'L'),
-        ('XL', 'XL'),
-        ('XXL', 'XXL'),
-        ('XXXL', 'XXXL'),
-        ('4XL', '4XL'),
-        ('5XL', '5XL'),
-        ('6XL', '6XL'),
-        ('7XL', '7XL'),
-        ('8XL', '8XL'),
-        ('9XL', '9XL'),
-        ('10XL', '10XL'),
-        ('11XL', '11XL'),
-        ('12XL', '12XL'),
-        ('40', '40'),
-        ('42', '42'),
-        ('44', '44'),
-        ('46', '46'),
-        ('48', '48'),
-        ('50', '50'),
-        ('52', '52'),
-        ('54', '54'),
-        ('56', '56'),
-        ('58', '58'),
-        ('60', '60'),
-        ('62', '62'),
-        ('64', '64'),
-        ('66', '66'),
-        ('68', '68'),
-        ('70', '70'),
-        ('42-44','42-44'),
-        ('46-48','46-48'),
-        ('50-52','50-52'),
-        ('54-56','54-56'),
-        ('58-60','58-60'),
-        ('62-64','62-64'),
-        ('66-68','66-68'),
-        ('70-72','70-72'),
-    ]
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="cuttings", verbose_name="Buyurtma")
     pastal_soni = models.PositiveIntegerField(verbose_name="Pastal soni")
@@ -336,6 +307,22 @@ class Printing(models.Model):
         return f"{self.order} modeli  ({self.quantity}) dona pechat ishi"
 
 
+class Stitching(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Boshlanmagan"),
+        ("in_progress", "Davom etmoqda"),
+        ("done", "Tugallangan"),
+    ]
+    ordersize = models.ForeignKey("OrderSize", models.PROTECT, related_name="stitchings")
+    quantity = models.PositiveIntegerField()   # tikilgan soni
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")  # ✅ Qo‘shildi
+    date =  models.DateField(verbose_name="Kunlik tikim sanasi")
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.ordersize.order} - {self.ordersize.size} - {self.quantity} dona"
 
 
 

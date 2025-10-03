@@ -1,5 +1,6 @@
 from django import forms
-from .models import ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize
+from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
+                     Stitching)
 
 
 
@@ -47,11 +48,10 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['client', 'artikul', 'quantity', 'rangi', 'deadline', 'model_picture']
+        fields = ['client', 'artikul','rangi', 'deadline', 'model_picture']
         widgets = {
             'client': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mijoz nomi'}),
             'artikul': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Artikul'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Miqdor'}),
             'rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rang'}),
             'model_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
@@ -123,7 +123,32 @@ class PrintForm(forms.ModelForm):
         }
 
 
+class StitchingForm(forms.ModelForm):
+    class Meta:
+        model = Stitching
+        fields = ["ordersize", "quantity", "date"]
+        widgets = {
+            'ordersize': forms.Select(attrs={'class': 'form-select'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Miqdori'}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
 
+        }
+        labels = {
+            'ordersize': 'Buyurtma o‘lchami',
+            'quantity': 'Miqdori',
+            'date': 'Sana',
+        }
+
+    def __init__(self, *args, **kwargs):
+        order = kwargs.pop("order", None)
+        super().__init__(*args, **kwargs)
+
+        # Agar order berilgan bo‘lsa, faqat shu orderga tegishli ordersizelarni chiqaramiz
+        if order:
+            self.fields["ordersize"].queryset = OrderSize.objects.filter(order=order)
+
+        # # Sana kiritilayotganini ko‘rsatamiz
+        # self.fields["date"].widget = forms.DateInput(attrs={"type": "date"})
 
 
 

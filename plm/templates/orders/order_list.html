@@ -29,6 +29,7 @@
                             <th>Artikul</th>
                             <th>Miqdor</th>
                             <th>Rang</th>
+                            <th>Tasdiqlash</th>
                             <th>Yuklanish vaqti</th>
                         </tr>
                     </thead>
@@ -46,8 +47,11 @@
                             </td>
                             <td>{{ order.client }}</td>
                             <td><a href="{% url 'plm:order_detail' order.pk %}" class="text-primary">{{ order.artikul }}</a></td>
-                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.sum_order_size }}</td>
                             <td>{{ order.rangi }}</td>
+                            <td>
+                                <span class="badge bg-warning">Tastiqlanmagan</span>
+                            </td>
                             <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>
                         </tr>
                         {% empty %}

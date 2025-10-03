@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize)
+                     Cutting, OrderSize, Stitching)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -150,10 +150,18 @@ def productionline_list(request):
 
         # Biriktirilgan model (oxirgisi yoki bir nechta bo‘lsa eng so‘nggisi)
         assigned = line.modelassigned_set.last()
-        artikul = assigned.model_name.artikul if assigned else None
-        client = assigned.model_name.client if assigned else None
-        order_id = assigned.model_name.id if assigned else None
-        quantity = assigned.model_name.quantity if assigned else 0
+        if assigned:
+            order = assigned.model_name  # Order object
+            artikul = order.artikul
+            client = order.client
+            order_id = order.id
+            quantity = order.sum_order_size() or 0
+            print(f"Line: {line.name}, Order: {order}, Quantity: {quantity}")  # 🔍 Debug
+        else:
+            artikul = None
+            client = None
+            order_id = None
+            quantity = 0
 
         # Normativ (oxirgisi)
         norm = line.norm_set.last()
@@ -206,8 +214,16 @@ def order_list(request):
 @login_required
 def order_detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
-    return render(request, "orders/order_detail.html", {"order": order})
+    sum_order_size = sum(c.quantity or 0 for c in order.ordersize.all())
 
+    return render(
+        request,
+        "orders/order_detail.html",
+        {
+            "order": order,
+            "sum_order_size": sum_order_size
+        }
+    )
 # Create
 @login_required
 def order_create(request):
@@ -247,9 +263,19 @@ def order_delete(request, pk):
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
 @login_required
-def ordersize_list(request):
-    orders = Order.objects.prefetch_related("ordersize")
-    return render(request, "orders/order_detail.html", {"orders": orders})
+def ordersize_list(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    sum_order_size = sum(c.quantity for c in order.ordersize.all())
+
+    return render(
+        request,
+        'orders/order_detail.html',
+        {
+            'order': order,
+            'sum_order_size': sum_order_size
+        }
+    )
+
 
 @login_required
 def ordersize_add_to_order(request, pk):
@@ -532,18 +558,6 @@ def print_add_to_order(request, order_id):
     return render(request, 'planning/print/print_form.html', {'form': form, 'order': order})
 
 
-# # Aksessuar qo‘shish
-# @login_required
-# def print_create(request):
-#     if request.method == 'POST':
-#         form = PrintForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('plm:print_list')
-#     else:
-#         form = PrintForm()
-#     return render(request, 'planning/print/print_form.html', {'form': form})
-
 
 @login_required
 def print_update(request, pk):
@@ -569,8 +583,96 @@ def print_delete(request, pk):
     return render(request, 'planning/print/print_confirm_delete.html', {'print': print})
 
 
+def stitching_list(request):
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("ordersize__stitchings")  # ordersize → stitching bog‘lanishi
+        .order_by("created_at")
+    )
+
+    return render(
+        request,
+        "planning/stitching/stitching_list.html",
+        {"orders": confirmed_orders}
+    )
 
 
+@login_required
+def stitching_add(request, order_id):
+
+    order = get_object_or_404(Order, id=order_id)
+
+    # shu orderga bog‘langan patok(lar)
+    assigned_lines = ModelAssigned.objects.filter(model_name=order).select_related("line")
+
+    if request.method == "POST":
+        form = StitchingForm(request.POST, order=order)
+        if form.is_valid():
+            stitching = form.save(commit=False)
+            # Patok yoki sexni avtomatik qo‘shish kerak bo‘lsa shu yerga qo‘shiladi
+            stitching.save()
+            return redirect("plm:stitching_list")
+    else:
+        form = StitchingForm(order=order)
+
+    return render(
+        request,
+        "planning/stitching/stitching_form.html",
+        {"form": form, "order": order,  "assigned_lines": assigned_lines,},
+    )
+
+
+# @login_required
+# def stitching_list(request):
+#     orders = Order.objects.filter(status="tasdiqlangan")  # kerakli filter
+#     stitchings = (
+#         Stitching.objects
+#         .select_related("ordersize__order")  # faqat ordersize orqali order ma’lumotini oladi
+#         .order_by("-date", "-created_at")
+#     )
+#     orders_with_totals = []
+#
+#     for order in orders:
+#         jami_tikim = Stitching.objects.filter(ordersize__order=order).aggregate(
+#             total=Sum("quantity")
+#         )["total"] or 0
+#         orders_with_totals.append((order, jami_tikim))
+#
+#     return render(request, "planning/stitching/stitching_list.html", {
+#         "orders_with_totals": orders_with_totals
+#     })
+
+
+@login_required
+def stitching_update(request, pk):
+    stitching = get_object_or_404(Stitching, pk=pk)
+    order = stitching.ordersize.order
+
+    if request.method == "POST":
+        form = StitchingForm(request.POST, instance=stitching, order=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tikim ma'lumoti yangilandi ✅")
+            return redirect("plm:stitching_list")
+    else:
+        form = StitchingForm(instance=stitching, order=order)
+
+    return render(request, "planning/stitching/stitching_form.html", {
+        "form": form,
+        "order": order,
+    })
+
+@login_required
+def stitching_delete(request, pk):
+    stitching = get_object_or_404(Stitching, pk=pk)
+    order = stitching.ordersize.order
+    if request.method == "POST":
+        stitching.delete()
+        messages.success(request, "Tikim ma'lumoti o‘chirildi ❌")
+        return redirect("plm:stitching_list")
+    return render(request, "planning/stitching/stitching_confirm_delete.html", {"stitching": stitching})
 
 
 

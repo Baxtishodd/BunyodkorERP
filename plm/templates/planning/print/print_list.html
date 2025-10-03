@@ -20,7 +20,7 @@
                                    title="Pechat bosilgan sana"></i></th>
                         <th>Yaratildi <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
                                    title="Ma'lumot kiritilgan sana"></i></th>
-                        <th class="">Amal</th>
+                        <th class=""></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +28,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ print.quantity }}</td>
-                        <td>{{ print.daily_work_date }}</td>
+                        <td><span class="badge bg-primary">{{ print.daily_work_date|date:"d.m.Y" }}</td>
                         <td>{{ print.created_at|date:"d.m.Y H:i" }}</td>
                         <td class="text-end">
                             <a href="{% url 'plm:print_update' print.pk %}" class="btn btn-sm btn-primary">
@@ -47,8 +47,8 @@
                 </tbody>
                     <tfoot>
                         <tr class="fw-bold">
-                            <td colspan="7" class="text-end">
-                                Jami pechat: {{ jami_pechat }}
+                            <td colspan="7" class="text-start">
+                                Jami pechat:    {{ jami_pechat }}
                             </td>
                         </tr>
                     </tfoot>

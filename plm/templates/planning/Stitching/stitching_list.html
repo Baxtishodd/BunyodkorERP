@@ -1,0 +1,46 @@
+{% extends "base1.html" %}
+{% block content %}
+
+<h3>Buyurtmalar kesimida tikim ishlari</h3><br>
+
+{% for order in orders %}
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></strong>
+        <a href="{% url 'plm:stitching_add' order.id %}" class="btn btn-sm btn-success">+ Ish qo‘shish</a>
+    </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>O‘lcham</th>
+                        <th>Tikilgan soni</th>
+                        <th>Tikim sanasi</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ordersize in order.ordersize.all %}
+                        {% for stitching in ordersize.stitchings.all %}
+                            <tr>
+                                <td>{{ forloop.parentloop.counter }}.{{ forloop.counter }}</td>
+                                <td>{{ stitching.ordersize.size }}</td>
+                                <td>{{ stitching.quantity }}</td>
+                                <td>{{ stitching.date|date:"d.m.Y" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center"><span class="badge bg-primary">{{ ordersize.quantity }} - {{ ordersize.size }}</span> Bu buyurtmaga tikim ishlari qo‘shilmagan</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% empty %}
+    <p>Hozircha buyurtmalar mavjud emas</p>
+{% endfor %}
+
+{% endblock %}
