@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching)
+                     Cutting, OrderSize, Stitching, Ironing)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
 from django.db.models import Sum
-from collections import Counter
+from collections import Counter, defaultdict
 
 # Model kartalar ro‘yxati
 @login_required
@@ -583,21 +583,41 @@ def print_delete(request, pk):
     return render(request, 'planning/print/print_confirm_delete.html', {'print': print})
 
 
+@login_required
 def stitching_list(request):
     confirmed_orders = (
         Order.objects.filter(
             id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
         )
-        .prefetch_related("ordersize__stitchings")  # ordersize → stitching bog‘lanishi
+        .prefetch_related("ordersize__stitchings")
         .order_by("created_at")
     )
+
+    # Har bir order uchun jami tikilgan o‘lchamlar lug‘ati
+    order_size_totals = {}
+    order_total_quantity = {}
+
+    for order in confirmed_orders:
+        size_totals = defaultdict(int)
+        total_quantity = 0
+
+        for ordersize in order.ordersize.all():
+            stitched_sum = ordersize.stitchings.aggregate(total=Sum("quantity"))["total"] or 0
+            size_totals[ordersize.size] += stitched_sum
+            total_quantity += stitched_sum
+
+        order_size_totals[order.id] = dict(size_totals)
+        order_total_quantity[order.id] = total_quantity
 
     return render(
         request,
         "planning/stitching/stitching_list.html",
-        {"orders": confirmed_orders}
+        {
+            "orders": confirmed_orders,
+            "order_size_totals": order_size_totals,
+            "order_total_quantity": order_total_quantity,
+        },
     )
-
 
 @login_required
 def stitching_add(request, order_id):
@@ -622,28 +642,6 @@ def stitching_add(request, order_id):
         "planning/stitching/stitching_form.html",
         {"form": form, "order": order,  "assigned_lines": assigned_lines,},
     )
-
-
-# @login_required
-# def stitching_list(request):
-#     orders = Order.objects.filter(status="tasdiqlangan")  # kerakli filter
-#     stitchings = (
-#         Stitching.objects
-#         .select_related("ordersize__order")  # faqat ordersize orqali order ma’lumotini oladi
-#         .order_by("-date", "-created_at")
-#     )
-#     orders_with_totals = []
-#
-#     for order in orders:
-#         jami_tikim = Stitching.objects.filter(ordersize__order=order).aggregate(
-#             total=Sum("quantity")
-#         )["total"] or 0
-#         orders_with_totals.append((order, jami_tikim))
-#
-#     return render(request, "planning/stitching/stitching_list.html", {
-#         "orders_with_totals": orders_with_totals
-#     })
-
 
 @login_required
 def stitching_update(request, pk):
@@ -673,6 +671,114 @@ def stitching_delete(request, pk):
         messages.success(request, "Tikim ma'lumoti o‘chirildi ❌")
         return redirect("plm:stitching_list")
     return render(request, "planning/stitching/stitching_confirm_delete.html", {"stitching": stitching})
+
+
+# Ironing view Dazmol modeli
+@login_required
+def ironing_list(request):
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('ironing')
+
+    orders_with_totals = []
+    for order in confirmed_orders:
+        jami_dazmol = sum(c.quantity for c in order.ironing.all())
+        orders_with_totals.append((order, jami_dazmol))
+
+    return render(
+        request,
+        'planning/ironing/ironing_list.html',
+        {
+            'orders_with_totals': orders_with_totals
+        }
+    )
+
+@login_required
+def ironing_add_to_order(request, order_id):
+    # Faqat ModelAssigned orqali tasdiqlangan buyurtmaga qo‘shishga ruxsat beramiz
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+    order = get_object_or_404(Order, pk=order_id)
+
+    if not is_confirmed:
+        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
+        return redirect('plm:ironing_list')
+
+    if request.method == "POST":
+        form = IroningForm(request.POST)
+        if form.is_valid():
+            ironing = form.save(commit=False)
+            ironing.order = order
+            ironing.created_by = request.user
+            ironing.save()
+            return redirect('plm:ironing_list')
+    else:
+        form = IroningForm()
+    return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
+
+
+@login_required
+def ironing_update(request, pk):
+    ironing_obj = get_object_or_404(Ironing, pk=pk)
+    order = ironing_obj.order
+
+    if request.method == 'POST':
+        form = IroningForm(request.POST, instance=ironing_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('plm:ironing_list')
+    else:
+        form = IroningForm(instance=ironing_obj)
+    return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
+
+
+@login_required
+def ironing_delete(request, pk):
+    ironing = get_object_or_404(Ironing, pk=pk)
+    if request.method == 'POST':
+        ironing.delete()
+        return redirect('plm:ironing_list')
+    return render(request, 'planning/ironing/ironing_confirm_delete.html', {'ironing': ironing})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -50,7 +50,13 @@
                             <td>{{ order.sum_order_size }}</td>
                             <td>{{ order.rangi }}</td>
                             <td>
-                                <span class="badge bg-warning">Tastiqlanmagan</span>
+                                {% with assigned=order.modelassigned_set.first %}
+                                    {% if assigned %}
+                                        <span class="badge bg-success">{{ assigned.line.name }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Tasdiqlanmagan</span>
+                                    {% endif %}
+                                {% endwith %}
                             </td>
                             <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>
                         </tr>

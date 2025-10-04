@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching)
+                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing)
 from django.utils.html import format_html
 
 
@@ -155,6 +155,11 @@ class StitchingAdmin(admin.ModelAdmin):
     ordering = ("-date", "-created_at")
 
 
+@admin.register(Ironing)
+class IroningAdmin(admin.ModelAdmin):
+    list_display = ('order', 'quantity', 'daily_work_date', 'created_at', 'updated_at', 'created_by')
+    list_filter = ('order', 'created_by')
+    search_fields = ('order__order_name', 'order__account_name')
 
 
 

@@ -1,4 +1,6 @@
+
 {% extends "base1.html" %}
+{% load custom_tags %}
 {% block content %}
 
 <h3>Buyurtmalar kesimida tikim ishlari</h3><br>
@@ -36,6 +38,25 @@
                         {% endfor %}
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr class="fw-bold">
+                        <td colspan="7" class="text-start">
+                            {% with total=order_total_quantity|get_item:order.id sizes=order_size_totals|get_item:order.id %}
+                                {% if total %}
+                                    Jami tikilgan:
+                                    <span class="text-success">{{ total }} dona</span>
+                                    (
+                                    {% for size, qty in sizes.items %}
+                                        {{ size }} - {{ qty }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                    )
+                                {% else %}
+                                    <span class="text-muted">Tikilgan ma’lumot yo‘q</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>

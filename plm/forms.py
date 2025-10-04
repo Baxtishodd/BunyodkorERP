@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching)
+                     Stitching, Ironing)
 
 
 
@@ -149,6 +149,32 @@ class StitchingForm(forms.ModelForm):
 
         # # Sana kiritilayotganini ko‘rsatamiz
         # self.fields["date"].widget = forms.DateInput(attrs={"type": "date"})
+
+
+class IroningForm(forms.ModelForm):
+    class Meta:
+        model = Ironing
+        fields = ['quantity', 'daily_work_date']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Soni'}),
+            'daily_work_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

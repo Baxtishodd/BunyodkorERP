@@ -325,6 +325,76 @@ class Stitching(models.Model):
         return f"{self.ordersize.order} - {self.ordersize.size} - {self.quantity} dona"
 
 
+class Ironing(models.Model):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name="ironing", verbose_name="Buyurtma")
+    quantity = models.PositiveIntegerField(verbose_name="Soni")
+    daily_work_date = models.DateField(verbose_name="Kunlik dazmol ish sanasi")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                               verbose_name="Muallif")
+
+    def __str__(self):
+        return f"{self.order} modeli  ({self.quantity}) dona dazmol ishi"
+
+
+class Inspection(models.Model):
+    order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="inspections")
+
+    total_checked = models.PositiveIntegerField(help_text="Umumiy tekshirilgan mahsulotlar soni")
+    passed_quantity = models.PositiveIntegerField(default=0, help_text="Sifatdan o‘tgan mahsulotlar soni")
+    failed_quantity = models.PositiveIntegerField(default=0, help_text="Sifatdan o‘tmagan mahsulotlar soni")
+
+    defect_notes = models.TextField(blank=True, help_text="Nuqson haqida qisqacha izoh (agar bo‘lsa)")
+    inspected_date = models.DateField(auto_now_add=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name="inspections", verbose_name="Muallif")
+
+    class Meta:
+        verbose_name = "Inspection"
+        verbose_name_plural = "Inspections"
+        ordering = ["-inspected_date"]
+
+    def __str__(self):
+        return f"{self.order} | {self.passed_quantity} ta o‘tgan"
+
+    @property
+    def passed_percentage(self):
+        """Necha foiz mahsulot sifatdan o‘tganini hisoblaydi."""
+        if self.total_checked > 0:
+            return round((self.passed_quantity / self.total_checked) * 100, 2)
+        return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

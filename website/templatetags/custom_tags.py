@@ -8,3 +8,4 @@ register = template.Library()
 def get_item(dictionary, key):
     """Returns the value for the given key in the dictionary."""
     return dictionary.get(key)
+

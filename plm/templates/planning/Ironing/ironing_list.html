@@ -2,13 +2,13 @@
 
 {% extends "base1.html" %}
 {% block content %}
-<h3>Tasdiqlangan Buyurtmalar uchun bosilgan Pechatlar ro‘yxati</h3><br>
+<h3>Tasdiqlangan Buyurtmalar uchun Dazmol qilingan modellar ro‘yxati</h3><br>
 
-{% for order, jami_pechat in orders_with_totals %}
+{% for order, jami_dazmol in orders_with_totals %}
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
             <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></strong>
-            <a href="{% url 'plm:print_add_to_order' order.id %}" class="btn btn-sm btn-success">+ Ish qo‘shish</a>
+            <a href="{% url 'plm:ironing_add_to_order' order.id %}" class="btn btn-sm btn-success">+ Ish qo‘shish</a>
         </div>
         <div class="card-body p-0">
             <table class="table mb-0">
@@ -17,38 +17,38 @@
                         <th>#</th>
                         <th>Soni</th>
                         <th>Sana <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Pechat bosilgan sana"></i></th>
+                                   title="Dazmol qilingan sana"></i></th>
                         <th>Yaratildi <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
                                    title="Ma'lumot kiritilgan sana"></i></th>
                         <th class=""></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for print in order.prints.all %}
+                    {% for item in order.ironing.all %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td>{{ print.quantity }}</td>
-                        <td><span class="badge bg-primary">{{ print.daily_work_date|date:"d.m.Y" }}</span></td>
-                        <td>{{ print.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ item.quantity }}</td>
+                      <td><span class="badge bg-primary">{{ item.daily_work_date|date:"d.m.Y" }}</span></td>
+                        <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
                         <td class="text-end">
-                            <a href="{% url 'plm:print_update' print.pk %}" class="btn btn-sm btn-primary">
+                            <a href="{% url 'plm:ironing_update' item.pk %}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-pen-fill"></i>
                             </a>
-                            <a href="{% url 'plm:print_delete' print.pk %}" class="btn btn-sm btn-danger">
+                            <a href="{% url 'plm:ironing_delete' item.pk %}" class="btn btn-sm btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">Hozircha Pechatlik ish qo‘shilmagan</td>
+                        <td colspan="5" class="text-center">Hozircha Dazmol qilingan ish qo‘shilmagan</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr class="fw-bold">
                         <td colspan="7" class="text-start">
-                            Jami pechat:    {{ jami_pechat }}
+                            Jami dazmol:    {{ jami_dazmol }}
                         </td>
                     </tr>
                 </tfoot>
@@ -56,6 +56,6 @@
         </div>
     </div>
 {% empty %}
-    <p>Hozircha buyurtmalar mavjud emas</p>
+    <p>Hozircha tastiqlangan buyurtmalar mavjud emas</p>
 {% endfor %}
 {% endblock %}
