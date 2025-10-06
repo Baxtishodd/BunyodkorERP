@@ -370,6 +370,118 @@ class Inspection(models.Model):
         return 0
 
 
+class Packing(models.Model):
+    PACKING_TYPE_CHOICES = [
+        ("karopka", "Karopka"),
+        ("paket", "Paket"),
+        ("xalta", "Xalta"),
+    ]
+
+    order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="packings")
+    packing_type = models.CharField(max_length=20, choices=PACKING_TYPE_CHOICES, default="karopka", verbose_name="Qadoq turi")
+    product_quantity = models.PositiveIntegerField(verbose_name="Qadoqlangan mahsulot soni")
+    box_quantity = models.PositiveIntegerField(verbose_name="Yopilgan karopkalar soni")
+    packed_date = models.DateField(verbose_name="Qadoqlangan sana")
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="packings")
+
+    class Meta:
+        verbose_name = "Packing"
+        verbose_name_plural = "Packings"
+        ordering = ["-packed_date"]
+
+    def __str__(self):
+        return f"{self.order} — {self.packing_type} ({self.product_quantity} dona)"
+
+# class Warehouse(models.Model):
+#     name = models.CharField(max_length=150, verbose_name="Ombor nomi")
+#     location = models.CharField(max_length=255, blank=True, null=True, verbose_name="Manzil")
+#     manager = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         blank=True,
+#         verbose_name="Mas’ul shaxs"
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#
+#     class Meta:
+#         verbose_name = "Ombor"
+#         verbose_name_plural = "Omborlar"
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# class WarehouseItem(models.Model):
+#     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="items")
+#     name = models.CharField(max_length=200, verbose_name="Mahsulot nomi")
+#     category = models.CharField(max_length=100, blank=True, null=True, verbose_name="Kategoriya (Tayyor kiyim, mato, ip, aksessuar...)")
+#     quantity = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdor")
+#     unit = models.CharField(
+#         max_length=20,
+#         choices=[
+#             ('dona', 'Dona'),
+#             ('kg', 'Kg'),
+#             ('metr', 'Metr'),
+#             ('pachka', 'Pachka'),
+#             ('quti', 'Quti'),
+#         ],
+#         default='dona',
+#         verbose_name="O‘lchov birligi"
+#     )
+#     last_updated = models.DateTimeField(auto_now=True)
+#
+#     def __str__(self):
+#         return f"{self.name} ({self.quantity} {self.unit})"
+#
+#
+# class WarehouseTransaction(models.Model):
+#     TRANSACTION_TYPE = [
+#         ('IN', 'Kirim'),
+#         ('OUT', 'Chiqim'),
+#     ]
+#
+#     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
+#     item = models.ForeignKey(WarehouseItem, on_delete=models.CASCADE)
+#     transaction_type = models.CharField(max_length=3, choices=TRANSACTION_TYPE)
+#     quantity = models.DecimalField(max_digits=12, decimal_places=2)
+#     date = models.DateTimeField(auto_now_add=True)
+#     note = models.TextField(blank=True, null=True)
+#
+#     def __str__(self):
+#         return f"{self.get_transaction_type_display()} - {self.item.name} ({self.quantity} {self.item.unit})"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

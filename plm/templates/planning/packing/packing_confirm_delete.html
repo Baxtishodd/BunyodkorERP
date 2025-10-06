@@ -1,0 +1,10 @@
+{% extends "base1.html" %}
+{% block content %}
+<h4>“{{ packing.order }}” buyurtmasidagi qadoqlash ma’lumotini o‘chirmoqchimisiz?</h4>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ha, o‘chir</button>
+    <a href="{% url 'plm:packing_list' %}" class="btn btn-secondary">Bekor qilish</a>
+</form>
+{% endblock %}

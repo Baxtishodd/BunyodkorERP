@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection)
+                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection,
+                     Packing)
 from django.utils.html import format_html
 
 
@@ -200,6 +201,34 @@ class InspectionAdmin(admin.ModelAdmin):
     @admin.display(description="O‘tgan %")
     def passed_percentage_display(self, obj):
         return f"{obj.passed_percentage} %"
+
+
+@admin.register(Packing)
+class PackingAdmin(admin.ModelAdmin):
+    list_display = ("order", "packing_type", "product_quantity", "box_quantity", "packed_date", "created_by")
+    list_filter = ("packing_type", "packed_date")
+    search_fields = ("order__client", "order__artikul")
+    ordering = ("-packed_date",)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

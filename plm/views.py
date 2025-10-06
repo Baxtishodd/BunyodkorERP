@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm, PackingForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching, Ironing, Inspection)
+                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -778,7 +778,6 @@ def inspection_list(request):
         },
     )
 
-
 @login_required
 def inspection_add_to_order(request, order_id):
     """Orderga yangi inspection qo‘shish"""
@@ -836,6 +835,90 @@ def inspection_delete(request, pk):
 
     return render(request, "planning/inspection/inspection_confirm_delete.html", {"inspection": inspection})
 
+# Packing VIEW
+@login_required
+def packing_list(request):
+    """Barcha packinglar ro‘yxati va umumiy statistikasi"""
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related("packings")
+
+    orders_with_totals = []
+    total_products_sum = 0
+    total_boxes_sum = 0
+
+    for order in confirmed_orders:
+        order_total_products = sum(p.product_quantity for p in order.packings.all())
+        order_total_boxes = sum(p.box_quantity for p in order.packings.all())
+
+        total_products_sum += order_total_products
+        total_boxes_sum += order_total_boxes
+
+        orders_with_totals.append({
+            "order": order,
+            "product_quantity": order_total_products,
+            "box_quantity": order_total_boxes,
+        })
+
+    return render(
+        request,
+        "planning/packing/packing_list.html",
+        {
+            "orders_with_totals": orders_with_totals,
+            "total_products_sum": total_products_sum,
+            "total_boxes_sum": total_boxes_sum,
+        },
+    )
+
+
+@login_required
+def packing_add_to_order(request, order_id):
+    """Buyurtmaga yangi qadoqlash ma’lumotini qo‘shish"""
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        form = PackingForm(request.POST)
+        if form.is_valid():
+            packing = form.save(commit=False)
+            packing.order = order
+            packing.created_by = request.user
+            packing.save()
+            messages.success(request, "Qadoqlash ma’lumoti muvaffaqiyatli qo‘shildi!")
+            return redirect("plm:packing_list")
+    else:
+        form = PackingForm()
+
+    return render(request, "planning/packing/packing_form.html", {"form": form, "order": order})
+
+
+@login_required
+def packing_update(request, pk):
+    """Qadoqlash ma’lumotini tahrirlash"""
+    packing = get_object_or_404(Packing, pk=pk)
+    order = packing.order
+
+    if request.method == "POST":
+        form = PackingForm(request.POST, instance=packing)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Qadoqlash ma’lumoti yangilandi!")
+            return redirect("plm:packing_list")
+    else:
+        form = PackingForm(instance=packing)
+
+    return render(request, "planning/packing/packing_form.html", {"form": form, "order": order})
+
+
+@login_required
+def packing_delete(request, pk):
+    """Qadoqlash ma’lumotini o‘chirish"""
+    packing = get_object_or_404(Packing, pk=pk)
+    if request.method == "POST":
+        packing.delete()
+        messages.success(request, "Qadoqlash ma’lumoti o‘chirildi!")
+        return redirect("plm:packing_list")
+
+    return render(request, "planning/packing/packing_confirm_delete.html", {"packing": packing})
 
 
 

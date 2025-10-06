@@ -68,6 +68,11 @@ urlpatterns = [
     path("order/<int:order_id>/inspection/add/", views.inspection_add_to_order, name="inspection_add_to_order"),
     path("inspection/<int:pk>/delete/", views.inspection_delete, name="inspection_delete"),
 
+    path("packing/", views.packing_list, name="packing_list"),
+    path("packing/add/<int:order_id>/", views.packing_add_to_order, name="packing_add_to_order"),
+    path("packing/update/<int:pk>/", views.packing_update, name="packing_update"),
+    path("packing/delete/<int:pk>/", views.packing_delete, name="packing_delete"),
+
 
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),

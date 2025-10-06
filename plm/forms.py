@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing, Inspection)
+                     Stitching, Ironing, Inspection, Packing)
 
 
 
@@ -28,7 +28,6 @@ class ProductModelForm(forms.ModelForm):
             "model_picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
-
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -39,7 +38,6 @@ class EmployeeForm(forms.ModelForm):
             "line": forms.Select(choices=Employee.line,
                          attrs={'class': 'form-select'})
         }
-
 
 class OrderForm(forms.ModelForm):
     deadline = forms.DateTimeField(
@@ -65,7 +63,6 @@ class OrderSizeForm(forms.ModelForm):
             'size': forms.Select(attrs={'class': 'form-control'}),
         }
 
-
 class WorkTypeForm(forms.ModelForm):
     class Meta:
         model = WorkType
@@ -74,7 +71,6 @@ class WorkTypeForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-
 
 class FabricArrivalForm(forms.ModelForm):
     class Meta:
@@ -89,8 +85,6 @@ class FabricArrivalForm(forms.ModelForm):
             'factory_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fabrika nomi'}),
         }
 
-
-
 class AccessoryForm(forms.ModelForm):
     class Meta:
         model = Accessory
@@ -101,7 +95,6 @@ class AccessoryForm(forms.ModelForm):
             'unit': forms.Select(attrs={'class': 'form-select'}),
         }
 
-
 class CuttingForm(forms.ModelForm):
     class Meta:
         model = Cutting
@@ -110,7 +103,6 @@ class CuttingForm(forms.ModelForm):
             'pastal_soni': forms.NumberInput(attrs={'class': 'form-control'}),
             'pastal_olchami': forms.Select(attrs={'class': 'form-select'}),
         }
-
 
 class PrintForm(forms.ModelForm):
     class Meta:
@@ -121,7 +113,6 @@ class PrintForm(forms.ModelForm):
             'daily_work_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
 
         }
-
 
 class StitchingForm(forms.ModelForm):
     class Meta:
@@ -149,7 +140,6 @@ class StitchingForm(forms.ModelForm):
 
         # # Sana kiritilayotganini ko‘rsatamiz
         # self.fields["date"].widget = forms.DateInput(attrs={"type": "date"})
-
 
 class IroningForm(forms.ModelForm):
     class Meta:
@@ -186,6 +176,22 @@ class InspectionForm(forms.ModelForm):
             "inspected_date": "Tekshiruv sanasi",
         }
 
+class PackingForm(forms.ModelForm):
+    class Meta:
+        model = Packing
+        fields = ["packing_type", "product_quantity", "box_quantity", "packed_date"]
+        widgets = {
+            "packing_type": forms.Select(attrs={"class": "form-select"}),
+            "product_quantity": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Mahsulot soni"}),
+            "box_quantity": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Karopkalar soni"}),
+            "packed_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+        }
+        labels = {
+            "packing_type": "Qadoq turi",
+            "product_quantity": "Qadoqlangan mahsulot soni",
+            "box_quantity": "Yopilgan karopkalar soni",
+            "packed_date": "Qadoqlangan sana",
+        }
 
 
 
