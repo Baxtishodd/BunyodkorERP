@@ -347,7 +347,7 @@ class Inspection(models.Model):
     failed_quantity = models.PositiveIntegerField(default=0, help_text="Sifatdan o‘tmagan mahsulotlar soni")
 
     defect_notes = models.TextField(blank=True, help_text="Nuqson haqida qisqacha izoh (agar bo‘lsa)")
-    inspected_date = models.DateField(auto_now_add=True)
+    inspected_date = models.DateField(verbose_name="Kunlik Sifat nazorat ishi sanasi")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

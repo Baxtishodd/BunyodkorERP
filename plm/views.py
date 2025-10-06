@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching, Ironing)
+                     Cutting, OrderSize, Stitching, Ironing, Inspection)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -715,7 +715,6 @@ def ironing_add_to_order(request, order_id):
         form = IroningForm()
     return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
 
-
 @login_required
 def ironing_update(request, pk):
     ironing_obj = get_object_or_404(Ironing, pk=pk)
@@ -730,7 +729,6 @@ def ironing_update(request, pk):
         form = IroningForm(instance=ironing_obj)
     return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
 
-
 @login_required
 def ironing_delete(request, pk):
     ironing = get_object_or_404(Ironing, pk=pk)
@@ -740,7 +738,103 @@ def ironing_delete(request, pk):
     return render(request, 'planning/ironing/ironing_confirm_delete.html', {'ironing': ironing})
 
 
+# Inspection VIEW
+@login_required
+def inspection_list(request):
+    """Barcha inspectionlar ro‘yxati va umumiy statistikasi"""
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    ).prefetch_related('inspections')
 
+    orders_with_totals = []
+    total_checked_sum = 0
+    passed_sum = 0
+    failed_sum = 0
+
+    for order in confirmed_orders:
+        order_total_checked = sum(i.total_checked for i in order.inspections.all())
+        order_passed = sum(i.passed_quantity for i in order.inspections.all())
+        order_failed = sum(i.failed_quantity for i in order.inspections.all())
+
+        total_checked_sum += order_total_checked
+        passed_sum += order_passed
+        failed_sum += order_failed
+
+        orders_with_totals.append({
+            "order": order,
+            "total_checked": order_total_checked,
+            "passed": order_passed,
+            "failed": order_failed,
+        })
+
+    return render(
+        request,
+        "planning/inspection/inspection_list.html",
+        {
+            "orders_with_totals": orders_with_totals,
+            "total_checked_sum": total_checked_sum,
+            "passed_sum": passed_sum,
+            "failed_sum": failed_sum,
+        },
+    )
+
+
+@login_required
+def inspection_add_to_order(request, order_id):
+    """Orderga yangi inspection qo‘shish"""
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        form = InspectionForm(request.POST)
+        if form.is_valid():
+            inspection = form.save(commit=False)
+            inspection.order = order
+            inspection.created_by = request.user
+            inspection.save()
+            messages.success(request, "Sifat nazorati muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:inspection_list")
+            # return redirect("plm:order_detail", pk=order.id)
+    else:
+        form = InspectionForm()
+
+    return render(request, "planning/inspection/inspection_form.html", {"form": form, "order": order})
+
+@login_required
+def inspection_update(request, pk):
+    """Inspection ma'lumotlarini tahrirlash"""
+    inspection = get_object_or_404(Inspection, pk=pk)
+    order = inspection.order  # Bog‘langan buyurtma
+
+    if request.method == "POST":
+        form = InspectionForm(request.POST, instance=inspection)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sifat nazorati ma'lumotlari yangilandi.")
+            return redirect("plm:inspection_list")  # yoki order_detail sahifasiga yo‘naltirish mumkin
+    else:
+        form = InspectionForm(instance=inspection)
+
+    return render(
+        request,
+        "planning/inspection/inspection_form.html",
+        {
+            "form": form,
+            "order": order,
+        },
+    )
+
+@login_required
+def inspection_delete(request, pk):
+    """Inspectionni o‘chirish"""
+    inspection = get_object_or_404(Inspection, pk=pk)
+    order_id = inspection.order.id
+
+    if request.method == "POST":
+        inspection.delete()
+        messages.success(request, "Sifat nazorati yozuvi o‘chirildi 🗑️")
+        return redirect("plm:order_detail", pk=order_id)
+
+    return render(request, "planning/inspection/inspection_confirm_delete.html", {"inspection": inspection})
 
 
 

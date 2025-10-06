@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
-                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing)
+                     FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection)
 from django.utils.html import format_html
 
 
@@ -162,7 +162,44 @@ class IroningAdmin(admin.ModelAdmin):
     search_fields = ('order__order_name', 'order__account_name')
 
 
+@admin.register(Inspection)
+class InspectionAdmin(admin.ModelAdmin):
+    list_display = (
+        "order",
+        "total_checked",
+        "passed_quantity",
+        "failed_quantity",
+        "passed_percentage_display",
+        "inspected_date",
+        "created_by",
+    )
+    list_filter = ("inspected_date", "created_by")
+    search_fields = ("order__id", "order__name", "defect_notes")
+    readonly_fields = ("created_at", "updated_at", "passed_percentage_display")
+    date_hierarchy = "inspected_date"
+    ordering = ("-inspected_date",)
 
+    fieldsets = (
+        ("Buyurtma ma’lumoti", {
+            "fields": ("order", "created_by")
+        }),
+        ("Sifat nazorati", {
+            "fields": (
+                "total_checked",
+                "passed_quantity",
+                "failed_quantity",
+                "defect_notes",
+                "passed_percentage_display",
+            )
+        }),
+        ("Sana ma’lumotlari", {
+            "fields": ("inspected_date", "created_at", "updated_at")
+        }),
+    )
+
+    @admin.display(description="O‘tgan %")
+    def passed_percentage_display(self, obj):
+        return f"{obj.passed_percentage} %"
 
 
 

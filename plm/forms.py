@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing)
+                     Stitching, Ironing, Inspection)
 
 
 
@@ -161,6 +161,30 @@ class IroningForm(forms.ModelForm):
 
         }
 
+class InspectionForm(forms.ModelForm):
+    class Meta:
+        model = Inspection
+        fields = [
+            "total_checked",
+            "passed_quantity",
+            "failed_quantity",
+            "inspected_date",
+            "defect_notes",
+        ]
+        widgets = {
+            'total_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Umumiy tekshirildi'}),
+            'passed_quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Sifatdan o`tdi'}),
+            'failed_quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Sifatdan o`tmadi'}),
+            "inspected_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "defect_notes": forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Nuqson haqida qisqacha izoh..."}),
+        }
+        labels = {
+            "total_checked": "Umumiy tekshirilgan soni",
+            "passed_quantity": "Sifatdan o‘tgan soni",
+            "failed_quantity": "Sifatdan o‘tmagan soni",
+            "defect_notes": "Nuqson haqida izoh",
+            "inspected_date": "Tekshiruv sanasi",
+        }
 
 
 

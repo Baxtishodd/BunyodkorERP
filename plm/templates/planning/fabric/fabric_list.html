@@ -33,7 +33,7 @@
                         <td>{{ fabric.fabric_name }}</td>
                         <td>{{ fabric.measure_value }} {{ fabric.measure_unit }}</td>
                         <td>{{ fabric.gramaj }}</td>
-                        <td>{{ fabric.arrival_date }}</td>
+                        <td>{{ fabric.arrival_date|date:"d.m.Y H:i" }}</td>
                         <td>{{ fabric.factory_name }}</td>
                         <td>
                             {% if fabric.is_confirmed %}

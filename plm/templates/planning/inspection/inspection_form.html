@@ -1,0 +1,29 @@
+{% extends "base1.html" %}
+{% block content %}
+<h3>{{ order }} buyurtmasi uchun sifat nazorati qo‘shish</h3><br>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            {{ form.total_checked.label_tag }} {{ form.total_checked }}
+        </div>
+        <div class="mb-3 col-md-3">
+            {{ form.passed_quantity.label_tag }} {{ form.passed_quantity }}
+        </div>
+        <div class="mb-3 col-md-3">
+            {{ form.failed_quantity.label_tag }} {{ form.failed_quantity }}
+        </div>
+        <div class="mb-3 col-md-3">
+            {{ form.inspected_date.label_tag }} {{ form.inspected_date }}
+        </div>
+    </div>
+
+    <div class="mb-3 col-md-3">
+        {{ form.defect_notes.label_tag }} {{ form.defect_notes }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Saqlash</button>
+    <a href="{% url 'plm:inspection_list' %}" class="btn btn-secondary">Orqaga</a>
+</form>
+{% endblock %}

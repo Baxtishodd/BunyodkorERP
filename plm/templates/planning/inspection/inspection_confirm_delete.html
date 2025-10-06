@@ -1,0 +1,11 @@
+{% extends "base1.html" %}
+{% block content %}
+
+<h5>Rostdan ham "{{ inspection }}" yozuvini o‘chirmoqchimisiz?</h5>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Ha, o‘chir</button>
+  <a href="{% url 'plm:inspection_list' %}" class="btn btn-secondary">Yo‘q</a>
+</form>
+
+{% endblock %}
