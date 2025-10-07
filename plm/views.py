@@ -922,6 +922,79 @@ def packing_delete(request, pk):
 
 
 
+@login_required
+def plan_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+
+    # Kesim (Cutting) bo‘yicha jami pastal
+    cuttings = Cutting.objects.filter(order=order)
+    jami_pastal = cuttings.aggregate(total=Sum("pastal_soni"))["total"] or 0
+
+    prints = Printing.objects.filter(order=order)
+    jami_pechat = sum(c.quantity for c in order.prints.all())
+
+    # ✅ Tikim (Stitching) — stitching_list logikasi asosida
+    order_size_totals = defaultdict(int)
+    total_quantity = 0
+
+    for ordersize in order.ordersize.all():
+        stitched_sum = ordersize.stitchings.aggregate(total=Sum("quantity"))["total"] or 0
+        order_size_totals[ordersize.size] += stitched_sum
+        total_quantity += stitched_sum
+
+    ironing = Ironing.objects.filter(order=order)
+    jami_dazmol = sum(c.quantity for c in order.ironing.all())
+
+    # ✅ Sifat nazorati (Inspection) umumiy statistika
+    inspections = Inspection.objects.filter(order=order)
+    total_checked = inspections.aggregate(total=Sum("total_checked"))["total"] or 0
+    total_passed = inspections.aggregate(total=Sum("passed_quantity"))["total"] or 0
+    total_failed = inspections.aggregate(total=Sum("failed_quantity"))["total"] or 0
+
+    # Qadoqlash
+    packings = Packing.objects.filter(order=order)
+    total_packed_products = packings.aggregate(total=Sum("product_quantity"))["total"] or 0
+    total_boxes = packings.aggregate(total=Sum("box_quantity"))["total"] or 0
+
+
+
+    context = {
+        "order": order,
+        "fabrics": FabricArrival.objects.filter(order=order),
+        "accessories": Accessory.objects.filter(order=order),
+
+        "cuttings": cuttings,
+        "jami_pastal": jami_pastal,
+
+        "prints": prints,
+        "jami_pechat": jami_pechat,
+
+        "stitchings": Stitching.objects.filter(ordersize__order=order),
+        "order_size_totals": dict(order_size_totals),
+        "order_total_quantity": total_quantity,
+
+        # "classifications": Classification.objects.filter(order=order),
+        "ironings": ironing,
+        "jami_dazmol": jami_dazmol,
+
+        "inspections": inspections,
+        "total_checked": total_checked,
+        "total_passed": total_passed,
+        "total_failed": total_failed,
+
+        "packings": packings,
+        "total_packed_products": total_packed_products,
+        "total_boxes": total_boxes,
+
+        # "shipments": Shipment.objects.filter(order=order),
+    }
+    return render(request, "planning/order_detailed.html", context)
+
+
+def test(request):
+    return render(request, "planning/order_detailed.html")
+
 
 
 

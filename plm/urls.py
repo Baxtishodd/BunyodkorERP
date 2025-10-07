@@ -20,6 +20,9 @@ urlpatterns = [
     path('orders/<int:pk>/edit/', views.order_update, name='order_update'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
 
+    # Order Plan
+    path('plan/orders/<int:order_id>/', views.plan_order_detail, name='plan_order_detail'),
+
     path("ordersize/", views.ordersize_list, name="ordersize_list"),
     path("ordersize/<int:pk>/update/", views.ordersize_update, name="ordersize_update"),
     path("ordersize/<int:pk>/delete/", views.ordersize_delete, name="ordersize_delete"),
@@ -77,6 +80,8 @@ urlpatterns = [
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),
     path('employees/add/', views.employee_create, name='employee_add'),
+
+    path('test', views.test, name='test'),
 
 
 

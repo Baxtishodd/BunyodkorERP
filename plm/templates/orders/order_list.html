@@ -53,6 +53,9 @@
                                 {% with assigned=order.modelassigned_set.first %}
                                     {% if assigned %}
                                         <span class="badge bg-success">{{ assigned.line.name }}</span>
+                                        <a href="{% url 'plm:plan_order_detail' order.id %}">
+                                            <span class="badge btn-light">Rejada</span>
+                                        </a>
                                     {% else %}
                                         <span class="badge bg-warning">Tasdiqlanmagan</span>
                                     {% endif %}
