@@ -51,7 +51,6 @@ urlpatterns = [
     path('cuttings/add/<int:order_id>/', views.cutting_add_to_order, name='cutting_add_to_order'),
 
     path('prints/', views.print_list, name='print_list'),
-    # path('prints/create/', views.print_create, name='print_create'),
     path('prints/<int:pk>/edit/', views.print_update, name='print_update'),
     path('prints/<int:pk>/delete/', views.print_delete, name='print_delete'),
     path('prints/add/<int:order_id>/', views.print_add_to_order, name='print_add_to_order'),
@@ -75,6 +74,11 @@ urlpatterns = [
     path("packing/add/<int:order_id>/", views.packing_add_to_order, name="packing_add_to_order"),
     path("packing/update/<int:pk>/", views.packing_update, name="packing_update"),
     path("packing/delete/<int:pk>/", views.packing_delete, name="packing_delete"),
+
+    path("shipment/list/", views.shipment_list, name="shipment_list"),
+    path("shipment/add/<int:order_id>/", views.shipment_add_to_order, name="shipment_add_to_order"),
+    path("shipment/update/<int:pk>/", views.shipment_update, name="shipment_update"),
+    path("shipment/delete/<int:pk>/", views.shipment_delete, name="shipment_delete"),
 
 
     # Xodimlar

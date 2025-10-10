@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing, Inspection, Packing)
+                     Stitching, Ironing, Inspection, Packing, Shipment)
 
 
 
@@ -194,7 +194,33 @@ class PackingForm(forms.ModelForm):
         }
 
 
-
+class ShipmentForm(forms.ModelForm):
+    class Meta:
+        model = Shipment
+        fields = [
+            "shipment_date",
+            "destination",
+            "truck_number",
+            "driver_name",
+            "package_type",
+            "product_quantity",
+            "box_quantity",
+            "note",
+            "status",
+            "attachment",
+        ]
+        widgets = {
+            "shipment_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "destination": forms.TextInput(attrs={"class": "form-control"}),
+            "truck_number": forms.TextInput(attrs={"class": "form-control"}),
+            "driver_name": forms.TextInput(attrs={"class": "form-control"}),
+            "package_type": forms.Select(attrs={"class": "form-select"}),
+            "product_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "box_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "note": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "status": forms.Select(attrs={"class": "form-select"}),
+            "attachment": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
 
 
 

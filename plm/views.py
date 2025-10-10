@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm, PackingForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm, PackingForm,
+                    ShipmentForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing)
+                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing, Shipment)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -991,6 +992,106 @@ def plan_order_detail(request, order_id):
     }
     return render(request, "planning/order_detailed.html", context)
 
+
+@login_required
+def shipment_list(request):
+    """
+    Tasdiqlangan buyurtmalar uchun yuklamalar ro‘yxati.
+    Har bir buyurtma bo‘yicha jami yuklangan mahsulotlar va karopkalar sonini hisoblaydi.
+    """
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("shipments")
+        .order_by("-created_at")
+    )
+
+    orders_with_totals = []
+    total_products_sum = 0
+    total_boxes_sum = 0
+
+    for order in confirmed_orders:
+        shipments = order.shipments.all()
+        product_quantity = shipments.aggregate(total=Sum("product_quantity"))["total"] or 0
+        box_quantity = shipments.aggregate(total=Sum("box_quantity"))["total"] or 0
+
+        total_products_sum += product_quantity
+        total_boxes_sum += box_quantity
+
+        orders_with_totals.append({
+            "order": order,
+            "product_quantity": product_quantity,
+            "box_quantity": box_quantity,
+        })
+
+    context = {
+        "orders_with_totals": orders_with_totals,
+        "total_products_sum": total_products_sum,
+        "total_boxes_sum": total_boxes_sum,
+    }
+    return render(request, "planning/shipment/shipment_list.html", context)
+
+
+@login_required
+def shipment_add_to_order(request, order_id):
+    """Ma’lum bir buyurtmaga yuk qo‘shish"""
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        form = ShipmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            shipment = form.save(commit=False)
+            shipment.order = order
+            shipment.created_by = request.user
+            shipment.save()
+            messages.success(request, "Yuk muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:shipment_list")
+    else:
+        form = ShipmentForm(initial={"order": order})
+
+    return render(request, "planning/shipment/shipment_form.html", {"form": form, "order": order})
+
+
+
+@login_required
+def shipment_add_to_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == "POST":
+        form = ShipmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            shipment = form.save(commit=False)
+            shipment.order = order
+            shipment.created_by = request.user
+            shipment.save()
+            messages.success(request, "Yuk muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:order_detail", order_id)
+    else:
+        form = ShipmentForm(initial={"order": order})
+    return render(request, "planning/shipment/shipment_form.html", {"form": form, "order": order})
+
+
+@login_required
+def shipment_update(request, pk):
+    shipment = get_object_or_404(Shipment, pk=pk)
+    if request.method == "POST":
+        form = ShipmentForm(request.POST, request.FILES, instance=shipment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Yuk ma’lumoti yangilandi ✅")
+            return redirect("plm:shipment_list")
+    else:
+        form = ShipmentForm(instance=shipment)
+    return render(request, "planning/shipment/shipment_form.html", {"form": form, "shipment": shipment})
+
+
+@login_required
+def shipment_delete(request, pk):
+    shipment = get_object_or_404(Shipment, pk=pk)
+    order_id = shipment.order.id
+    shipment.delete()
+    messages.warning(request, "Yuk ma’lumoti o‘chirildi ❌")
+    return redirect("plm:order_detail", order_id)
 
 def test(request):
     return render(request, "planning/order_detailed.html")

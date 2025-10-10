@@ -393,6 +393,81 @@ class Packing(models.Model):
     def __str__(self):
         return f"{self.order} — {self.packing_type} ({self.product_quantity} dona)"
 
+
+class Shipment(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Kutilmoqda"),
+        ("ready", "Yuklashga tayyor"),
+        ("shipped", "Yuklab jo‘natildi"),
+        ("delivered", "Yetkazildi"),
+    ]
+
+    PACKAGE_TYPES = [
+        ("box", "Karopka"),
+        ("bag", "Xalta"),
+        ("packet", "Paket"),
+        ("pallet", "Pallet"),
+        ("other", "Boshqa"),
+    ]
+
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name="shipments",
+        verbose_name="Buyurtma"
+    )
+    shipment_date = models.DateField(verbose_name="Yuk chiqarish sanasi")
+    destination = models.CharField(max_length=200, verbose_name="Manzil")
+    truck_number = models.CharField(max_length=50, blank=True, null=True, verbose_name="Mashina raqami")
+    driver_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Haydovchi ismi")
+
+    # Yangi maydonlar
+    package_type = models.CharField(
+        max_length=20,
+        choices=PACKAGE_TYPES,
+        default="box",
+        verbose_name="Qadoq turi"
+    )
+    product_quantity = models.PositiveIntegerField(default=0, verbose_name="Yuk miqdori (dona)")
+    box_quantity = models.PositiveIntegerField(default=0, verbose_name="Karopkalar soni")
+
+    note = models.TextField(blank=True, null=True, verbose_name="Izoh")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending", verbose_name="Holati")
+
+    # Fayl biriktirish
+    attachment = models.FileField(
+        upload_to="shipments/files/",
+        blank=True,
+        null=True,
+        verbose_name="Biriktirilgan fayl (ixtiyoriy)"
+    )
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Yaratgan foydalanuvchi"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-shipment_date"]
+        verbose_name = "Yuklama"
+        verbose_name_plural = "Yuklamalar"
+
+    def __str__(self):
+        return f"{self.order} - {self.destination} ({self.product_quantity} dona)"
+
+    @property
+    def is_due_soon(self):
+        from datetime import date, timedelta
+        return self.shipment_date <= date.today() + timedelta(days=2)
+
+
+
+
 # class Warehouse(models.Model):
 #     name = models.CharField(max_length=150, verbose_name="Ombor nomi")
 #     location = models.CharField(max_length=255, blank=True, null=True, verbose_name="Manzil")
