@@ -21,48 +21,67 @@
     <div class="card-body">
       <form method="post" enctype="multipart/form-data" class="row g-3">
         {% csrf_token %}
+
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Qadoq turi</label>
+          <label class="form-label fw-semibold">
+            Qadoq turi <span class="text-danger">*</span>
+          </label>
           {{ form.package_type }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Yuk sanasi</label>
+          <label class="form-label fw-semibold">
+            Yuk sanasi <span class="text-danger">*</span>
+          </label>
           {{ form.shipment_date }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Mahsulotlar soni</label>
+          <label class="form-label fw-semibold">
+            Mahsulotlar soni <span class="text-danger">*</span>
+          </label>
           {{ form.product_quantity }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Karopkalar soni</label>
+          <label class="form-label fw-semibold">
+            Karopkalar soni <span class="text-danger">*</span>
+          </label>
           {{ form.box_quantity }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Manzil (Mamlakat)</label>
+          <label class="form-label fw-semibold">
+            Manzil (Mamlakat) <span class="text-danger">*</span>
+          </label>
           {{ form.destination }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Haydovchi ismi</label>
+          <label class="form-label fw-semibold">
+            Haydovchi ismi
+          </label>
           {{ form.driver_name }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Mashina raqami</label>
+          <label class="form-label fw-semibold">
+            Mashina raqami
+          </label>
           {{ form.truck_number }}
         </div>
 
         <div class="col-md-6">
-          <label class="form-label fw-semibold">Holat</label>
+          <label class="form-label fw-semibold">
+            Holat <span class="text-danger">*</span>
+          </label>
           {{ form.status }}
         </div>
 
         <div class="col-md-12">
-          <label class="form-label fw-semibold">Qo‘shimcha fayl (nakladnoy, invoice va hokazo)</label>
+          <label class="form-label fw-semibold">
+            Qo‘shimcha fayl (nakladnoy, invoice va hokazo)
+          </label>
           {{ form.attachment }}
         </div>
 

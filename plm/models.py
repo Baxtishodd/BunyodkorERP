@@ -399,7 +399,6 @@ class Shipment(models.Model):
         ("pending", "Kutilmoqda"),
         ("ready", "Yuklashga tayyor"),
         ("shipped", "Yuklab jo‘natildi"),
-        ("delivered", "Yetkazildi"),
     ]
 
     PACKAGE_TYPES = [

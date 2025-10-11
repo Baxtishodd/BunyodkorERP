@@ -26,6 +26,7 @@
                         <th>Mahsulotlar soni</th>
                         <th>Karopkalar soni</th>
                         <th>Yuk manzili</th>
+                        <th>Mashina raqami</th>
                         <th>Haydovchi</th>
                         <th>Yuk sanasi</th>
                         <th>Fayl</th>
@@ -41,7 +42,19 @@
                         <td class="text-success fw-semibold">{{ shipment.product_quantity }}</td>
                         <td class="text-primary fw-semibold">{{ shipment.box_quantity }}</td>
                         <td>{{ shipment.destination }}</td>
-                        <td>{{ shipment.driver_name }}</td>
+                        <td>{% if shipment.truck_number  %}
+                                {{ shipment.truck_number }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if shipment.driver_name %}
+                                {{ shipment.driver_name }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         <td><span class="badge bg-primary">{{ shipment.shipment_date|date:"d.m.Y" }}</span></td>
                         <td>
                             {% if shipment.attachment %}
@@ -49,7 +62,7 @@
                                     <i class="bi bi-paperclip"></i>
                                 </a>
                             {% else %}
-                                <span class="text-muted">Yo‘q</span>
+                                <span class="text-muted">-</span>
                             {% endif %}
                         </td>
                         <td>
@@ -58,9 +71,7 @@
                             {% elif shipment.status == "ready" %}
                                 <span class="badge bg-info text-dark">Tayyor</span>
                             {% elif shipment.status == "shipped" %}
-                                <span class="badge bg-primary">Jo‘natildi</span>
-                            {% elif shipment.status == "delivered" %}
-                                <span class="badge bg-success">Yetkazildi</span>
+                                <span class="badge bg-success">Jo‘natildi</span>
                             {% endif %}
                         </td>
                         <td class="text-end">

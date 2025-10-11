@@ -958,6 +958,11 @@ def plan_order_detail(request, order_id):
     total_packed_products = packings.aggregate(total=Sum("product_quantity"))["total"] or 0
     total_boxes = packings.aggregate(total=Sum("box_quantity"))["total"] or 0
 
+    # Yuklama
+    shipment = Shipment.objects.filter(order=order)
+    total_shipment_products = shipment.aggregate(total=Sum("product_quantity"))["total"] or 0
+    total_shipment_box = shipment.aggregate(total=Sum("box_quantity"))["total"] or 0
+
 
 
     context = {
@@ -987,6 +992,10 @@ def plan_order_detail(request, order_id):
         "packings": packings,
         "total_packed_products": total_packed_products,
         "total_boxes": total_boxes,
+
+        "shipment": shipment,
+        "total_shipment_products": total_shipment_products,
+        "total_shipment_box": total_shipment_box,
 
         # "shipments": Shipment.objects.filter(order=order),
     }

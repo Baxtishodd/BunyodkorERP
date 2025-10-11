@@ -509,7 +509,104 @@
 
       <!-- Yuklama -->
       <div class="tab-pane fade" id="shipment" role="tabpanel">
-        <p class="text-muted">Yuklama ma’lumotlari hali kiritilmagan.</p>
+
+          <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Buyurtma:
+                    <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">
+                        {{ order }}
+                    </a>
+                </strong>
+                <a href="{% url 'plm:shipment_add_to_order' order.id %}" class="btn btn-sm btn-success">
+                    + Yuk qo‘shish
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Qadoq turi</th>
+                            <th>Mahsulotlar soni</th>
+                            <th>Karopkalar soni</th>
+                            <th>Yuk manzili</th>
+                            <th>Mashina raqami</th>
+                            <th>Haydovchi</th>
+                            <th>Yuk sanasi</th>
+                            <th>Fayl</th>
+                            <th>Holat</th>
+                            <th class="text-end">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shipment in order.shipments.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-info">{{ shipment.get_package_type_display }}</span></td>
+                            <td class="text-success fw-semibold">{{ shipment.product_quantity }}</td>
+                            <td class="text-primary fw-semibold">{{ shipment.box_quantity }}</td>
+                            <td>{{ shipment.destination }}</td>
+                            <td>{% if shipment.truck_number  %}
+                                    {{ shipment.truck_number }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shipment.driver_name %}
+                                    {{ shipment.driver_name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge bg-primary">{{ shipment.shipment_date|date:"d.m.Y" }}</span></td>
+                            <td>
+                                {% if shipment.attachment %}
+                                    <a href="{{ shipment.attachment.url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-paperclip"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if shipment.status == "pending" %}
+                                    <span class="badge bg-warning text-dark">Kutilmoqda</span>
+                                {% elif shipment.status == "ready" %}
+                                    <span class="badge bg-info text-dark">Tayyor</span>
+                                {% elif shipment.status == "shipped" %}
+                                    <span class="badge bg-success">Jo‘natildi</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'plm:shipment_update' shipment.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'plm:shipment_delete' shipment.pk %}" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-3">
+                                Hozircha yuklama ma’lumoti yo‘q
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td colspan="10" class="text-start ps-3">
+                                Jami yuklangan mahsulot: <span class="text-success">{{ total_shipment_products }}</span> |
+                                Jami karopkalar soni: <span class="text-primary">{{ total_shipment_box }}</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
       </div>
 
     </div>
