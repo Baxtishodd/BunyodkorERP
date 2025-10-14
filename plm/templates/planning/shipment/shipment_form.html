@@ -86,7 +86,7 @@
         </div>
 
         <div class="mt-4 d-flex justify-content-between">
-          <a href="{% if order %}{% url 'plm:plan_order_detail' order.id %}{% else %}{% url 'plm:shipment_list' %}{% endif %}"
+          <a href="{% url 'plm:plan_order_detail' order.id %}"
              class="btn btn-light">
             <i class="bi bi-arrow-left"></i> Orqaga
           </a>

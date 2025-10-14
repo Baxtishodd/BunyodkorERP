@@ -72,6 +72,13 @@
                                       Tasdiqlash
                                   </a>
                               {% endif %}
+
+                              <a href="{% url 'plm:fabric_update' fabric.pk %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pen-fill"></i>
+                              </a>
+                              <a href="{% url 'plm:fabric_delete' fabric.pk %}" class="btn btn-sm btn-danger">
+                                 <i class="bi bi-trash"></i>
+                              </a>
                           </td>
                       </tr>
                       {% empty %}

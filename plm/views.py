@@ -344,7 +344,7 @@ def fabric_add_to_order(request, order_id):
 
     if not is_confirmed:
         # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
-        return redirect('plm:fabric_list')
+        return redirect("plm:plan_order_detail", order_id=is_confirmed.order.pk)
 
     if request.method == "POST":
         form = FabricArrivalForm(request.POST)
@@ -353,23 +353,11 @@ def fabric_add_to_order(request, order_id):
             fabric.order = order
             fabric.author = request.user
             fabric.save()
-            return redirect('plm:fabric_list')
+            return redirect("plm:plan_order_detail", order_id=fabric.order.pk)
     else:
         form = FabricArrivalForm()
     return render(request, 'planning/fabric/fabric_form.html', {'form': form, 'order': order})
 
-
-# Yangi qo‘shish
-@login_required
-def fabric_create(request):
-    if request.method == 'POST':
-        form = FabricArrivalForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('plm:fabric_list')
-    else:
-        form = FabricArrivalForm()
-    return render(request, 'planning/fabric/fabric_form.html', {'form': form})
 
 # Tasdiqlash
 @login_required
@@ -377,8 +365,32 @@ def fabric_confirm(request, pk):
     fabric = get_object_or_404(FabricArrival, pk=pk)
     fabric.is_confirmed = True
     fabric.save()
-    return redirect('plm:fabric_list')
+    return redirect("plm:plan_order_detail", order_id=fabric.order.pk)
 
+
+@login_required
+def fabric_update(request, pk):
+    fabric = get_object_or_404(FabricArrival, pk=pk)
+    if request.method == 'POST':
+        form = FabricArrivalForm(request.POST, instance=fabric)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Mato ma'lumoti yangilandi ✅")
+            return redirect("plm:plan_order_detail", order_id=fabric.order.pk)
+    else:
+        form = FabricArrivalForm(instance=fabric)
+    return render(request, 'planning/fabric/fabric_form.html', {'form': form, 'fabric': fabric})
+
+
+@login_required
+def fabric_delete(request, pk):
+    fabric = get_object_or_404(FabricArrival, pk=pk)
+    if request.method == 'POST':
+        fabric.delete()
+        messages.success(request, "Mato ma'lumoti o‘chirildi ❌")
+        return redirect("plm:plan_order_detail", order_id=fabric.order.pk)
+
+    return render(request, 'planning/fabric/fabric_confirm_delete.html', {'fabric': fabric})
 
 
 # Aksessuarlar ro‘yxati — har bir buyurtmaga guruhlab chiqarish
@@ -408,22 +420,10 @@ def accessory_add_to_order(request, order_id):
             accessory = form.save(commit=False)
             accessory.order = order
             accessory.save()
-            return redirect('plm:accessory_list')
+            return redirect("plm:plan_order_detail", order_id=accessory.order.pk)
     else:
         form = AccessoryForm()
     return render(request, 'planning/accessory/accessory_form.html', {'form': form, 'order': order})
-
-# Aksessuar qo‘shish
-@login_required
-def accessory_create(request):
-    if request.method == 'POST':
-        form = AccessoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('plm:accessory_list')
-    else:
-        form = AccessoryForm()
-    return render(request, 'planning/accessory/accessory_form.html', {'form': form})
 
 
 @login_required
@@ -435,7 +435,7 @@ def accessory_update(request, pk):
         form = AccessoryForm(request.POST, instance=accessory)
         if form.is_valid():
             form.save()
-            return redirect('plm:accessory_list')
+            return redirect("plm:plan_order_detail", order_id=accessory.order.pk)
     else:
         form = AccessoryForm(instance=accessory)
     return render(request, 'planning/accessory/accessory_form.html', {'form': form, 'order':order})
@@ -445,7 +445,7 @@ def accessory_delete(request, pk):
     accessory = get_object_or_404(Accessory, pk=pk)
     if request.method == 'POST':
         accessory.delete()
-        return redirect('plm:accessory_list')
+        return redirect("plm:plan_order_detail", order_id=accessory.order.pk)
     return render(request, 'planning/accessory/accessory_confirm_delete.html', {'accessory': accessory})
 
 
@@ -475,10 +475,6 @@ def cutting_add_to_order(request, order_id):
     is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
     order = get_object_or_404(Order, pk=order_id)
 
-    if not is_confirmed:
-        # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
-        return redirect('plm:cutting_list')
-
     if request.method == "POST":
         form = CuttingForm(request.POST)
         if form.is_valid():
@@ -486,7 +482,7 @@ def cutting_add_to_order(request, order_id):
             cutting.order = order
             cutting.author = request.user
             cutting.save()
-            return redirect('plm:cutting_list')
+            return redirect("plm:plan_order_detail", order_id=cutting.order.pk)
     else:
         form = CuttingForm()
     return render(request, 'planning/cutting/cutting_form.html', {'form': form, 'order': order})
@@ -501,7 +497,7 @@ def cutting_update(request, pk):
         form = CuttingForm(request.POST, instance=cutting)
         if form.is_valid():
             form.save()
-            return redirect('plm:cutting_list')
+            return redirect("plm:plan_order_detail", order_id=cutting.order.pk)
     else:
         form = CuttingForm(instance=cutting)
     return render(request, 'planning/cutting/cutting_form.html', {'form': form, 'order':order})
@@ -511,7 +507,7 @@ def cutting_delete(request, pk):
     cutting = get_object_or_404(Cutting, pk=pk)
     if request.method == 'POST':
         cutting.delete()
-        return redirect('plm:cutting_list')
+        return redirect("plm:plan_order_detail", order_id=cutting.order.pk)
     return render(request, 'planning/cutting/cutting_confirm_delete.html', {'cutting': cutting})
 
 
@@ -553,7 +549,7 @@ def print_add_to_order(request, order_id):
             print.order = order
             print.created_by = request.user
             print.save()
-            return redirect('plm:print_list')
+            return redirect("plm:plan_order_detail", order_id=print.order.pk)
     else:
         form = PrintForm()
     return render(request, 'planning/print/print_form.html', {'form': form, 'order': order})
@@ -569,7 +565,7 @@ def print_update(request, pk):
         form = PrintForm(request.POST, instance=print_obj)
         if form.is_valid():
             form.save()
-            return redirect('plm:print_list')
+            return redirect("plm:plan_order_detail", order_id=print_obj.order.pk)
     else:
         form = PrintForm(instance=print_obj)
     return render(request, 'planning/print/print_form.html', {'form': form, 'order': order})
@@ -580,7 +576,7 @@ def print_delete(request, pk):
     print = get_object_or_404(Printing, pk=pk)
     if request.method == 'POST':
         print.delete()
-        return redirect('plm:print_list')
+        return redirect("plm:plan_order_detail", order_id=print.order.pk)
     return render(request, 'planning/print/print_confirm_delete.html', {'print': print})
 
 
@@ -634,7 +630,7 @@ def stitching_add(request, order_id):
             stitching = form.save(commit=False)
             # Patok yoki sexni avtomatik qo‘shish kerak bo‘lsa shu yerga qo‘shiladi
             stitching.save()
-            return redirect("plm:stitching_list")
+            return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
     else:
         form = StitchingForm(order=order)
 
@@ -654,7 +650,7 @@ def stitching_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Tikim ma'lumoti yangilandi ✅")
-            return redirect("plm:stitching_list")
+            return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
     else:
         form = StitchingForm(instance=stitching, order=order)
 
@@ -670,7 +666,8 @@ def stitching_delete(request, pk):
     if request.method == "POST":
         stitching.delete()
         messages.success(request, "Tikim ma'lumoti o‘chirildi ❌")
-        return redirect("plm:stitching_list")
+        return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
+
     return render(request, "planning/stitching/stitching_confirm_delete.html", {"stitching": stitching})
 
 
@@ -702,7 +699,7 @@ def ironing_add_to_order(request, order_id):
 
     if not is_confirmed:
         # agar bu buyurtma tasdiqlanmagan bo‘lsa, ro‘yxatga qaytarib yuboramiz
-        return redirect('plm:ironing_list')
+        return redirect("plm:plan_order_detail", order_id=is_confirmed.order.pk)
 
     if request.method == "POST":
         form = IroningForm(request.POST)
@@ -711,7 +708,7 @@ def ironing_add_to_order(request, order_id):
             ironing.order = order
             ironing.created_by = request.user
             ironing.save()
-            return redirect('plm:ironing_list')
+            return redirect("plm:plan_order_detail", order_id=ironing.order.pk)
     else:
         form = IroningForm()
     return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
@@ -725,7 +722,7 @@ def ironing_update(request, pk):
         form = IroningForm(request.POST, instance=ironing_obj)
         if form.is_valid():
             form.save()
-            return redirect('plm:ironing_list')
+            return redirect("plm:plan_order_detail", order_id=ironing_obj.order.pk)
     else:
         form = IroningForm(instance=ironing_obj)
     return render(request, 'planning/ironing/ironing_form.html', {'form': form, 'order': order})
@@ -735,7 +732,7 @@ def ironing_delete(request, pk):
     ironing = get_object_or_404(Ironing, pk=pk)
     if request.method == 'POST':
         ironing.delete()
-        return redirect('plm:ironing_list')
+        return redirect("plm:plan_order_detail", order_id=ironing.order.pk)
     return render(request, 'planning/ironing/ironing_confirm_delete.html', {'ironing': ironing})
 
 
@@ -792,8 +789,7 @@ def inspection_add_to_order(request, order_id):
             inspection.created_by = request.user
             inspection.save()
             messages.success(request, "Sifat nazorati muvaffaqiyatli qo‘shildi ✅")
-            return redirect("plm:inspection_list")
-            # return redirect("plm:order_detail", pk=order.id)
+            return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
     else:
         form = InspectionForm()
 
@@ -810,7 +806,7 @@ def inspection_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Sifat nazorati ma'lumotlari yangilandi.")
-            return redirect("plm:inspection_list")  # yoki order_detail sahifasiga yo‘naltirish mumkin
+            return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
     else:
         form = InspectionForm(instance=inspection)
 
@@ -832,7 +828,7 @@ def inspection_delete(request, pk):
     if request.method == "POST":
         inspection.delete()
         messages.success(request, "Sifat nazorati yozuvi o‘chirildi 🗑️")
-        return redirect("plm:order_detail", pk=order_id)
+        return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
 
     return render(request, "planning/inspection/inspection_confirm_delete.html", {"inspection": inspection})
 
@@ -885,7 +881,7 @@ def packing_add_to_order(request, order_id):
             packing.created_by = request.user
             packing.save()
             messages.success(request, "Qadoqlash ma’lumoti muvaffaqiyatli qo‘shildi!")
-            return redirect("plm:packing_list")
+            return redirect("plm:plan_order_detail", order_id=packing.order.pk)
     else:
         form = PackingForm()
 
@@ -903,7 +899,7 @@ def packing_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Qadoqlash ma’lumoti yangilandi!")
-            return redirect("plm:packing_list")
+            return redirect("plm:plan_order_detail", order_id=packing.order.pk)
     else:
         form = PackingForm(instance=packing)
 
@@ -917,9 +913,100 @@ def packing_delete(request, pk):
     if request.method == "POST":
         packing.delete()
         messages.success(request, "Qadoqlash ma’lumoti o‘chirildi!")
-        return redirect("plm:packing_list")
+        return redirect("plm:plan_order_detail", order_id=packing.order.pk)
 
     return render(request, "planning/packing/packing_confirm_delete.html", {"packing": packing})
+
+
+
+@login_required
+def shipment_list(request):
+    """
+    Tasdiqlangan buyurtmalar uchun yuklamalar ro‘yxati.
+    Har bir buyurtma bo‘yicha jami yuklangan mahsulotlar va karopkalar sonini hisoblaydi.
+    """
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("shipments")
+        .order_by("-created_at")
+    )
+
+    orders_with_totals = []
+    total_products_sum = 0
+    total_boxes_sum = 0
+
+    for order in confirmed_orders:
+        shipments = order.shipments.all()
+        product_quantity = shipments.aggregate(total=Sum("product_quantity"))["total"] or 0
+        box_quantity = shipments.aggregate(total=Sum("box_quantity"))["total"] or 0
+
+        total_products_sum += product_quantity
+        total_boxes_sum += box_quantity
+
+        orders_with_totals.append({
+            "order": order,
+            "product_quantity": product_quantity,
+            "box_quantity": box_quantity,
+        })
+
+    context = {
+        "orders_with_totals": orders_with_totals,
+        "total_products_sum": total_products_sum,
+        "total_boxes_sum": total_boxes_sum,
+    }
+    return render(request, "planning/shipment/shipment_list.html", context)
+
+
+
+@login_required
+def shipment_add_to_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == "POST":
+        form = ShipmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            shipment = form.save(commit=False)
+            shipment.order = order
+            shipment.created_by = request.user
+            shipment.save()
+            messages.success(request, "Yuk muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:plan_order_detail", order_id=shipment.order.pk)
+    else:
+        form = ShipmentForm(initial={"order": order})
+    return render(request, "planning/shipment/shipment_form.html", {"form": form, "order": order})
+
+
+@login_required
+def shipment_update(request, pk):
+    shipment = get_object_or_404(Shipment, pk=pk)
+    if request.method == "POST":
+        form = ShipmentForm(request.POST, request.FILES, instance=shipment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Yuklama ma’lumoti yangilandi ✅")
+            return redirect("plm:plan_order_detail", order_id=shipment.order.pk)
+    else:
+        form = ShipmentForm(instance=shipment)
+    return render(request, "planning/shipment/shipment_form.html", {"form": form, "shipment": shipment})
+
+
+@login_required
+def shipment_delete(request, pk):
+    shipment = get_object_or_404(Shipment, pk=pk)
+
+    if request.method == "POST":
+        order_id = shipment.order.id
+        shipment.delete()
+        messages.warning(request, "Yuk ma’lumoti o‘chirildi ❌")
+        return redirect("plm:plan_order_detail", order_id=shipment.order.pk)
+
+    return render(request, "planning/shipment/shipment_confirm_delete.html", {"shipment":shipment})
+
+
+def test(request):
+    return render(request, "planning/order_detailed.html")
+
 
 
 
@@ -1000,112 +1087,6 @@ def plan_order_detail(request, order_id):
         # "shipments": Shipment.objects.filter(order=order),
     }
     return render(request, "planning/order_detailed.html", context)
-
-
-@login_required
-def shipment_list(request):
-    """
-    Tasdiqlangan buyurtmalar uchun yuklamalar ro‘yxati.
-    Har bir buyurtma bo‘yicha jami yuklangan mahsulotlar va karopkalar sonini hisoblaydi.
-    """
-    confirmed_orders = (
-        Order.objects.filter(
-            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-        )
-        .prefetch_related("shipments")
-        .order_by("-created_at")
-    )
-
-    orders_with_totals = []
-    total_products_sum = 0
-    total_boxes_sum = 0
-
-    for order in confirmed_orders:
-        shipments = order.shipments.all()
-        product_quantity = shipments.aggregate(total=Sum("product_quantity"))["total"] or 0
-        box_quantity = shipments.aggregate(total=Sum("box_quantity"))["total"] or 0
-
-        total_products_sum += product_quantity
-        total_boxes_sum += box_quantity
-
-        orders_with_totals.append({
-            "order": order,
-            "product_quantity": product_quantity,
-            "box_quantity": box_quantity,
-        })
-
-    context = {
-        "orders_with_totals": orders_with_totals,
-        "total_products_sum": total_products_sum,
-        "total_boxes_sum": total_boxes_sum,
-    }
-    return render(request, "planning/shipment/shipment_list.html", context)
-
-
-@login_required
-def shipment_add_to_order(request, order_id):
-    """Ma’lum bir buyurtmaga yuk qo‘shish"""
-    order = get_object_or_404(Order, id=order_id)
-
-    if request.method == "POST":
-        form = ShipmentForm(request.POST, request.FILES)
-        if form.is_valid():
-            shipment = form.save(commit=False)
-            shipment.order = order
-            shipment.created_by = request.user
-            shipment.save()
-            messages.success(request, "Yuk muvaffaqiyatli qo‘shildi ✅")
-            return redirect("plm:shipment_list")
-    else:
-        form = ShipmentForm(initial={"order": order})
-
-    return render(request, "planning/shipment/shipment_form.html", {"form": form, "order": order})
-
-
-
-@login_required
-def shipment_add_to_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == "POST":
-        form = ShipmentForm(request.POST, request.FILES)
-        if form.is_valid():
-            shipment = form.save(commit=False)
-            shipment.order = order
-            shipment.created_by = request.user
-            shipment.save()
-            messages.success(request, "Yuk muvaffaqiyatli qo‘shildi ✅")
-            return redirect("plm:order_detail", order_id)
-    else:
-        form = ShipmentForm(initial={"order": order})
-    return render(request, "planning/shipment/shipment_form.html", {"form": form, "order": order})
-
-
-@login_required
-def shipment_update(request, pk):
-    shipment = get_object_or_404(Shipment, pk=pk)
-    if request.method == "POST":
-        form = ShipmentForm(request.POST, request.FILES, instance=shipment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Yuk ma’lumoti yangilandi ✅")
-            return redirect("plm:shipment_list")
-    else:
-        form = ShipmentForm(instance=shipment)
-    return render(request, "planning/shipment/shipment_form.html", {"form": form, "shipment": shipment})
-
-
-@login_required
-def shipment_delete(request, pk):
-    shipment = get_object_or_404(Shipment, pk=pk)
-    order_id = shipment.order.id
-    shipment.delete()
-    messages.warning(request, "Yuk ma’lumoti o‘chirildi ❌")
-    return redirect("plm:order_detail", order_id)
-
-def test(request):
-    return render(request, "planning/order_detailed.html")
-
-
 
 
 

@@ -35,12 +35,15 @@ urlpatterns = [
     path("productionline/<int:pk>/", views.productionline_detail, name="productionline_detail"),
 
     path('fabrics/', views.fabric_list, name='fabric_list'),
-    path('fabrics/create/', views.fabric_create, name='fabric_create'),
+    # path('fabrics/create/', views.fabric_create, name='fabric_create'),
     path('fabrics/<int:pk>/confirm/', views.fabric_confirm, name='fabric_confirm'),
     path('fabrics/add/<int:order_id>/', views.fabric_add_to_order, name='fabric_add_to_order'),
+    path('fabrics/<int:pk>/edit/', views.fabric_update, name='fabric_update'),
+    path('fabrics/<int:pk>/delete/', views.fabric_delete, name='fabric_delete'),
+
 
     path('accessories/', views.accessory_list, name='accessory_list'),
-    path('accessories/create/', views.accessory_create, name='accessory_create'),
+    # path('accessories/create/', views.accessory_create, name='accessory_create'),
     path('accessories/<int:pk>/edit/', views.accessory_update, name='accessory_update'),
     path('accessories/<int:pk>/delete/', views.accessory_delete, name='accessory_delete'),
     path('accessories/add/<int:order_id>/', views.accessory_add_to_order, name='accessory_add_to_order'),
