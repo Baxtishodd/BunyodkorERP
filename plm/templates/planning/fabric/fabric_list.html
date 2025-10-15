@@ -1,71 +1,96 @@
 {% extends "base1.html" %}
 {% block content %}
-<h3>Tasdiqlangan Buyurtmalar uchun kelgan Matolar ro‘yxati</h3><br>
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="fw-bold text-success mb-2">Model Matolari (Fabric) ro‘yxati</h4>
 
-{% for order in orders %}
-    <div class="card mb-5">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></span>
-            <a href="{% url 'plm:fabric_add_to_order' order.id %}" class="btn btn-sm btn-success">+ Mato qo‘shish</a>
-        </div>
-        <div class="card-body p-0">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Mato nomi</th>
-                        <th>Miqdori</th>
-                        <th>Grammaj</th>
-                        <th>Kelgan sana</th>
-                        <th>Fabrika <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Mato qaysi fabrikadan kelgan"></i></th>
-                        <th>Status <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Mato yetib kelganligi holati"></i>
-                        </th>
-                        <th>Amal <i class="bi bi-info-circle text-primary" data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Mato yetib kelganligini tasdiqlash"></i></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for fabric in order.fabric_arrival.all %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ fabric.fabric_name }}</td>
-                        <td>{{ fabric.measure_value }} {{ fabric.measure_unit }}</td>
-                        <td>{{ fabric.gramaj }}</td>
-                        <td>{{ fabric.arrival_date|date:"d.m.Y H:i" }}</td>
-                        <td>{{ fabric.factory_name }}</td>
-                        <td>
-                            {% if fabric.is_confirmed %}
-                                <span class="badge bg-success">Tasdiqlangan</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Kutilmoqda</span>
-                            {% endif %}
+    <div class="d-flex align-items-center">
+      <!-- 🔍 Qidiruv form -->
+      <form method="get" class="d-flex me-2">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control me-2"
+          placeholder="Qidiruv (mijoz, artikul, rang)..."
+        />
+        <button class="btn btn-success" type="submit">Qidir</button>
+      </form>
 
-                            <a href="{% url 'plm:fabric_update' fabric.pk %}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-pen-fill"></i>
-                            </a>
-                            <a href="{% url 'plm:fabric_delete' fabric.pk %}" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                        <td>
-                            {% if not fabric.is_confirmed %}
-                                <a href="{% url 'plm:fabric_confirm' fabric.pk %}" class="btn btn-success btn-sm">Tasdiqlash</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">❌ Hozircha mato kelgani yo‘q</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      <!-- 📄 Har sahifada nechta ko‘rsatish -->
+      <form method="get" class="ms-2">
+        {% if search_query %}
+          <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+        <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+          {% for num in per_page_options %}
+            <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+          {% endfor %}
+        </select>
+      </form>
     </div>
-{% empty %}
-    <p>Hozircha buyurtmalar mavjud emas</p>
-{% endfor %}
-{% endblock %}
+  </div>
 
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <table class="table table-hover align-middle">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Mijoz</th>
+            <th>Artikul</th>
+            <th>Jami matolar</th>
+            <th>Harakat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ order.client }}</td>
+            <td>{{ order.artikul }}</td>
+            <td>{{ order.fabric_arrival.count }}</td>
+            <td>
+              <a href="{% url 'plm:plan_order_detail' order.id %}" class="btn btn-sm btn-outline-success">
+                Batafsil
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-3">Tasdiqlangan modellar topilmadi.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- 📄 Pagination -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">«</a>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <li class="page-item">
+                <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">»</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}

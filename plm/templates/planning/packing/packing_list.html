@@ -1,77 +1,105 @@
 {% extends "base1.html" %}
 {% block content %}
-<h3>Tasdiqlangan buyurtmalar uchun qadoqlash ro‘yxati</h3><br>
-{% if orders_with_totals %}
-<div class="card mt-4 border-secondary shadow-sm">
-    <div class="card-body text-center fw-bold">
-        <span class="me-4">Umumiy qadoqlangan mahsulot: <span class="text-success">{{ total_products_sum }}</span></span>
-        <span class="text-primary">Umumiy yopilgan karopka: {{ total_boxes_sum }}</span>
-    </div>
-</div>
-{% endif %}
-{% for item in orders_with_totals %}
-    {% with order=item.order %}
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Buyurtma:
-                <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a>
-            </strong>
-            <a href="{% url 'plm:packing_add_to_order' order.id %}" class="btn btn-sm btn-success">
-                + Qadoqlash qo‘shish
-            </a>
+<div class="container mt-3">
+
+  <!-- 🔝 Sarlavha va qidiruv -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h4 class="fw-bold text-success mb-2">Model Qadoq hisobi (Packing) ro‘yxati</h4>
+
+        <div class="d-flex align-items-center">
+          <!-- 🔍 Qidiruv form -->
+          <form method="get" class="d-flex me-2">
+            <input
+              type="text"
+              name="q"
+              value="{{ search_query }}"
+              class="form-control me-2"
+              placeholder="Qidiruv (mijoz, artikul, rang)..."
+            />
+            <button class="btn btn-success" type="submit">Qidir</button>
+          </form>
+
+          <!-- 📄 Har sahifada nechta ko‘rsatish -->
+          <form method="get" class="ms-2">
+            {% if search_query %}
+              <input type="hidden" name="q" value="{{ search_query }}">
+            {% endif %}
+            <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+              {% for num in per_page_options %}
+                <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+              {% endfor %}
+            </select>
+          </form>
         </div>
-        <div class="card-body p-0">
-            <table class="table mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Qadoq turi</th>
-                        <th>Qadoqlangan mahsulotlar</th>
-                        <th>Yopilgan karopkalar</th>
-                        <th>Qadoqlangan sana</th>
-                        <th>Yaratilgan</th>
-                        <th class="text-end">Amallar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for packing in order.packings.all %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td><span class="badge bg-info">{{ packing.get_packing_type_display }}</span></td>
-                        <td class="text-success fw-semibold">{{ packing.product_quantity }}</td>
-                        <td class="text-primary fw-semibold">{{ packing.box_quantity }}</td>
-                        <td><span class="badge bg-primary">{{ packing.packed_date|date:"d.m.Y" }}</span></td>
-                        <td>{{ packing.created_at|date:"d.m.Y H:i" }}</td>
-                        <td class="text-end">
-                            <a href="{% url 'plm:packing_update' packing.pk %}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'plm:packing_delete' packing.pk %}" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">Hozircha qadoqlash ma’lumoti yo‘q</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr class="fw-bold">
-                        <td colspan="7" class="text-start ps-3">
-                            Jami qadoqlangan mahsulot: <span class="text-success">{{ item.product_quantity }}</span> |
-                            Jami yopilgan karopka: <span class="text-primary">{{ item.box_quantity }}</span>
-                        </td>
-                    </tr>
-                </tfoot>
+      </div>
+
+  <!-- 📋 Jadval -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="table-responsive shadow-sm border rounded-3">
+            <table class="table  table-hover align-middle mb-0 text-center">
+              <thead class="table-success">
+                <tr>
+                  <th>#</th>
+                  <th>Buyurtma (Mijoz - Artikul)</th>
+                  <th>Qutilar</th>
+                  <th>Mahsulotlar</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in page_obj %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                      <a href="{% url 'plm:plan_order_detail' item.order.id %}" class="text-decoration-none fw-semibold">
+                        {{ item.order.client }} – {{ item.order.artikul }}
+                      </a>
+                    </td>
+                    <td>{{ item.jami_box }}</td>
+                    <td>{{ item.jami_product }}</td>
+                    <td>
+                      <a href="{% url 'plm:packing_add_to_order' item.order.id %}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-plus-circle"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-muted py-3">Hozircha buyurtmalar mavjud emas 😔</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
             </table>
+          </div>
         </div>
     </div>
-    {% endwith %}
-{% empty %}
-    <p>Hozircha buyurtmalar mavjud emas</p>
-{% endfor %}
 
+  <!-- 📄 Sahifalash -->
+  <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+    <p class="mb-0 small text-muted">
+      Jami: {{ page_obj.paginator.count }} ta buyurtma
+    </p>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&per_page={{ per_page }}">Oldingi</a>
+          </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}&q={{ search_query }}&per_page={{ per_page }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&per_page={{ per_page }}">Keyingi</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
 
+</div>
 {% endblock %}

@@ -12,6 +12,8 @@ from datetime import time
 from django.contrib import messages
 from django.db.models import Sum
 from collections import Counter, defaultdict
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 # Model kartalar ro‘yxati
 @login_required
@@ -328,13 +330,48 @@ def fabric_list1(request):
     fabrics = FabricArrival.objects.select_related('order').order_by('-id')
     return render(request, 'planning/fabric/fabric_list.html', {'fabrics': fabrics})
 
+# @login_required
+# def fabric_list(request):
+#     confirmed_orders = Order.objects.filter(
+#         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+#     ).prefetch_related('fabric_arrival')
+#
+#     return render(request, 'planning/fabric/fabric_list.html', {'orders': confirmed_orders})
+
+
 @login_required
 def fabric_list(request):
+    # 🔍 Qidiruv so‘rovi
+    search_query = request.GET.get("q", "")
+    # 📄 Har sahifada nechta element — foydalanuvchi tanloviga qarab
+    per_page = int(request.GET.get("per_page", 10))
+
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
     confirmed_orders = Order.objects.filter(
         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('fabric_arrival')
+    ).prefetch_related("fabric_arrival").order_by("-created_at")
 
-    return render(request, 'planning/fabric/fabric_list.html', {'orders': confirmed_orders})
+    # 🔍 Agar foydalanuvchi qidiruv so‘rovini kiritgan bo‘lsa
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+    # 📄 Pagination (10 ta element har sahifada)
+    paginator = Paginator(confirmed_orders, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+    }
+    return render(request, "planning/fabric/fabric_list.html", context)
+
 
 @login_required
 def fabric_add_to_order(request, order_id):
@@ -398,11 +435,37 @@ def fabric_delete(request, pk):
 
 @login_required
 def accessory_list(request):
+    # 🔍 Qidiruv
+    search_query = request.GET.get("q", "")
+    # 📄 Har sahifada nechta element ko‘rsatiladi
+    per_page = int(request.GET.get("per_page", 10))
+
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
     confirmed_orders = Order.objects.filter(
         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('accessories')
+    ).prefetch_related("accessories").order_by("-created_at")
 
-    return render(request, 'planning/accessory/accessory_list.html', {'orders': confirmed_orders})
+    # 🔍 Qidiruv
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+    # 📄 Pagination
+    paginator = Paginator(confirmed_orders, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],  # ✅ Foydalanuvchi tanlovi uchun
+    }
+    return render(request, "planning/accessory/accessory_list.html", context)
+
 
 @login_required
 def accessory_add_to_order(request, order_id):
@@ -452,22 +515,45 @@ def accessory_delete(request, pk):
 
 @login_required
 def cutting_list(request):
+    # 🔍 Qidiruv so‘rovi
+    search_query = request.GET.get("q", "")
+    # 📄 Foydalanuvchi belgilaydigan sahifa hajmi
+    per_page = int(request.GET.get("per_page", 10))
+
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
     confirmed_orders = Order.objects.filter(
         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('cuttings')
+    ).prefetch_related("cuttings").order_by("-created_at")
 
+    # 🔍 Qidiruv (mijoz yoki artikul bo‘yicha)
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query) | Q(artikul__icontains=search_query)
+        )
+
+    # 📊 Har bir buyurtma uchun jami pastal sonini hisoblash
     orders_with_totals = []
     for order in confirmed_orders:
         jami_pastal = sum(c.pastal_soni for c in order.cuttings.all())
-        orders_with_totals.append((order, jami_pastal))
+        orders_with_totals.append({
+            "order": order,
+            "jami_pastal": jami_pastal,
+        })
 
-    return render(
-        request,
-        'planning/cutting/cutting_list.html',
-        {
-            'orders_with_totals': orders_with_totals
-        }
-    )
+    # 📄 Pagination
+    paginator = Paginator(orders_with_totals, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Kontekst
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+    }
+    return render(request, "planning/cutting/cutting_list.html", context)
+
 
 @login_required
 def cutting_add_to_order(request, order_id):
@@ -514,23 +600,49 @@ def cutting_delete(request, pk):
 # Printing view
 @login_required
 def print_list(request):
-    confirmed_orders = Order.objects.filter(
-        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('prints')
+    # 🔍 Qidiruv
+    search_query = request.GET.get("q", "")
+    # 📄 Foydalanuvchi tanlaydigan sahifa hajmi
+    per_page = int(request.GET.get("per_page", 10))
 
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("prints")
+        .order_by("-created_at")
+    )
+
+    # 🔍 Qidiruv — mijoz yoki artikul bo‘yicha
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+        )
+
+    # 📊 Har bir buyurtma uchun jami pechat miqdorini hisoblash
     orders_with_totals = []
     for order in confirmed_orders:
-        jami_pechat = sum(c.quantity for c in order.prints.all())
-        orders_with_totals.append((order, jami_pechat))
+        jami_print = order.prints.aggregate(total=Sum("quantity"))["total"] or 0
+        orders_with_totals.append({
+            "order": order,
+            "jami_print": jami_print,
+        })
 
-    return render(
-        request,
-        'planning/print/print_list.html',
-        {
-            'orders_with_totals': orders_with_totals
-        }
-    )
-    # return render(request, 'planning/print/print_list.html', {'orders': confirmed_orders})
+    # 📄 Pagination
+    paginator = Paginator(orders_with_totals, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 📦 Context
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+    }
+    return render(request, "planning/print/print_list.html", context)
 
 @login_required
 def print_add_to_order(request, order_id):
@@ -580,25 +692,89 @@ def print_delete(request, pk):
     return render(request, 'planning/print/print_confirm_delete.html', {'print': print})
 
 
+# @login_required
+# def stitching_list(request):
+#     confirmed_orders = (
+#         Order.objects.filter(
+#             id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+#         )
+#         .prefetch_related("ordersize__stitchings")
+#         .order_by("created_at")
+#     )
+#
+#     # Har bir order uchun jami tikilgan o‘lchamlar lug‘ati
+#     order_size_totals = {}
+#     order_total_quantity = {}
+#
+#     for order in confirmed_orders:
+#         size_totals = defaultdict(int)
+#         total_quantity = 0
+#
+#         for ordersize in order.ordersize.all():
+#             stitched_sum = ordersize.stitchings.aggregate(total=Sum("quantity"))["total"] or 0
+#             size_totals[ordersize.size] += stitched_sum
+#             total_quantity += stitched_sum
+#
+#         order_size_totals[order.id] = dict(size_totals)
+#         order_total_quantity[order.id] = total_quantity
+#
+#     return render(
+#         request,
+#         "planning/stitching/stitching_list.html",
+#         {
+#             "orders": confirmed_orders,
+#             "order_size_totals": order_size_totals,
+#             "order_total_quantity": order_total_quantity,
+#         },
+#     )
+
+from collections import defaultdict
+
 @login_required
 def stitching_list(request):
-    confirmed_orders = (
+    # GET parametrlar
+    search_query = request.GET.get("q", "").strip()
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
+
+    # Ruxsat etilgan per_page variantlari
+    per_page_options = [5, 10, 25, 50, 100]
+    if per_page not in per_page_options:
+        per_page = 10
+
+    # Asosiy queryset — ModelAssigned orqali tasdiqlangan buyurtmalar
+    confirmed_orders_qs = (
         Order.objects.filter(
             id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
         )
-        .prefetch_related("ordersize__stitchings")
-        .order_by("created_at")
+        .prefetch_related("ordersize__stitchings")  # <-- e'tibor shu yerga: ordersize__stitchings
+        .order_by("-created_at")
     )
 
-    # Har bir order uchun jami tikilgan o‘lchamlar lug‘ati
-    order_size_totals = {}
-    order_total_quantity = {}
+    # Qidiruv: mijoz yoki artikul
+    if search_query:
+        confirmed_orders_qs = confirmed_orders_qs.filter(
+            Q(client__icontains=search_query) | Q(artikul__icontains=search_query)
+        )
 
-    for order in confirmed_orders:
+    # Pagination — avval querysetni sahifalab olamiz
+    paginator = Paginator(confirmed_orders_qs, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Faqat hozirgi sahifadagi buyurtmalar uchun jami hisob-kitoblarni qilamiz
+    order_size_totals = {}     # { order_id: { size: total_for_that_size, ... }, ... }
+    order_total_quantity = {}  # { order_id: total_quantity_for_order, ... }
+
+    for order in page_obj.object_list:
         size_totals = defaultdict(int)
         total_quantity = 0
 
+        # ordersize — OrderSize modeliga tegishli related_name (models.py ga mos)
         for ordersize in order.ordersize.all():
+            # Har bir ordersize uchun stitchings (related_name="stitchings") bo'yicha yig'adigan summa
             stitched_sum = ordersize.stitchings.aggregate(total=Sum("quantity"))["total"] or 0
             size_totals[ordersize.size] += stitched_sum
             total_quantity += stitched_sum
@@ -606,15 +782,17 @@ def stitching_list(request):
         order_size_totals[order.id] = dict(size_totals)
         order_total_quantity[order.id] = total_quantity
 
-    return render(
-        request,
-        "planning/stitching/stitching_list.html",
-        {
-            "orders": confirmed_orders,
-            "order_size_totals": order_size_totals,
-            "order_total_quantity": order_total_quantity,
-        },
-    )
+    context = {
+        "page_obj": page_obj,
+        "order_size_totals": order_size_totals,
+        "order_total_quantity": order_total_quantity,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": per_page_options,
+    }
+
+    return render(request, "planning/stitching/stitching_list.html", context)
+
 
 @login_required
 def stitching_add(request, order_id):
@@ -630,7 +808,8 @@ def stitching_add(request, order_id):
             stitching = form.save(commit=False)
             # Patok yoki sexni avtomatik qo‘shish kerak bo‘lsa shu yerga qo‘shiladi
             stitching.save()
-            return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
+            messages.success(request, "Tikimga ish qo'shildi! ✅")
+            return redirect("plm:plan_order_detail", order_id=order.pk)
     else:
         form = StitchingForm(order=order)
 
@@ -650,7 +829,7 @@ def stitching_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Tikim ma'lumoti yangilandi ✅")
-            return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
+            return redirect("plm:plan_order_detail", order_id=order.pk)
     else:
         form = StitchingForm(instance=stitching, order=order)
 
@@ -666,7 +845,7 @@ def stitching_delete(request, pk):
     if request.method == "POST":
         stitching.delete()
         messages.success(request, "Tikim ma'lumoti o‘chirildi ❌")
-        return redirect("plm:plan_order_detail", order_id=stitching.order.pk)
+        return redirect("plm:plan_order_detail", order_id=order.pk)
 
     return render(request, "planning/stitching/stitching_confirm_delete.html", {"stitching": stitching})
 
@@ -674,22 +853,62 @@ def stitching_delete(request, pk):
 # Ironing view Dazmol modeli
 @login_required
 def ironing_list(request):
-    confirmed_orders = Order.objects.filter(
-        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('ironing')
+    # 🔍 Qidiruv va sahifalash parametrlari
+    search_query = request.GET.get("q", "").strip()
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
 
+    # Ruxsat etilgan variantlar
+    per_page_options = [5, 10, 25, 50, 100]
+    if per_page not in per_page_options:
+        per_page = 10
+
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("ironing")
+        .order_by("-created_at")
+    )
+
+    # 🔍 Qidiruv — mijoz, artikul yoki rang bo‘yicha
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+    # 📊 Har bir buyurtma uchun jami dazmol miqdorini hisoblash
     orders_with_totals = []
     for order in confirmed_orders:
-        jami_dazmol = sum(c.quantity for c in order.ironing.all())
-        orders_with_totals.append((order, jami_dazmol))
+        jami_dazmol = order.ironing.aggregate(total=Sum("quantity"))["total"] or 0
+        orders_with_totals.append({
+            "order": order,
+            "jami_dazmol": jami_dazmol,
+        })
 
-    return render(
-        request,
-        'planning/ironing/ironing_list.html',
-        {
-            'orders_with_totals': orders_with_totals
-        }
-    )
+    # 📄 Pagination
+    paginator = Paginator(orders_with_totals, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 📦 Context
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": per_page_options,
+    }
+
+    return render(request, "planning/ironing/ironing_list.html", context)
+
+
+
+
 
 @login_required
 def ironing_add_to_order(request, order_id):
@@ -722,6 +941,7 @@ def ironing_update(request, pk):
         form = IroningForm(request.POST, instance=ironing_obj)
         if form.is_valid():
             form.save()
+            messages.success(request, "Dazmol ma'lumoti yangilandi!")
             return redirect("plm:plan_order_detail", order_id=ironing_obj.order.pk)
     else:
         form = IroningForm(instance=ironing_obj)
@@ -732,6 +952,7 @@ def ironing_delete(request, pk):
     ironing = get_object_or_404(Ironing, pk=pk)
     if request.method == 'POST':
         ironing.delete()
+        messages.success(request, "Dazmol ma'lumoti o‘chirildi ❌")
         return redirect("plm:plan_order_detail", order_id=ironing.order.pk)
     return render(request, 'planning/ironing/ironing_confirm_delete.html', {'ironing': ironing})
 
@@ -739,42 +960,64 @@ def ironing_delete(request, pk):
 # Inspection VIEW
 @login_required
 def inspection_list(request):
-    """Barcha inspectionlar ro‘yxati va umumiy statistikasi"""
-    confirmed_orders = Order.objects.filter(
-        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related('inspections')
+    # 🔍 Qidiruv va sahifalash
+    search_query = request.GET.get("q", "").strip()
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
 
+    per_page_options = [5, 10, 25, 50, 100]
+    if per_page not in per_page_options:
+        per_page = 10
+
+    # ✅ ModelAssigned mavjud bo‘lgan (tasdiqlangan) buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(modelassigned__isnull=False)
+        .prefetch_related("inspections")
+        .order_by("-created_at")
+    )
+
+    # 🔍 Qidiruv
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+    # 📊 Har bir buyurtma uchun umumiy ma’lumot
     orders_with_totals = []
-    total_checked_sum = 0
-    passed_sum = 0
-    failed_sum = 0
-
     for order in confirmed_orders:
-        order_total_checked = sum(i.total_checked for i in order.inspections.all())
-        order_passed = sum(i.passed_quantity for i in order.inspections.all())
-        order_failed = sum(i.failed_quantity for i in order.inspections.all())
+        jami_checked = order.inspections.aggregate(total=Sum("total_checked"))["total"] or 0
+        jami_passed = order.inspections.aggregate(total=Sum("passed_quantity"))["total"] or 0
+        jami_failed = order.inspections.aggregate(total=Sum("failed_quantity"))["total"] or 0
 
-        total_checked_sum += order_total_checked
-        passed_sum += order_passed
-        failed_sum += order_failed
+        passed_percent = round((jami_passed / jami_checked) * 100, 2) if jami_checked > 0 else 0
 
         orders_with_totals.append({
             "order": order,
-            "total_checked": order_total_checked,
-            "passed": order_passed,
-            "failed": order_failed,
+            "jami_checked": jami_checked,
+            "jami_passed": jami_passed,
+            "jami_failed": jami_failed,
+            "passed_percent": passed_percent,
         })
 
-    return render(
-        request,
-        "planning/inspection/inspection_list.html",
-        {
-            "orders_with_totals": orders_with_totals,
-            "total_checked_sum": total_checked_sum,
-            "passed_sum": passed_sum,
-            "failed_sum": failed_sum,
-        },
-    )
+    # 📄 Pagination
+    paginator = Paginator(orders_with_totals, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 🧩 Context
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": per_page_options,
+    }
+
+    return render(request, "planning/inspection/inspection_list.html", context)
+
 
 @login_required
 def inspection_add_to_order(request, order_id):
@@ -835,37 +1078,61 @@ def inspection_delete(request, pk):
 # Packing VIEW
 @login_required
 def packing_list(request):
-    """Barcha packinglar ro‘yxati va umumiy statistikasi"""
-    confirmed_orders = Order.objects.filter(
-        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-    ).prefetch_related("packings")
+    # 🔍 Qidiruv va sahifalash
+    search_query = request.GET.get("q", "").strip()
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
 
+    per_page_options = [5, 10, 25, 50, 100]
+    if per_page not in per_page_options:
+        per_page = 10
+
+    # ✅ Faqat tasdiqlangan buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(modelassigned__isnull=False)
+        .prefetch_related("packings")
+        .order_by("-created_at")
+    )
+
+    # 🔍 Qidiruv (mijoz, artikul, rang)
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+    # 📊 Har bir buyurtma uchun jami qadoqlash
     orders_with_totals = []
-    total_products_sum = 0
-    total_boxes_sum = 0
-
     for order in confirmed_orders:
-        order_total_products = sum(p.product_quantity for p in order.packings.all())
-        order_total_boxes = sum(p.box_quantity for p in order.packings.all())
-
-        total_products_sum += order_total_products
-        total_boxes_sum += order_total_boxes
+        packings = order.packings.all()
+        jami_box = packings.aggregate(total=Sum("box_quantity"))["total"] or 0
+        jami_product = packings.aggregate(total=Sum("product_quantity"))["total"] or 0
 
         orders_with_totals.append({
             "order": order,
-            "product_quantity": order_total_products,
-            "box_quantity": order_total_boxes,
+            "jami_box": jami_box,
+            "jami_product": jami_product,
         })
 
-    return render(
-        request,
-        "planning/packing/packing_list.html",
-        {
-            "orders_with_totals": orders_with_totals,
-            "total_products_sum": total_products_sum,
-            "total_boxes_sum": total_boxes_sum,
-        },
-    )
+    # 📄 Pagination
+    paginator = Paginator(orders_with_totals, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": per_page_options,
+    }
+
+    return render(request, "planning/packing/packing_list.html", context)
+
+
+
 
 
 @login_required
@@ -1087,6 +1354,42 @@ def plan_order_detail(request, order_id):
         # "shipments": Shipment.objects.filter(order=order),
     }
     return render(request, "planning/order_detailed.html", context)
+
+
+@login_required
+def fabric_arrival_dashboard(request):
+    # 1️⃣ Mato kelgan buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(
+            id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+        )
+        .prefetch_related("fabric_arrival")
+        .order_by("-created_at")
+    )
+
+    # 2️⃣ Eng yaqin buyurtmalar (deadline bo‘yicha)
+    upcoming_orders = Order.objects.filter(deadline__isnull=False).order_by("deadline")[:5]
+
+    context = {
+        "orders": confirmed_orders,
+        "upcoming_orders": upcoming_orders,
+    }
+    return render(request, "planning/fabric/fabric_arrival_dashboard.html", context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

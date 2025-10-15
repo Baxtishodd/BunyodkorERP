@@ -35,11 +35,12 @@ urlpatterns = [
     path("productionline/<int:pk>/", views.productionline_detail, name="productionline_detail"),
 
     path('fabrics/', views.fabric_list, name='fabric_list'),
-    # path('fabrics/create/', views.fabric_create, name='fabric_create'),
     path('fabrics/<int:pk>/confirm/', views.fabric_confirm, name='fabric_confirm'),
     path('fabrics/add/<int:order_id>/', views.fabric_add_to_order, name='fabric_add_to_order'),
     path('fabrics/<int:pk>/edit/', views.fabric_update, name='fabric_update'),
     path('fabrics/<int:pk>/delete/', views.fabric_delete, name='fabric_delete'),
+    path("fabric-arrival/dashboard/", views.fabric_arrival_dashboard, name="fabric_arrival_dashboard"),
+
 
 
     path('accessories/', views.accessory_list, name='accessory_list'),

@@ -1,93 +1,125 @@
 {% extends "base1.html" %}
 {% block content %}
-<h3>Tasdiqlangan buyurtmalar uchun Sifat nazoratidan o`tgan modellar ro`yhati</h3><br>
-
-{% if orders_with_totals %}
-<div class="card mt-4 border-secondary shadow-sm">
-    <div class="card-body text-center fw-bold">
-        <span class="me-4">Umumiy tekshirilgan: {{ total_checked_sum }}</span>
-        <span class="me-4 text-success">O‘tgan: {{ passed_sum }}</span>
-        <span class="text-danger">O‘tmagan: {{ failed_sum }}</span>
+<div class="container mt-3">
+ <div class="row align-items-center mb-3 gy-2">
+    <!-- Chap tomonda sarlavha -->
+    <div class="col-md-6 col-12">
+      <h4 class="fw-bold text-success mb-0">Sifat nazorati (Inspection) ro‘yxati</h4>
     </div>
+
+    <!-- O‘ng tomonda qidiruv forma -->
+   <div class="col-md-6 col-12">
+      <form method="get" class="d-flex align-items-center justify-content-md-end gap-2 flex-wrap mb-0" style="height: 42px;">
+        <!-- 🔍 Qidiruv -->
+        <div class="d-flex align-items-center" style="height: 42px;">
+          <input
+            type="text"
+            name="q"
+            value="{{ search_query }}"
+            class="form-control"
+            placeholder="Mijoz, artikul yoki rang bo‘yicha qidiruv..."
+            style="min-width: 220px; height: 40px; line-height: 1.2;"
+          />
+        </div>
+
+        <!-- 🔘 Qidir tugmasi -->
+        <div class="d-flex align-items-center" style="height: 42px;">
+          <button type="submit" class="btn btn-success d-flex align-items-center justify-content-center px-3" style="height: 40px; line-height: 1;">
+            <i class="bi bi-search me-1"></i>
+            <span>Qidir</span>
+          </button>
+        </div>
+
+        <!-- 📄 Sahifada nechta ko‘rsatish -->
+        <div class="d-flex align-items-center" style="height: 42px;">
+          <select name="per_page" class="form-select" style="width: 85px; height: 40px; line-height: 1;" onchange="this.form.submit()">
+            {% for num in per_page_options %}
+              <option value="{{ num }}" {% if num == per_page %}selected{% endif %}>{{ num }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- 📋 Jadval -->
+  <div class="table-responsive shadow-sm border rounded-3">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-success text-center">
+        <tr>
+          <th>#</th>
+          <th>Buyurtma (Mijoz - Artikul)</th>
+          <th>Tekshirilgan</th>
+          <th>Sifatdan o‘tgan</th>
+          <th>Sifatdan o‘tmagan</th>
+          <th>O‘tgan foiz</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        {% for item in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <a href="{% url 'plm:plan_order_detail' item.order.id %}" class="text-decoration-none fw-semibold">
+                {{ item.order.client }} – {{ item.order.artikul }}
+              </a>
+            </td>
+            <td>{{ item.jami_checked|default:0 }}</td>
+            <td class="text-success fw-bold">{{ item.jami_passed|default:0 }}</td>
+            <td class="text-danger fw-bold">{{ item.jami_failed|default:0 }}</td>
+            <td>
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: {{ item.passed_percent }}%;"
+                     aria-valuenow="{{ item.passed_percent }}" aria-valuemin="0" aria-valuemax="100">
+                  {{ item.passed_percent }}%
+                </div>
+              </div>
+            </td>
+            <td>
+              <a href="{% url 'plm:inspection_add_to_order' item.order.id %}" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-plus-circle"></i>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-muted py-3">Hech qanday ma’lumot topilmadi 😔</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 📄 Sahifalash -->
+  <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+    <p class="mb-0 small text-muted">
+      Jami: {{ page_obj.paginator.count }} ta buyurtma
+    </p>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&per_page={{ per_page }}">Oldingi</a>
+          </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+            <a class="page-link"
+               href="?page={{ num }}&q={{ search_query }}&per_page={{ per_page }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&per_page={{ per_page }}">Keyingi</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
 </div>
-{% endif %}
-
-{% for item in orders_with_totals %}
-    {% with order=item.order %}
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Buyurtma:
-                <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a>
-            </strong>
-            <a href="{% url 'plm:inspection_add_to_order' order.id %}" class="btn btn-sm btn-success">
-                + Ish qo‘shish
-            </a>
-        </div>
-        <div class="card-body p-0">
-            <table class="table mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Umumiy tekshirilgan</th>
-                        <th>Sifatdan o‘tgan</th>
-                        <th>Sifatdan o‘tmagan</th>
-                        <th>O‘tgan %</th>
-                        <th>Tekshirilgan sana</th>
-                        <th>Yaratilgan</th>
-                        <th class="text-end"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for inspection in order.inspections.all %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ inspection.total_checked }}</td>
-                        <td class="text-success fw-semibold">{{ inspection.passed_quantity }}</td>
-                        <td class="text-danger fw-semibold">{{ inspection.failed_quantity }}</td>
-                        <td>
-                            <div class="progress" style="height: 15px;">
-                                <div class="progress-bar bg-success" role="progressbar"
-                                     style="width: {{ inspection.passed_percentage }}%;"
-                                     aria-valuenow="{{ inspection.passed_percentage }}"
-                                     aria-valuemin="0" aria-valuemax="100">
-                                     {{ inspection.passed_percentage }}%
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-primary">{{ inspection.inspected_date|date:"d.m.Y" }}</span></td>
-                        <td>{{ inspection.created_at|date:"d.m.Y H:i" }}</td>
-                        <td class="text-end">
-                          <a href="{% url 'plm:inspection_update' inspection.pk %}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-pen-fill"></i>
-                          </a>
-                          <a href="{% url 'plm:inspection_delete' inspection.pk %}"
-                             class="btn btn-sm btn-danger">
-                              <i class="bi bi-trash"></i>
-                          </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">Hozircha sifat nazorati ma’lumoti yo‘q</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr class="fw-bold">
-                        <td colspan="8" class="text-start ps-3">
-                            Jami tekshirilgan: {{ item.total_checked }} |
-                            Sifatdan o‘tgan: <span class="text-success">{{ item.passed }}</span> |
-                            Sifatdan o‘tmagan: <span class="text-danger">{{ item.failed }}</span>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
-    {% endwith %}
-{% empty %}
-    <p>Hozircha buyurtmalar mavjud emas</p>
-{% endfor %}
-
-
 {% endblock %}
