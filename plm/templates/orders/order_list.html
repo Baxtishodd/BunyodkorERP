@@ -1,76 +1,137 @@
 {% extends "base1.html" %}
-
 {% block content %}
-<!-- [ Main Content ] start -->
-    <!-- [ breadcrumb ] start -->
-    <div class="page-header">
-      <div class="page-block">
-        <div class="page-header-title">
-          <h5 class="mb-0 font-medium">Buyurtmalar ro`yhati</h5>
-        </div>
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{ url 'plm:order_list' }">Buyurtmalar</a></li>
-          <li class="breadcrumb-item" aria-current="page">Buyurtmalar ro'yhati</li>
-        </ul>
-      </div>
-    </div>
-    <!-- [ breadcrumb ] end -->
-<a href="{% url 'plm:order_create' %}" class="btn btn-success mb-3"><i class="ti ti-circle-plus me-1"></i> Yangi buyurtma</a>
-      <div class="pc-component">
-          <div class="card shadow-sm border-0 rounded-3">
-              <div class="card-body p-0">
-                <table class="table table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Id</th>
-                            <th>Rasmi</th>
-                            <th>Mijoz</th>
-                            <th>Artikul</th>
-                            <th>Miqdor</th>
-                            <th>Rang</th>
-                            <th>Tasdiqlash</th>
-                            <th>Yuklanish vaqti</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ order.id }}</td>
-                            <td>
-                                {% if order.model_picture %}
-                                    <img src="{{ order.model_picture.url }}" alt="Rasm" width="60" height="60">
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>{{ order.client }}</td>
-                            <td><a href="{% url 'plm:order_detail' order.pk %}" class="text-primary">{{ order.artikul }}</a></td>
-                            <td>{{ order.sum_order_size }}</td>
-                            <td>{{ order.rangi }}</td>
-                            <td>
-                                {% with assigned=order.modelassigned_set.first %}
-                                    {% if assigned %}
-                                        <span class="badge bg-success">{{ assigned.line.name }}</span>
-                                        <a href="{% url 'plm:plan_order_detail' order.id %}">
-                                            <span class="badge btn-light">Rejada</span>
-                                        </a>
-                                    {% else %}
-                                        <span class="badge bg-warning">Tasdiqlanmagan</span>
-                                    {% endif %}
-                                {% endwith %}
-                            </td>
-                            <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="7" class="text-center text-muted">Buyurtmalar yo‘q</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-              </div>
-         </div>
-    </div>
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="fw-bold text-success mb-2">Buyurtmalar ro‘yxati</h4>
+
+    <div class="d-flex align-items-center">
+      <a href="{% url 'plm:order_create' %}" class="btn btn-primary d-flex me-2">
+            + Yangi buyurtma
+      </a>
+        <!-- 🔍 Qidiruv form -->
+      <form method="get" class="d-flex me-2">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control me-2"
+          placeholder="Qidiruv (mijoz, artikul, rang)..."
+        />
+        <button class="btn btn-success" type="submit">Qidir</button>
+      </form>
 
 
+      <!-- 📄 Har sahifada nechta ko‘rsatish -->
+      <form method="get" class="ms-2">
+        {% if search_query %}
+          <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+        <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+          {% for num in per_page_options %}
+            <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+
+
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Rasm</th>
+            <th>Mijoz</th>
+            <th>Artikul</th>
+            <th>Miqdor</th>
+            <th>Rang</th>
+            <th>Tasdiqlash</th>
+            <th>Yuklanish vaqti</th>
+            <th>Harakat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              {% if order.model_picture %}
+                <img src="{{ order.model_picture.url }}" width="60" height="60" class="rounded">
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>{{ order.client }}</td>
+            <td><a href="{% url 'plm:order_detail' order.pk %}" class="text-primary">{{ order.artikul }}</a></td>
+            <td>{{ order.sum_order_size }}</td>
+            <td>{{ order.rangi }}</td>
+            <td>
+              {% with assigned=order.modelassigned_set.first %}
+                {% if assigned %}
+                  <span class="badge bg-success">{{ assigned.line.name }}</span>
+                  <a href="{% url 'plm:plan_order_detail' order.id %}">
+                    <span class="badge btn-light">Rejada</span>
+                  </a>
+                {% else %}
+                  <span class="badge bg-warning">Tasdiqlanmagan</span>
+                {% endif %}
+              {% endwith %}
+            </td>
+            <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>
+            <td>
+              <a href="{% url 'plm:order_update' order.id %}" class="btn btn-sm btn-outline-success">✎</a>
+              <a href="{% url 'plm:order_delete' order.id %}" class="btn btn-sm btn-outline-danger">🗑</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" class="text-center text-muted py-3">Buyurtmalar topilmadi.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+ <!-- 📄 Pagination -->
+  <nav>
+   <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <!-- 🔙 Birinchi sahifaga o'tish -->
+        <li class="page-item">
+          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page=1">««</a>
+        </li>
+
+        <!-- ⬅️ Oldingi sahifa -->
+        <li class="page-item">
+          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">«</a>
+        </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <!-- ➡️ Keyingi sahifa -->
+        <li class="page-item">
+          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">»</a>
+        </li>
+
+        <!-- 🔚 Oxirgi sahifaga o'tish -->
+        <li class="page-item">
+          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.paginator.num_pages }}">»»</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
 {% endblock %}

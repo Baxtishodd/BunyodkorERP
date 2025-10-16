@@ -210,8 +210,62 @@ def productionline_detail(request, pk):
 
 @login_required
 def order_list(request):
-    orders = Order.objects.all().order_by('-created_at')
-    return render(request, "orders/order_list.html", {"orders": orders})
+    search_query = request.GET.get("q", "")
+    sort_by = request.GET.get("sort", "created_at")
+    direction = request.GET.get("dir", "desc")
+
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
+
+    per_page_options = [5, 10, 25, 50, 100]
+
+    orders = Order.objects.all().order_by("-created_at")
+
+    # 🔍 Qidiruv
+    if search_query:
+        orders = orders.filter(
+            Q(client__icontains=search_query)
+            | Q(artikul__icontains=search_query)
+            | Q(rangi__icontains=search_query)
+        )
+
+        # ⬆️⬇️ Sortirovka
+    sort_fields = {
+        "client": "client",
+        "artikul": "artikul",
+        "rangi": "rangi",
+        "patok": "modelassigned__line__name",
+        "created_at": "created_at",
+    }
+
+    if sort_by in sort_fields:
+        sort_field = sort_fields[sort_by]
+        if direction == "asc":
+            orders = orders.order_by(sort_field)
+        else:
+            orders = orders.order_by(f"-{sort_field}")
+
+    # 📄 Pagination
+    paginator = Paginator(orders, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+
+    return render(
+        request,
+        "orders/order_list.html",
+        {
+            "page_obj": page_obj,
+            "search_query": search_query,
+            "per_page": per_page,
+            "per_page_options": per_page_options,
+            "sort_by": sort_by,
+            "direction": direction,
+        },
+    )
+
 
 # Detail
 @login_required
@@ -227,6 +281,8 @@ def order_detail(request, pk):
             "sum_order_size": sum_order_size
         }
     )
+
+
 # Create
 @login_required
 def order_create(request):
