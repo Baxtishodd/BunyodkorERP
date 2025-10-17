@@ -394,6 +394,9 @@ class Packing(models.Model):
         return f"{self.order} — {self.packing_type} ({self.product_quantity} dona)"
 
 
+
+
+
 class Shipment(models.Model):
     STATUS_CHOICES = [
         ("pending", "Kutilmoqda"),
@@ -465,6 +468,93 @@ class Shipment(models.Model):
         return self.shipment_date <= date.today() + timedelta(days=2)
 
 
+# models.py
+
+class ShipmentInvoice(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Kutilmoqda"),
+        ("ready", "Yuklashga tayyor"),
+        ("shipped", "Yuklab jo‘natildi"),
+    ]
+
+    PACKAGE_TYPES = [
+        ("box", "Karopka"),
+        ("bag", "Xalta"),
+        ("packet", "Paket"),
+        ("pallet", "Pallet"),
+        ("other", "Boshqa"),
+    ]
+
+    number = models.PositiveIntegerField(
+        verbose_name="Yuk xati raqami", unique=True, blank=True, null=True
+    )
+    date = models.DateField(verbose_name="Yuk xati sanasi")
+    shipment_date = models.DateField(verbose_name="Yuk chiqarish sanasi")
+    destination = models.CharField(max_length=200, verbose_name="Manzil")
+
+    driver_name = models.CharField(max_length=150, verbose_name="Haydovchi ismi", blank=True, null=True)
+    vehicle_number = models.CharField(max_length=50, verbose_name="Mashina raqami", blank=True, null=True)
+
+    package_type = models.CharField(
+        max_length=20,
+        choices=PACKAGE_TYPES,
+        default="box",
+        verbose_name="Qadoq turi"
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+        verbose_name="Holati"
+    )
+
+    note = models.TextField(blank=True, null=True, verbose_name="Izoh")
+
+    attachment = models.FileField(
+        upload_to="shipments/files/",
+        blank=True,
+        null=True,
+        verbose_name="Biriktirilgan fayl (ixtiyoriy)"
+    )
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Yaratgan foydalanuvchi"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        # Agar yangi yozuv bo‘lsa va number hali berilmagan bo‘lsa
+        if not self.number:
+            last_invoice = ShipmentInvoice.objects.order_by("-number").first()
+            if last_invoice and last_invoice.number:
+                self.number = last_invoice.number + 1
+            else:
+                self.number = 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Yuk xati №{self.number} ({self.get_status_display()})"
+
+
+
+class ShipmentItem(models.Model):
+    shipment = models.ForeignKey(ShipmentInvoice, on_delete=models.CASCADE, related_name="items")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Buyurtma")
+    quantity = models.PositiveIntegerField(verbose_name="Yuk miqdori")
+    unit = models.CharField(max_length=20, choices=[('dona', 'Dona'), ('kg', 'Kg'), ('karopka', 'Karopka')], default='dona')
+    note = models.CharField(max_length=255, blank=True, null=True, verbose_name="Izoh")
+
+    def __str__(self):
+        return f"{self.order} → {self.quantity} {self.unit}"
 
 
 # class Warehouse(models.Model):

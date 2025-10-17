@@ -62,7 +62,7 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'plm:plan_order_detail' item.order.id %}" class="text-decoration-none fw-semibold">
+              <a href="{% url 'plm:plan_order_detail' item.order.id %}#inspection" class="text-decoration-none fw-semibold">
                 {{ item.order.client }} – {{ item.order.artikul }}
               </a>
             </td>
