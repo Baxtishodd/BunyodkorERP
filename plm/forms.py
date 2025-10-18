@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing, Inspection, Packing, Shipment)
+                     Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice, ShipmentItem)
 
 
 
@@ -224,7 +224,93 @@ class ShipmentForm(forms.ModelForm):
 
 
 
+class ShipmentInvoiceForm(forms.ModelForm):
+    class Meta:
+        model = ShipmentInvoice
+        fields = [
+            "shipment_number",
+            "shipment_date",
+            "destination",
+            "driver_name",
+            "vehicle_number",
+            "status",
+            "note",
+            "attachment",
+        ]
+        widgets = {
+            "shipment_number": forms.TextInput(attrs={
+                "class": "form-control",
+                "readonly": True,
+                "placeholder": "Avtomatik raqam"
+            }),
+            "shipment_date": forms.DateInput(attrs={
+                "type": "date",
+                "class": "form-control"
+            }),
+            "destination": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Yuk manzili"
+            }),
+            "driver_name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Haydovchi ismi"
+            }),
+            "vehicle_number": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Mashina raqami (masalan, 30A123AB)"
+            }),
+            "status": forms.Select(attrs={
+                "class": "form-select"
+            }),
+            "note": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 3,
+                "placeholder": "Izoh (ixtiyoriy)"
+            }),
+            "attachment": forms.ClearableFileInput(attrs={
+                "class": "form-control"
+            }),
+        }
+        labels = {
+            "shipment_number": "Yuk xati raqami avtomatik yaratiladi",
+            "shipment_date": "Yuk jo‘natiladigan sana",
+            "destination": "Manzil",
+            "driver_name": "Haydovchi ismi",
+            "vehicle_number": "Mashina raqami",
+            "status": "Holati",
+            "note": "Izoh",
+            "attachment": "Biriktirilgan fayl",
+        }
 
+
+
+class ShipmentItemForm(forms.ModelForm):
+    class Meta:
+        model = ShipmentItem
+        fields = [
+            "order",
+            "size",
+            "quantity",
+            "unit",
+            "package_type",
+            "note",
+        ]
+        widgets = {
+            "order": forms.Select(attrs={"class": "form-select select2"}),
+            "size": forms.Select(attrs={"class": "form-select"}),  # yangi qo‘shildi
+            "quantity": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Yuk miqdori"}),
+            "unit": forms.Select(attrs={"class": "form-select"}),
+            "package_type": forms.Select(attrs={"class": "form-select"}),
+            "note": forms.Textarea(attrs={"class": "form-control", "rows": 2, "placeholder": "Izoh (ixtiyoriy)"}),
+        }
+        labels = {
+            "order": "Buyurtma",
+            "size": "O‘lchami",
+            "quantity": "Yuk miqdori",
+            "unit": "O‘lchov birligi",
+            "package_type": "Qadoq turi",
+            "note": "Izoh",
+        }
 
 
 

@@ -1,0 +1,25 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0">🗑 Yuk tarkibini o‘chirish</h5>
+    </div>
+    <div class="card-body text-center">
+      <p class="fs-5">
+        “<strong>{{ item.order }}</strong>” mahsulotini o‘chirmoqchimisiz?
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-trash"></i> Ha, o‘chirilsin
+        </button>
+        <a href="{% url 'plm:shipment_items_list' shipment.id %}" class="btn btn-secondary">
+          Bekor qilish
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

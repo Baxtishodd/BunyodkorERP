@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
                      FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection,
-                     Packing)
+                     Packing, ShipmentInvoice, ShipmentInvoice, ShipmentItem)
 from django.utils.html import format_html
 
 
@@ -212,8 +212,78 @@ class PackingAdmin(admin.ModelAdmin):
 
 
 
+class ShipmentItemInline(admin.TabularInline):
+    model = ShipmentItem
+    extra = 1
+    fields = ("order", "quantity", "unit", "package_type", "note")
+    autocomplete_fields = ("order",)
+    verbose_name = "Yuk tarkibi"
+    verbose_name_plural = "Yuk tarkibi (Buyurtmalar)"
+    min_num = 0
 
 
+@admin.register(ShipmentInvoice)
+class ShipmentInvoiceAdmin(admin.ModelAdmin):
+    list_display = (
+        "shipment_number",
+        "shipment_date",
+        "destination",
+        "driver_name",
+        "vehicle_number",
+        "status",
+        "item_count",
+        "created_by",
+        "created_at",
+    )
+    list_filter = ("status", "shipment_date", "created_at")
+    search_fields = (
+        "shipment_number",
+        "destination",
+        "driver_name",
+        "vehicle_number",
+    )
+    ordering = ("-created_at",)
+    readonly_fields = ("shipment_number", "created_at", "created_by")
+    inlines = [ShipmentItemInline]  # 👈 Yuk xati ichida itemlar ko‘rinadi
+
+    fieldsets = (
+        ("Asosiy ma’lumotlar", {
+            "fields": (
+                "shipment_number",
+                "shipment_date",
+                "destination",
+                "status",
+                "note",
+            ),
+        }),
+        ("Transport ma’lumotlari", {
+            "fields": (
+                "driver_name",
+                "vehicle_number",
+            ),
+        }),
+        ("Qo‘shimcha ma’lumotlar", {
+            "fields": (
+                "attachment",
+                "created_by",
+                "created_at",
+            ),
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        """Yaratganda avtomatik foydalanuvchini belgilaydi"""
+        if not obj.created_by:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+
+@admin.register(ShipmentItem)
+class ShipmentItemAdmin(admin.ModelAdmin):
+    list_display = ("shipment", "order", "quantity", "unit", "package_type",   "note")
+    list_filter = ("package_type", "unit")
+    search_fields = ("shipment__shipment_number", "order__artikul", "order__client")
+    autocomplete_fields = ("shipment", "order")
 
 
 

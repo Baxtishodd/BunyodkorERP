@@ -111,50 +111,6 @@ class Order(models.Model):
 
 
 class OrderSize(models.Model):
-    SIZE_CHOICES = [
-        ('oversize', 'Oversize'),
-        ('XXS', 'XXS'),
-        ('XS', 'XS'),
-        ('S', 'S'),
-        ('M', 'M'),
-        ('L', 'L'),
-        ('XL', 'XL'),
-        ('XXL', 'XXL'),
-        ('XXXL', 'XXXL'),
-        ('4XL', '4XL'),
-        ('5XL', '5XL'),
-        ('6XL', '6XL'),
-        ('7XL', '7XL'),
-        ('8XL', '8XL'),
-        ('9XL', '9XL'),
-        ('10XL', '10XL'),
-        ('11XL', '11XL'),
-        ('12XL', '12XL'),
-        ('40', '40'),
-        ('42', '42'),
-        ('44', '44'),
-        ('46', '46'),
-        ('48', '48'),
-        ('50', '50'),
-        ('52', '52'),
-        ('54', '54'),
-        ('56', '56'),
-        ('58', '58'),
-        ('60', '60'),
-        ('62', '62'),
-        ('64', '64'),
-        ('66', '66'),
-        ('68', '68'),
-        ('70', '70'),
-        ('42-44','42-44'),
-        ('46-48','46-48'),
-        ('50-52','50-52'),
-        ('54-56','54-56'),
-        ('58-60','58-60'),
-        ('62-64','62-64'),
-        ('66-68','66-68'),
-        ('70-72','70-72'),
-    ]
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ordersize", verbose_name="Buyurtma")
     quantity = models.PositiveIntegerField(verbose_name="Soni")
@@ -468,8 +424,7 @@ class Shipment(models.Model):
         return self.shipment_date <= date.today() + timedelta(days=2)
 
 
-# models.py
-
+# Shipment invoice
 class ShipmentInvoice(models.Model):
     STATUS_CHOICES = [
         ("pending", "Kutilmoqda"),
@@ -477,30 +432,15 @@ class ShipmentInvoice(models.Model):
         ("shipped", "Yuklab jo‘natildi"),
     ]
 
-    PACKAGE_TYPES = [
-        ("box", "Karopka"),
-        ("bag", "Xalta"),
-        ("packet", "Paket"),
-        ("pallet", "Pallet"),
-        ("other", "Boshqa"),
-    ]
 
-    number = models.PositiveIntegerField(
+    shipment_number = models.PositiveIntegerField(
         verbose_name="Yuk xati raqami", unique=True, blank=True, null=True
     )
-    date = models.DateField(verbose_name="Yuk xati sanasi")
     shipment_date = models.DateField(verbose_name="Yuk chiqarish sanasi")
     destination = models.CharField(max_length=200, verbose_name="Manzil")
 
     driver_name = models.CharField(max_length=150, verbose_name="Haydovchi ismi", blank=True, null=True)
     vehicle_number = models.CharField(max_length=50, verbose_name="Mashina raqami", blank=True, null=True)
-
-    package_type = models.CharField(
-        max_length=20,
-        choices=PACKAGE_TYPES,
-        default="box",
-        verbose_name="Qadoq turi"
-    )
 
     status = models.CharField(
         max_length=20,
@@ -532,29 +472,87 @@ class ShipmentInvoice(models.Model):
         ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
-        # Agar yangi yozuv bo‘lsa va number hali berilmagan bo‘lsa
-        if not self.number:
-            last_invoice = ShipmentInvoice.objects.order_by("-number").first()
-            if last_invoice and last_invoice.number:
-                self.number = last_invoice.number + 1
+        # Agar yangi yozuv bo‘lsa va shipment_number hali berilmagan bo‘lsa
+        if not self.shipment_number:
+            last_invoice = ShipmentInvoice.objects.order_by("-shipment_number").first()
+            if last_invoice and last_invoice.shipment_number:
+                self.shipment_number = last_invoice.shipment_number + 1
             else:
-                self.number = 1
+                self.shipment_number = 1
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Yuk xati №{self.number} ({self.get_status_display()})"
+        return f"Yuk xati №{self.shipment_number} ({self.get_status_display()})"
+
+    # ✅ Yangi qo‘shilgan funksiya
+    def item_count(self):
+        """Yuk tarkibidagi mahsulotlar sonini qaytaradi"""
+        return self.items.count()
+
+    def total_quantity(self):
+        """Yuk tarkibidagi barcha miqdorlarning jamini qaytaradi"""
+        return sum(item.quantity for item in self.items.all())
 
 
 
 class ShipmentItem(models.Model):
+    PACKAGE_TYPES = [
+        ("box", "Karopka"),
+        ("bag", "Xalta"),
+        ("packet", "Paket"),
+        ("pallet", "Pallet"),
+        ("other", "Boshqa"),
+    ]
+
     shipment = models.ForeignKey(ShipmentInvoice, on_delete=models.CASCADE, related_name="items")
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Buyurtma")
+    size = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize", verbose_name="O‘lchami")
     quantity = models.PositiveIntegerField(verbose_name="Yuk miqdori")
     unit = models.CharField(max_length=20, choices=[('dona', 'Dona'), ('kg', 'Kg'), ('karopka', 'Karopka')], default='dona')
     note = models.CharField(max_length=255, blank=True, null=True, verbose_name="Izoh")
 
+    package_type = models.CharField(
+        max_length=20,
+        choices=PACKAGE_TYPES,
+        default="box",
+        verbose_name="Qadoq turi"
+    )
+
     def __str__(self):
         return f"{self.order} → {self.quantity} {self.unit}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # class Warehouse(models.Model):

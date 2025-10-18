@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
                     CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm, PackingForm,
-                    ShipmentForm)
+                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing, Shipment)
+                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice,
+                     ShipmentItem)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.contrib import messages
@@ -1433,8 +1434,169 @@ def fabric_arrival_dashboard(request):
     return render(request, "planning/fabric/fabric_arrival_dashboard.html", context)
 
 
+# Shipment Invoice CRUD
 
 
+@login_required
+def shipmentinvoice_list(request):
+    """Yuk xatlari ro‘yxati"""
+    search_query = request.GET.get("q", "")
+    per_page = int(request.GET.get("per_page", 10))
+
+    invoices = ShipmentInvoice.objects.all().order_by("-created_at")
+
+    if search_query:
+        invoices = invoices.filter(
+            destination__icontains=search_query
+        )
+
+    paginator = Paginator(invoices, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+    }
+    return render(request, "planning/shipmentinvoice/shipmentinvoice_list.html", context)
+
+
+@login_required
+def shipmentinvoice_create(request):
+    """Yangi yuk xati qo‘shish"""
+    if request.method == "POST":
+        form = ShipmentInvoiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            invoice = form.save(commit=False)
+            invoice.created_by = request.user
+            invoice.save()
+            messages.success(request, "Yangi yuk xati muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:shipmentinvoice_list")
+    else:
+        form = ShipmentInvoiceForm()
+
+    return render(
+        request,
+        "planning/shipmentinvoice/shipmentinvoice_form.html",
+        {"form": form},
+    )
+
+
+@login_required
+def shipmentinvoice_update(request, pk):
+    """Yuk xatini tahrirlash"""
+    invoice = get_object_or_404(ShipmentInvoice, pk=pk)
+    if request.method == "POST":
+        form = ShipmentInvoiceForm(request.POST, request.FILES, instance=invoice)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Yuk xati ma’lumoti yangilandi ✅")
+            return redirect("plm:shipmentinvoice_list")
+    else:
+        form = ShipmentInvoiceForm(instance=invoice)
+
+    return render(
+        request,
+        "planning/shipmentinvoice/shipmentinvoice_form.html",
+        {"form": form, "invoice": invoice},
+    )
+
+
+@login_required
+def shipmentinvoice_delete(request, pk):
+    """Yuk xatini o‘chirish"""
+    invoice = get_object_or_404(ShipmentInvoice, pk=pk)
+    if request.method == "POST":
+        invoice.delete()
+        messages.success(request, "Yuk xati o‘chirildi ❌")
+        return redirect("plm:shipmentinvoice_list")
+
+    return render(
+        request,
+        "planning/shipmentinvoice/shipmentinvoice_confirm_delete.html",
+        {"invoice": invoice},
+    )
+
+
+
+# Shipmentitem
+
+@login_required
+def shipment_items_list(request, shipment_id):
+    shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
+    items = shipment.items.select_related("order").all()
+
+    # 📊 jami hisoblash
+    total_quantity = sum(item.quantity for item in items)
+
+    return render(request, "planning/shipmentitem/shipment_items_list.html", {
+        "shipment": shipment,
+        "items": items,
+        "total_quantity": total_quantity,
+    })
+
+
+@login_required
+def shipment_item_create(request, shipment_id):
+    shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
+
+    if request.method == "POST":
+        form = ShipmentItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.shipment = shipment  # <-- avtomatik yuk xatiga biriktirish
+            item.save()
+            messages.success(request, "Yangi yuk tarkibi muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:shipment_items_list", shipment_id=shipment.id)
+    else:
+        form = ShipmentItemForm()
+
+    return render(request, "planning/shipmentitem/shipment_item_form.html", {
+        "form": form,
+        "shipment": shipment,
+    })
+
+
+
+@login_required
+def shipment_item_update(request, shipment_id, item_id):
+    shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
+    item = get_object_or_404(ShipmentItem, id=item_id, shipment=shipment)
+
+    if request.method == "POST":
+        form = ShipmentItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Yuk tarkibi yangilandi ✏️")
+            return redirect("plm:shipment_items_list", shipment_id=shipment.id)
+    else:
+        form = ShipmentItemForm(instance=item)
+
+    return render(request, "planning/shipmentitem/shipment_item_form.html", {
+        "form": form,
+        "shipment": shipment,
+    })
+
+
+
+@login_required
+def shipment_item_delete(request, shipment_id, pk):
+    """Yuk tarkibini o‘chirish"""
+    shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
+    item = get_object_or_404(ShipmentItem, pk=pk, shipment=shipment)
+
+    if request.method == "POST":
+        item.delete()
+        messages.success(request, "Yuk tarkibi o‘chirildi ❌")
+        return redirect("plm:shipment_items_list", shipment_id=shipment.id)
+
+    context = {
+        "shipment": shipment,
+        "item": item,
+    }
+    return render(request, "planning/shipmentitem/shipment_item_confirm_delete.html", context)
 
 
 

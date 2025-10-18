@@ -84,6 +84,19 @@ urlpatterns = [
     path("shipment/update/<int:pk>/", views.shipment_update, name="shipment_update"),
     path("shipment/delete/<int:pk>/", views.shipment_delete, name="shipment_delete"),
 
+    path("shipmentinvoice/list/", views.shipmentinvoice_list, name="shipmentinvoice_list"),
+    path("shipmentinvoice/add/", views.shipmentinvoice_create, name="shipmentinvoice_create"),
+    path("shipmentinvoice/<int:pk>/edit/", views.shipmentinvoice_update, name="shipmentinvoice_update"),
+    path("shipmentinvoice/<int:pk>/delete/", views.shipmentinvoice_delete, name="shipmentinvoice_delete"),
+
+    # Shipment item URLs (har bir yuk xatiga bog‘liq)
+    path("shipment/<int:shipment_id>/items/", views.shipment_items_list, name="shipment_items_list"),
+    path("shipment/<int:shipment_id>/items/add/", views.shipment_item_create, name="shipment_item_create"),
+    path("shipment/<int:shipment_id>/items/<int:item_id>/edit/", views.shipment_item_update, name="shipment_item_update"),
+    path("shipment/<int:shipment_id>/items/<int:pk>/delete/", views.shipment_item_delete, name="shipment_item_delete"),
+
+
+
 
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),

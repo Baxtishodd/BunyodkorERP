@@ -1,0 +1,37 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 text-white">
+        {% if form.instance.pk %}✏️ Yuk xatini tahrirlash{% else %}➕ Yangi yuk xati{% endif %}
+      </h5>
+      <a href="{% url 'plm:shipmentinvoice_list' %}" class="btn btn-light btn-sm">← Orqaga</a>
+    </div>
+
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="col-12 mt-3">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save"></i> Saqlash
+          </button>
+          <a href="{% url 'plm:shipmentinvoice_list' %}" class="btn btn-secondary">Bekor qilish</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
