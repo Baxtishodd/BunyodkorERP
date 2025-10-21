@@ -1,11 +1,27 @@
 {% extends 'base1.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h3>Haqiqatan ham "{{ ordersize }}" ni o‘chirmoqchimisiz?</h3>
-    <form method="post">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow-lg border-0" style="max-width: 500px; width: 100%; border-radius: 1rem;">
+    <div class="card-body text-center p-4">
+      <div class="mb-3">
+        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3rem;"></i>
+      </div>
+      <h4 class="fw-bold mb-3 text-danger">O‘chirishni tasdiqlang</h4>
+      <p class="text-muted mb-4">
+        Siz haqiqatan ham <strong>"{{ ordersize }}"</strong> nomli elementni o‘chirmoqchimisiz?<br>
+        Ushbu amalni ortga qaytarib bo‘lmaydi.
+      </p>
+
+      <form method="post" class="d-flex justify-content-center gap-3">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Ha, o‘chirish</button>
-        <a href="{% url 'plm:order_list' %}" class="btn btn-secondary">Bekor qilish</a>
-    </form>
+        <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm">
+          <i class="bi bi-trash3 me-1"></i> Ha, o‘chirish
+        </button>
+        <a href="{% url 'plm:order_list' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
+          <i class="bi bi-x-circle me-1"></i> Bekor qilish
+        </a>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

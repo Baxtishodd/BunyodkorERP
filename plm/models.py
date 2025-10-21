@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Sum
 
 SIZE_CHOICES = [
         ('oversize', 'Oversize'),
@@ -108,6 +109,9 @@ class Order(models.Model):
 
     def sum_order_size(self):
         return sum(c.quantity or 0 for c in self.ordersize.all())
+
+    def total_stitched(self):
+        return self.ordersize.all().aggregate(total=Sum("stitchings__quantity"))["total"] or 0
 
 
 class OrderSize(models.Model):

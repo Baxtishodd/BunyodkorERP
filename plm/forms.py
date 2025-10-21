@@ -1,6 +1,6 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice, ShipmentItem)
+                     Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice, ShipmentItem, ModelAssigned)
 
 
 
@@ -311,6 +311,14 @@ class ShipmentItemForm(forms.ModelForm):
             "package_type": "Qadoq turi",
             "note": "Izoh",
         }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # faqat ModelAssigned orqali tasdiqlangan buyurtmalarni ko‘rsatish
+            confirmed_orders = Order.objects.filter(
+                id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+            )
+            self.fields['order'].queryset = confirmed_orders
 
 
 

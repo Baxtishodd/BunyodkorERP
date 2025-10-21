@@ -110,10 +110,51 @@ def hourly_work_table(request, line_id, order_id):
         "time_slots": hours,
     })
 
+# @login_required
+# def employee_list(request):
+#     employees = Employee.objects.select_related("line").all()
+#     return render(request, "employee/employee_list.html", {"employees": employees})
+
+
 @login_required
 def employee_list(request):
-    employees = Employee.objects.select_related("line").all()
-    return render(request, "employee/employee_list.html", {"employees": employees})
+    # 🔍 Qidiruv so‘rovi
+    search_query = request.GET.get("q", "").strip()
+
+    # 📄 Har sahifada nechta xodim ko‘rsatish
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
+
+    per_page_options = [5, 10, 25, 50, 100]
+
+    # 🔹 Asosiy queryset
+    employees = Employee.objects.select_related("line").order_by("-id")
+
+    # 🔍 Qidiruv: ism familiya yoki patok nomi bo‘yicha
+    if search_query:
+        employees = employees.filter(
+            Q(full_name__icontains=search_query) |
+            Q(line__name__icontains=search_query)
+        )
+
+    # 📄 Pagination
+    paginator = Paginator(employees, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 📦 Kontekst
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": per_page_options,
+    }
+
+    return render(request, "employee/employee_list.html", context)
+
+
 
 @login_required
 def employee_create(request):
@@ -160,23 +201,28 @@ def productionline_list(request):
             client = order.client
             order_id = order.id
             quantity = order.sum_order_size() or 0
-            print(f"Line: {line.name}, Order: {order}, Quantity: {quantity}")  # 🔍 Debug
+            # 🔹 Tikilgan sonni Order model methodidan olish
+            tikildi = order.total_stitched()
         else:
             artikul = None
             client = None
             order_id = None
             quantity = 0
+            tikildi = 0
+
+        # Progress
+        progress = int((tikildi / quantity) * 100) if quantity else 0
 
         # Normativ (oxirgisi)
         norm = line.norm_set.last()
         daily_norm = norm.daily_norm if norm else 0
         hourly_norm = norm.hourly_norm if norm else 0
 
-        # Tikilgan mahsulot (masalan HourlyWork orqali)
-        tikildi = line.hourlywork_set.aggregate(total=Sum("quantity"))["total"] or 0
-
-        # Progress % (tikilgan / umumiy reja)
-        progress = int((tikildi / quantity) * 100) if quantity else 0
+        # # Tikilgan mahsulot (masalan HourlyWork orqali)
+        # tikildi = line.hourlywork_set.aggregate(total=Sum("quantity"))["total"] or 0
+        #
+        # # Progress % (tikilgan / umumiy reja)
+        # progress = int((tikildi / quantity) * 100) if quantity else 0
 
         line_data.append({
             "pk": line.pk,
@@ -1033,6 +1079,7 @@ def inspection_list(request):
         Order.objects.filter(modelassigned__isnull=False)
         .prefetch_related("inspections")
         .order_by("-created_at")
+        .distinct()
     )
 
     # 🔍 Qidiruv
@@ -1151,6 +1198,7 @@ def packing_list(request):
         Order.objects.filter(modelassigned__isnull=False)
         .prefetch_related("packings")
         .order_by("-created_at")
+        .distinct()
     )
 
     # 🔍 Qidiruv (mijoz, artikul, rang)
@@ -1542,21 +1590,32 @@ def shipment_items_list(request, shipment_id):
 def shipment_item_create(request, shipment_id):
     shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
 
+    # ✅ faqat ModelAssigned orqali tasdiqlangan buyurtmalarni olish
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    )
+
     if request.method == "POST":
         form = ShipmentItemForm(request.POST)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.shipment = shipment  # <-- avtomatik yuk xatiga biriktirish
-            item.save()
-            messages.success(request, "Yangi yuk tarkibi muvaffaqiyatli qo‘shildi ✅")
-            return redirect("plm:shipment_items_list", shipment_id=shipment.id)
     else:
         form = ShipmentItemForm()
+
+    # ✅ form ichidagi order tanlovini faqat tasdiqlangan buyurtmalarga cheklaymiz
+    if "order" in form.fields:
+        form.fields["order"].queryset = confirmed_orders
+
+    if request.method == "POST" and form.is_valid():
+        item = form.save(commit=False)
+        item.shipment = shipment  # avtomatik yuk xatiga biriktirish
+        item.save()
+        messages.success(request, "Yangi yuk tarkibi muvaffaqiyatli qo‘shildi ✅")
+        return redirect("plm:shipment_items_list", shipment_id=shipment.id)
 
     return render(request, "planning/shipmentitem/shipment_item_form.html", {
         "form": form,
         "shipment": shipment,
     })
+
 
 
 
@@ -1565,20 +1624,29 @@ def shipment_item_update(request, shipment_id, item_id):
     shipment = get_object_or_404(ShipmentInvoice, id=shipment_id)
     item = get_object_or_404(ShipmentItem, id=item_id, shipment=shipment)
 
+    # ✅ faqat ModelAssigned orqali tasdiqlangan buyurtmalarni olish
+    confirmed_orders = Order.objects.filter(
+        id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
+    )
+
     if request.method == "POST":
         form = ShipmentItemForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Yuk tarkibi yangilandi ✏️")
-            return redirect("plm:shipment_items_list", shipment_id=shipment.id)
     else:
         form = ShipmentItemForm(instance=item)
+
+    # ✅ formdagi order tanlovini faqat tastiqlangan buyurtmalarga cheklash
+    if "order" in form.fields:
+        form.fields["order"].queryset = confirmed_orders
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Yuk tarkibi yangilandi ✏️")
+        return redirect("plm:shipment_items_list", shipment_id=shipment.id)
 
     return render(request, "planning/shipmentitem/shipment_item_form.html", {
         "form": form,
         "shipment": shipment,
     })
-
 
 
 @login_required

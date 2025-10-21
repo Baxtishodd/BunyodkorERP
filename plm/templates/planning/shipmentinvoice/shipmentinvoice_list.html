@@ -40,10 +40,10 @@
         <thead class="table-success">
           <tr>
             <th>#</th>
+            <th>Holati</th>
             <th>Yuk xati raqami</th>
             <th>Manzil</th>
             <th>Yuk sanasi</th>
-            <th>Holati</th>
             <th>Mahsulotlar soni</th>
             <th>Fayl</th>
             <th>Harakat</th>
@@ -53,10 +53,6 @@
           {% for shipment in page_obj %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>№{{ shipment.shipment_number }}</td>
-            <td>{{ shipment.destination }}</td>
-            <td>{{ shipment.shipment_date }}</td>
-
             <td>
               {% if shipment.status == "pending" %}
                 <span class="badge bg-warning text-dark">Kutilmoqda</span>
@@ -66,6 +62,10 @@
                 <span class="badge bg-success">Yuklab jo‘natildi</span>
               {% endif %}
             </td>
+            <td>№{{ shipment.shipment_number }}</td>
+            <td>{{ shipment.destination }}</td>
+            <td>{{ shipment.shipment_date }}</td>
+
 
             <td>
               <span class="badge bg-light text-dark">

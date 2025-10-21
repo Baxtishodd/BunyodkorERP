@@ -61,6 +61,11 @@ class OrderAdmin(admin.ModelAdmin):
         }),
     )
 
+    def total_stitched_display(self, obj):
+        return obj.total_stitched()
+
+    total_stitched_display.short_description = "Tikilgan son"
+
 @admin.register(OrderSize)
 class OrderSizeAdmin(admin.ModelAdmin):
     list_display = ("order", "size", "quantity", "author", "created_at", "updated_at")
