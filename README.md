@@ -96,11 +96,11 @@ Model ro‘yxati	Buyurtma tafsiloti	Ishlab chiqarish jarayoni
 
 Bunyodkor Textile
 📍 Qashqadaryo, Koson tumani
-🌐 bunyodkortex.com
+🌐 t.me/bakhtech
 
-📧 sales@bunyodkortex.com
+📧 baxtishodd@gmail.com
 
-📞 +998 90 997 8888
+📞 +998 90 678 63 27
 
 🪪 Litsenziya
 
