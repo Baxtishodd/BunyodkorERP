@@ -6,7 +6,7 @@ __pycache__/
 local_settings.py
 
 .env
-.idea
+.idea/
 db.sqlite3
 
 
