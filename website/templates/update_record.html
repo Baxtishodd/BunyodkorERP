@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<!--<h4>Ma'lumotlarni o'zgartirish</h4>-->
+<div class="d-flex justify-content-center align-items-center mb-4" style="">
+    {% if customer_record.avatar %}
+        <img class="rounded-circle" src="{{ customer_record.avatar.url }}" width="200px" height="200px" alt="Avatar">
+    {% else %}
+        <img class="rounded-circle" src="/media/avatars/default-avatar.jpg" width="200px" height="200px" alt="Avatar">
+    {% endif %}
+</div>
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <!-- Accordion start -->
+    <div class="accordion shadow-lg" id="accordionPanelsStayOpenExample">
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+            XODIM MA'LUMOTLARI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+          <div class="accordion-body">
+              <div class="row g-4">
+                  <div class="col-md-4">
+                    <label class="form-label">Ismi:</label>
+                      {{ form.first_name }}
+
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Avatar:</label>
+                      {{ form.avatar }}
+
+                  </div>
+                  <div class="col-md-4 ">
+
+                    <label class="form-label">Jinsi: </label><br>
+                      {% for value, label in form.sex.field.choices %}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sex" id="id_sex_{{ forloop.counter }}" value="{{ value }}" {% if form.sex.value == value %}checked{% endif %}>
+                            <label class="form-check-label" for="id_sex_{{ forloop.counter }}">
+                                {{ label }}
+                            </label>
+                        </div>
+                      {% endfor %}
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Familiyasi:</label>
+                      {{ form.last_name }}
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Otasining ismi:</label>
+                      {{ form.father_name }}
+                  </div>
+                  <div class="col-md-4">
+                      <label class="form-label">Oilaviy ahvoli:</label>
+                      {{ form.family_situation }}
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Tug`ilgan kun sanasi:</label>
+                      {{ form.birthday }}
+                  </div>
+                  <div class="col-md-5">
+                    <label class="form-label">Millati:</label>
+                    {{ form.nationality }}
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Zipcode:</label>
+                    {{ form.zipcode }}
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Manzil:</label>
+                    {{ form.address }}
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Shahar:</label>
+                    {{ form.city }}
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Viloyati:</label>
+                    {{ form.state }}
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Davlati:</label>
+                    {{ form.country }}
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Telefoni:</label>
+                    {{ form.phone }}
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email:</label>
+                    {{ form.email }}
+                  </div>
+              </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+            BANDLIK MA'LUMOTLARI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+            SHAXSIY IDENTIFIKATSIYA RAQAMI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+       <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
+            TO`LOV USHLANMA TOIFASI JADVALI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false" aria-controls="panelsStayOpen-collapseFive">
+            BANK HISOB VARAG`I MA`LUMOTLARI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false" aria-controls="panelsStayOpen-collapseSix">
+            BIRIKTIRMALAR
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSeven" aria-expanded="false" aria-controls="panelsStayOpen-collapseSeven">
+            BAZAVIY MA`LUMOTLAR
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseSeven" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseEight" aria-expanded="false" aria-controls="panelsStayOpen-collapseEight">
+            ISH TAJRIBASI
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapseEight" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <strong>Ushbu bo`lim hali mavjud emas.</strong>
+          </div>
+        </div>
+      </div>
+
+    </div><br>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a href="{% url 'records' %}" class="btn btn-secondary">Orqaga</a>
+            <button type="submit" class="btn btn-success"><i class="bi bi-database-add"></i> Saqlash</button>
+        </div>
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-6"></div>
+    </div>
+</form>
+<br>
+<br>
+
+
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Bosh Saxifa {% endblock %}
+
+
+{% block content %}
+
+<br>
+
+<div class="row justify-content">
+
+
+
+  <div class="row gy-3">
+
+    <!-- Savdolar -->
+    <div class="col-md-4  col-sm-6">
+      <div class="card widget-card border-light shadow-sm">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-8">
+              <div class="card-title widget-card-title mb-3">
+                <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Savdo </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
+              </div>
+              <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>
+            </div>
+            <div class="col-4">
+              <div class="d-flex justify-content-end">
+                <div class="lh-1 text-white bg-warning rounded-circle p-3 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cash text-light fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+
+             <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">Kecha</p>
+                    <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>
+                    <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Payments -->
+    <div class="col-md-4  col-sm-6">
+      <div class="card widget-card border-light shadow-sm">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-8">
+              <div class="card-title widget-card-title mb-3">
+                <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Tushum </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
+              </div>
+              <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>
+            </div>
+            <div class="col-4">
+              <div class="d-flex justify-content-end">
+                <div class="lh-1 text-success bg-success rounded-circle p-3 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-arrow-down-short text-light fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+
+             <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">Kecha</p>
+                    <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>
+                    <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Qarzdorlik -->
+    <div class="col-md-4  col-sm-6">
+      <div class="card widget-card border-light shadow-sm">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-8">
+              <div class="card-title widget-card-title mb-3">
+                <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Qarzdorlik </span>
+                <span class="fs-7 mb-0 text-secondary">Butun davr </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
+              </div>
+              <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>
+            </div>
+            <div class="col-4">
+              <div class="d-flex justify-content-end">
+                <div class="lh-1 text-white bg-danger rounded-circle p-3 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cash-stack text-light fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+
+             <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">Bugun</p>
+                    <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>
+                    <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+     <!-- Xarajatlar -->
+    <div class="col-md-4  col-sm-6">
+      <div class="card widget-card border-light shadow-sm">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-8">
+              <div class="card-title widget-card-title mb-3">
+                <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Xarajat </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>
+              </div>
+              <h5 class="card-subtitle text-body-secondary m-0">9,700,250.00 So'm</h5>
+            </div>
+            <div class="col-4">
+              <div class="d-flex justify-content-end">
+                <div class="lh-1 text-white bg-primary rounded-circle p-3 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-arrow-up-short text-light fs-1"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+
+             <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">Kecha</p>
+                    <p class="fs-7 mb-0 text-success">12,750,695.00</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex align-items-center mt-3">
+                  <div>
+                    <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>
+                    <p class="fs-7 mb-0 text-success">224,311,500.00</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8  col-sm-6"></div>
+
+
+<!--    <div class="col-md-3  col-sm-6">-->
+<!--      <div class="card widget-card border-light shadow-sm">-->
+<!--        <div class="card-body p-4">-->
+<!--          <div class="row">-->
+<!--            <div class="col-8">-->
+<!--              <h5 class="card-title widget-card-title mb-3">-->
+<!--                <a href="{% url 'account_list' %}" class="text-decoration-none">Accounts</a>-->
+<!--                <a href="{% url 'account_create' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--              </h5>-->
+<!--              <h4 class="card-subtitle text-body-secondary m-0">{{ account_count }}</h4>-->
+<!--            </div>-->
+<!--            <div class="col-4">-->
+<!--              <div class="d-flex justify-content-end">-->
+<!--                <div class="lh-1 text-white bg-success rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                  <i class="bi bi-buildings fs-1"></i>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          <div class="row">-->
+<!--              <div class="col-12">-->
+<!--                <div class="d-flex align-items-center mt-3">-->
+<!--                  <span class="lh-1 me-3 bg-success-subtle text-success rounded-circle p-1 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-arrow-up-right"></i>-->
+<!--                  </span>-->
+<!--                  <div>-->
+<!--                    <p class="fs-7 mb-0 text-success">+{{ accounts_this_month }}</p>-->
+<!--                    <p class="fs-7 mb-0 text-secondary">in this month</p>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="col-md-3 col-sm-6">-->
+<!--        <div class="card widget-card border-light shadow-sm">-->
+<!--          <div class="card-body p-4">-->
+<!--            <div class="row">-->
+<!--              <div class="col-8">-->
+<!--                <h5 class="card-title widget-card-title mb-3">-->
+<!--                  <a href="{% url 'contact_list' %}" class="text-decoration-none">Contacts</a>-->
+<!--                  <a href="{% url 'contact_create' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                </h5>-->
+<!--                <h4 class="card-subtitle text-body-secondary m-0">{{ contact_count }}</h4>-->
+<!--              </div>-->
+<!--              <div class="col-4">-->
+<!--                <div class="d-flex justify-content-end">-->
+<!--                  <div class="lh-1 text-white bg-info rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-person fs-1"></i>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="row">-->
+<!--              <div class="col-12">-->
+<!--                <div class="d-flex align-items-center mt-3">-->
+<!--                  <span class="lh-1 me-3 bg-success-subtle text-success rounded-circle p-1 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-arrow-up-right"></i>-->
+<!--                  </span>-->
+<!--                  <div>-->
+<!--                    <p class="fs-7 mb-0 text-success">+{{ contact_this_month }}</p>-->
+<!--                    <p class="fs-7 mb-0 text-secondary">in this month</p>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="col-md-3  col-sm-6">-->
+<!--        <div class="card widget-card border-light shadow-sm">-->
+<!--          <div class="card-body p-4">-->
+<!--            <div class="row">-->
+<!--              <div class="col-8">-->
+<!--                <h5 class="card-title widget-card-title mb-3">-->
+<!--                  <a href="{% url 'records' %}" class="text-decoration-none">Employees</a>-->
+<!--                  <a href="{% url 'add_record' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                </h5>-->
+<!--                <h4 class="card-subtitle text-body-secondary m-0">{{ record_count }}</h4>-->
+<!--              </div>-->
+<!--              <div class="col-4">-->
+<!--                <div class="d-flex justify-content-end">-->
+<!--                  <div class="lh-1 text-white bg-dark rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-people fs-1"></i>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="row">-->
+<!--              <div class="col-12">-->
+<!--                <div class="d-flex align-items-center mt-3">-->
+<!--                  <span class="lh-1 me-3 bg-success-subtle text-success rounded-circle p-1 d-flex align-items-center justify-content-center">-->
+<!--                    <i class="bi bi-arrow-up-right"></i>-->
+<!--                  </span>-->
+<!--                  <div>-->
+<!--                    <p class="fs-7 mb-0 text-success">+{{ records_this_month }}</p>-->
+<!--                    <p class="fs-7 mb-0 text-secondary">in this month</p>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+
+
+    </div>
+</div>
+
+<!--<input type="text" class="price-field" value="">-->
+
+
+
+<!--<img src="/media/images/not-found.png" alt="Nothing to show" width="auto">-->
+<!--<iframe width="1024" height="666" src="https://www.youtube.com/embed/asaIt9pmTrY?list=PLp8HTS59FoNpySc5G81T0BodKIYsGK3r8" title="Prezident Koson tumanidagi ishlab chiqarish korxonalarini borib ko‘rdi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>-->
+
+{% endblock %}
+

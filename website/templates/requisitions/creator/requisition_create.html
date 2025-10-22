@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Yangi Talabnoma Qo‘shish</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field|capfirst }}</strong>: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="POST" class="border p-4 rounded shadow-sm" action="{% url 'requisition_create' %}" enctype="multipart/form-data">{% csrf_token %}
+        {% csrf_token %}
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Mahsulot nomi</label>
+                {{ form.product_name }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Model / Turi</label>
+                {{ form.product_model }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Mahsulot rasmi</label>
+                {{ form.product_image }}
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Foydalanish joyi</label>
+                {{ form.usage_location }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Miqdori</label>
+                {{ form.quantity }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">O‘lchov birligi</label>
+                {{ form.unit_of_measure }}
+            </div>
+
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary">Yuborish</button>
+            <a href="{% url 'requisition_list' %}" class="btn btn-secondary">Bekor qilish</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

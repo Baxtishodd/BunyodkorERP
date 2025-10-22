@@ -1,0 +1,51 @@
+
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+<div class="page-header">
+  <div class="page-block">
+    <div class="page-header-title">
+      <h5 class="mb-0 font-medium">Xodim qo'shish</h5>
+    </div>
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Xodimlar</a></li>
+      <li class="breadcrumb-item" aria-current="page">Xodim qo'shish</li>
+    </ul>
+  </div>
+</div>
+<!-- [ breadcrumb ] end -->
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0">Yangi hodim qo'shish</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.full_name.id_for_label }}" class="form-label">{{ form.full_name.label }}</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}
+                    <div class="text-danger small">{{ form.full_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.line.id_for_label }}" class="form-label">{{ form.line.label }}</label>
+                {{ form.line }}
+                {% if form.line.errors %}
+                    <div class="text-danger small">{{ form.line.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-success">Saqlash</button>
+            <a href="{% url 'plm:employee_list' %}" class="btn btn-secondary">Orqaga</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+

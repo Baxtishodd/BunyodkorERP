@@ -1,0 +1,50 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="row mt-3">
+  <!-- Chap qism: Fabric Arrival List -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-success text-white fw-bold">
+        Mato kelish ro‘yxati
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for order in orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <a href="{% url 'plm:order_detail' order.id %}" class="text-decoration-none text-dark">
+                {{ order.client }} — {{ order.artikul }}
+              </a>
+              <span class="badge bg-secondary">
+                {{ order.fabric_arrival.count }} ta mato
+              </span>
+            </li>
+          {% empty %}
+            <li class="list-group-item">Hozircha mato kelgan buyurtmalar yo‘q.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- O‘ng qism: Yaqin buyurtmalar -->
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-dark text-white fw-bold">
+        Yaqin oradagi buyurtmalar
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for order in upcoming_orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ order.client }} — {{ order.artikul }}</span>
+              <span class="badge bg-danger">{{ order.deadline|date:"d.m.Y H:i" }}</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item">Yaqin orada buyurtmalar yo‘q.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

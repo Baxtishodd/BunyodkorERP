@@ -1,0 +1,152 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="fw-bold text-success mb-2">🚚 Yuk xatlari ro‘yxati</h4>
+
+    <div class="d-flex align-items-center">
+      <a href="{% url 'plm:shipmentinvoice_create' %}" class="btn btn-primary d-flex me-2">
+            + Yuk xati yaratish
+      </a>
+      <!-- 🔍 Qidiruv -->
+      <form method="get" class="d-flex me-2">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control me-2"
+          placeholder="Manzil bo‘yicha qidiruv..."
+        />
+        <button class="btn btn-success" type="submit">Qidir</button>
+      </form>
+
+      <!-- 📄 Har sahifada nechta ko‘rsatish -->
+      <form method="get" class="ms-2">
+        {% if search_query %}
+          <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+        <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+          {% for num in per_page_options %}
+            <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <table class="table table-hover align-middle text-center">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Holati</th>
+            <th>Yuk xati raqami</th>
+            <th>Manzil</th>
+            <th>Yuk sanasi</th>
+            <th>Mahsulotlar soni</th>
+            <th>Fayl</th>
+            <th>Harakat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for shipment in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              {% if shipment.status == "pending" %}
+                <span class="badge bg-warning text-dark">Kutilmoqda</span>
+              {% elif shipment.status == "ready" %}
+                <span class="badge bg-info text-dark">Yuklashga tayyor</span>
+              {% else %}
+                <span class="badge bg-success">Yuklab jo‘natildi</span>
+              {% endif %}
+            </td>
+            <td>№{{ shipment.shipment_number }}</td>
+            <td>{{ shipment.destination }}</td>
+            <td>{{ shipment.shipment_date }}</td>
+
+
+            <td>
+              <span class="badge bg-light text-dark">
+                {{ shipment.item_count }} ta tur
+              </span>
+              <br>
+              <small class="text-muted">{{ shipment.total_quantity }} dona</small>
+            </td>
+
+            <td>
+              {% if shipment.attachment %}
+                {% if ".pdf" in shipment.attachment.url %}
+                  <a href="{{ shipment.attachment.url }}" target="_blank" class="text-decoration-none text-danger">
+                    📄 PDF
+                  </a>
+                {% elif ".xlsx" in shipment.attachment.url or ".xls" in shipment.attachment.url %}
+                  <a href="{{ shipment.attachment.url }}" target="_blank" class="text-decoration-none text-success">
+                    📘 Excel
+                  </a>
+                {% elif ".doc" in shipment.attachment.url or ".docx" in shipment.attachment.url %}
+                  <a href="{{ shipment.attachment.url }}" target="_blank" class="text-decoration-none text-primary">
+                    📝 Word
+                  </a>
+                {% else %}
+                  <a href="{{ shipment.attachment.url }}" target="_blank" class="text-decoration-none">
+                    📎 Ko‘rish
+                  </a>
+                {% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+
+
+            <td>
+              <a href="{% url 'plm:shipment_items_list' shipment.id %}" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-box-seam"></i> Tarkibi
+              </a>
+              <a href="{% url 'plm:shipmentinvoice_update' shipment.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a href="{% url 'plm:shipmentinvoice_delete' shipment.id %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-3">
+              Hozircha yuk xatlari mavjud emas.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&per_page={{ per_page }}">«</a>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ search_query }}&per_page={{ per_page }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&per_page={{ per_page }}">»</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}

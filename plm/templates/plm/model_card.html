@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Modellar karta{% endblock %}
+
+{% block content %}
+
+<div class="row m-3 align-items-center">
+        <div class="col-md-2">
+            <a class="btn btn-success bi bi-person-plus" style="width: 100%;" href="{% url 'contact_create' %}"> New Contact</a>
+        </div>
+        <div class="col-md-4">
+            <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+                {% csrf_token %}
+                <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ query|default:'' }}">
+                <input type="hidden" name="view" value="{{ view_type }}"> <!-- Retain the view type -->
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+
+                <input type="hidden" name="view" value="{{ view_type }}">
+<!--                <label  class="me-2">Lead Status:</label>-->
+                {{ contact_form.lead_status}}
+                <button class="btn btn-warning  ms-2" type="submit">Filter</button>
+                <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>
+
+            </form>
+        </div>
+        <div class="col-md-2">
+            <a href="?view=list" class="btn btn-light"><i class="fa-solid fa-list"></i></a>
+        </div>
+    </div>
+
+
+<div class="row">
+    {% for contact in contacts %}
+    <div class="col-12 col-md-6 col-lg-3 mb-4"> <!-- 4 cards per row on larger screens -->
+        <div class="card h-100">
+            <!-- Contact Photo -->
+            {% if contact.profile_picture %}
+                <img src="{{ contact.profile_picture.url }}" class="card-img-top no-rounded-circle" alt="{{ contact.first_name }} {{ contact.last_name }}'s photo">
+            {% else %}
+                <img src="media/contacts/default-avatar.jpg" class="card-img-top" alt="{{ contact.first_name }} {{ contact.last_name }}'s photo">
+            {% endif %}
+
+            <!-- Contact  -->
+            <div class="card-body p-2">
+                <!-- Company employee Name -->
+                <h5 class="card-title text-truncate">
+                    <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">
+                        {{ contact.first_name|title }} {% if contact.last_name %}{{ contact.last_name|title }}{% endif %}
+                    </a></h5>
+
+                <!-- Phone Number -->
+                <p class="card-text mb-1">
+                    <i class="bi bi-telephone-fill"></i> {{ contact.phone_mobile }}
+                </p>
+
+                <!-- Company Name -->
+                <p class="card-text mb-1">
+                    <strong>Company:</strong> {{ contact.company }}
+                </p>
+
+                <!-- Industry -->
+                <p class="card-text mb-1">
+                    <strong>Industry:</strong> {{ contact.industry }}
+                </p>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer p-2">
+                <div class="d-flex align-items-center">
+                    <!-- Contact Author Photo -->
+
+                    {% if contact.created_by.profile_picture %}
+                        <img src="{{ contact.created_by.profile_picture.url }}" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">
+                    {% else %}
+                        <img src="/media/contacts/default-avatar.jpg" class="rounded-circle me-2" alt="{{ contact.created_by.get_full_name }}" width="30" height="30">
+                    {% endif %}
+
+
+
+                    <div>
+                        <!-- Author Full Name -->
+                        <p class="mb-0">
+                            <a class=" text-decoration-none" href="{% url 'accounts:profile' contact.created_by.pk %}">{{ contact.created_by.get_full_name }}</a>
+                        </p>
+                        <!-- Created Date { % url 'accounts:profile/' contact.created_by.pk %} -->
+                        <small class="text-muted"><i class="bi bi-clock " style="font-size: 1rem; color: #999999;"></i> {{ contact.created_at|date:"M d, Y  H:i" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination Links -->
+<!-- Pagination Links -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if contacts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1&view={{ view_type }}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ contacts.previous_page_number }}&view={{ view_type }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in contacts.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > contacts.number|add:'-2' and num < contacts.number|add:'2' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&view={{ view_type }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if contacts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ contacts.next_page_number }}&view={{ view_type }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ contacts.paginator.num_pages }}&view={{ view_type }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+
+{% endblock %}

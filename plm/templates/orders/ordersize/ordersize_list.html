@@ -1,0 +1,39 @@
+{% extends 'base1.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Buyurtma o‘lchamlari ro‘yxati</h3>
+    <a href="{% url 'plm:ordersize_create' %}" class="btn btn-success mb-3">+ Yangi qo‘shish</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Buyurtma</th>
+                <th>O‘lcham</th>
+                <th>Soni</th>
+                <th>Muallif</th>
+                <th>Yaratilgan</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sizes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ s.order }}</td>
+                <td>{{ s.size }}</td>
+                <td>{{ s.quantity }}</td>
+                <td>{{ s.author }}</td>
+                <td>{{ s.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'plm:ordersize_update' s.pk %}" class="btn btn-sm btn-primary">Tahrirlash</a>
+                    <a href="{% url 'plm:ordersize_delete' s.pk %}" class="btn btn-sm btn-danger">O‘chirish</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center">Ma’lumot topilmadi</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+
+{% extends "base1.html" %}
+{% block content %}
+<h3>{{ order }} buyurtmasi uchun aksessuar qo‘shish</h3><br>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.name.label_tag }} {{ form.name }}
+    </div>
+    <div class="mb-3">
+        {{ form.quantity.label_tag }} {{ form.quantity }}
+    </div>
+    <div class="mb-3">
+        {{ form.unit.label_tag }} {{ form.unit }}
+    </div>
+    <button type="submit" class="btn btn-primary">Saqlash</button>
+    <a href="{% url 'plm:accessory_list' %}" class="btn btn-secondary">Orqaga</a>
+</form>
+{% endblock %}

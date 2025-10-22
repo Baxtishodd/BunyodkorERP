@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Xodimlar Ro'yhati{% endblock %}
+
+{% block content %}
+
+<form method="GET" action="">
+    <div class="row m-3">
+        <div class="col-md-2">
+            <a class="btn btn-success bi bi-person-plus" style="width:100%;" href="{% url 'add_record' %}"> Xodim</a>
+        </div>
+        <div class="col-md-4">
+            <input class="form-control" type="text" name="q" placeholder="Izlash.." value="{{ request.GET.q }}">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-hover table-bordered">
+  <thead class="table-secondary">
+    <tr>
+        <th scope="col"><i class="bi bi-list"></i></th>
+        <th scope="col">Ism Familiya</th>
+        <th scope="col">Email</th>
+        <th scope="col">Telefon</th>
+        <th scope="col">Manzil</th>
+        <th scope="col">Shahar</th>
+        <th scope="col">Muallif</th>
+        <th scope="col">Qo'shilgan Vaqti</th>
+        <th scope="col">EMP ID</th>
+        <th scope="col">...</th>
+    </tr>
+  </thead>
+  <tbody>
+
+	{% for record in records %}
+		<tr>
+            <td>
+                <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+
+                    {% if record.avatar %}
+                      <img class="rounded-circle" src="{{ record.avatar.url }}" title="{{ record.first_name }} {{ record.last_name }}"  width="30px" height="30px">
+                    {% else %}
+                      <img class="rounded-circle" src="/media/avatars/default-avatar.jpg" title="{{ record.first_name }} {{ record.last_name }}"  width="30px" height="30px">
+                    {% endif %}
+              </div>
+            </td>
+			<td><a href="{% url 'record' record.id %}" class="link-primary hover-link text-decoration-none">
+                {{ record.first_name }} {{ record.last_name }}</a></td>
+			<td>{{ record.email }}</td>
+			<td>{{ record.phone }}</td>
+			<td>{{ record.address }}</td>
+			<td>{{ record.city }}</td>
+			<td>{{ record.created_by.first_name|default:"deleted user" }}</td>
+			<td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
+			<td><a href="{% url 'record' record.id %}" class="text-decoration-none">EMP{{ record.id }}</a></td>
+            <td><a href="{% url 'update_record' record.id %}" class="text-decoration-none"><i class="bi bi-pen"></i></a></td>
+		</tr>
+    {% empty %}
+        <tr>
+            <td colspan="3">Natija topilmadi...</td>
+        </tr>
+	{% endfor %}
+
+	  </tbody>
+	</table>
+   <!-- Pagination Links -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if records.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in records.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > records.number|add:'-2' and num < records.number|add:'2' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if records.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ records.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ records.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+{% endblock %}

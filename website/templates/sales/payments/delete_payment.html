@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>To‘lovni o‘chirish</h2>
+    <p>Haqiqatan ham {{ payment.company_name }} {{ payment.amount|floatformat:2|intcomma }} {{ payment.currency }} to‘lov ma`lumotlarini o‘chirib tashlamoqchimisiz?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Ha, o‘chirish</button>
+        <a href="{% url 'payment_list' %}" class="btn btn-secondary">Bekor qilish</a>
+    </form>
+</div>
+{% endblock %}

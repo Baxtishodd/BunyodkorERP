@@ -1,0 +1,93 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="fw-bold text-success mb-2">Xodimlar ro‘yxati</h4>
+
+    <div class="d-flex align-items-center">
+        <a href="{% url 'plm:employee_add' %}" class="btn btn-success me-2">
+          ➕ Yangi xodim
+        </a>
+      <!-- 🔍 Qidiruv -->
+      <form method="get" class="d-flex me-2">
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          class="form-control me-2"
+          placeholder="Qidiruv (xodim, patok)..."
+        />
+        <button class="btn btn-success" type="submit">Qidir</button>
+      </form>
+
+      <!-- 📄 Har sahifada nechta ko‘rsatish -->
+      <form method="get" class="ms-2">
+        {% if search_query %}
+          <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+        <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+          {% for num in per_page_options %}
+            <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <table class="table table-hover align-middle">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Ism familiya</th>
+            <th>Patok</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for emp in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ emp.full_name }}</td>
+            <td>{{ emp.line.name }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="text-center text-muted py-3">
+              Xodimlar topilmadi.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- 📄 Pagination -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">«</a>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-10' and num < page_obj.number|add:'10' %}
+              <li class="page-item">
+                <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">»</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}

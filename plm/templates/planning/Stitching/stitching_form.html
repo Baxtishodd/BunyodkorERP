@@ -1,0 +1,57 @@
+{% extends 'base1.html' %}
+{% block content %}
+<h3>Tikim qo‘shish - Model: {{ order }}</h3><br>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <!-- Patok -->
+        <div class="mb-3 col-md-2">
+            <label class="form-label">Patok</label>
+            <select class="form-control" disabled>
+                {% for assigned in assigned_lines %}
+                    <option selected>{{ assigned.line.name }}</option>
+                {% empty %}
+                    <option selected>Patok biriktirilmagan</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Order -->
+        <div class="mb-3 col-md-2">
+            <label class="form-label">Buyurtma</label>
+            <select class="form-control" disabled>
+                <option selected>{{ order }}</option>
+            </select>
+        </div>
+
+
+        <!-- OrderSize select -->
+        <div class="mb-3 col-md-2">
+            <label for="{{ form.ordersize.id_for_label }}" class="form-label">
+                {{ form.ordersize.label }}
+            </label>
+            {{ form.ordersize }}
+        </div>
+
+        <!-- Quantity -->
+        <div class="mb-3 col-md-2">
+            <label for="{{ form.quantity.id_for_label }}" class="form-label">
+                {{ form.quantity.label }}
+            </label>
+            {{ form.quantity }}
+        </div>
+
+        <!-- Date -->
+        <div class="mb-3 col-md-2">
+            <label class="form-label">
+                {{ form.date.label }}
+            </label>
+            {{ form.date }}
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-success">Saqlash</button>
+</form>
+{% endblock %}

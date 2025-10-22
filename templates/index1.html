@@ -1,0 +1,477 @@
+{% extends 'base1.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}Home | Dashboard  {% endblock title %}
+
+{% block content %}
+
+<!-- AOS animatsiya kutubxonasi -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<div class="container py-1">
+
+  <!-- HEADER SECTION -->
+  <div class="text-center my-5" data-aos="fade-up">
+    <h1 class="fw-bold display-5 text-success mb-3">Bunyodkor PLM Tizimi</h1>
+    <p class="lead text-muted">Ishlab chiqarishning har bir bosqichini nazorat qilish — bir platformada.</p>
+    <hr class="w-50 mx-auto border-success">
+  </div>
+
+  <!-- PURPOSE SECTION -->
+  <div class="row align-items-center my-5">
+    <div class="col-md-5" data-aos="fade-right">
+      <img src="{% static 'images/not-found.png' %}" alt="PLM Diagram" class="img-fluid rounded ">
+    </div>
+    <div class="col-md-7" data-aos="fade-left">
+      <h3 class="fw-bold mb-3 text-dark">  <span class="border-start border-4 border-success me-3" style="height: 30px;"></span>Bizning maqsad</h3>
+      <p class="fs-5 text-secondary">
+        PLM tizimi — bu <strong>mahsulot hayot siklini to‘liq boshqarish</strong> uchun mo‘ljallangan raqamli platforma.
+        U Bunyodkor Textile ishlab chiqarish zanjirining barcha bosqichlarini yagona tizimga birlashtiradi:
+      </p>
+      <div class="row text-center mt-4">
+          <div class="col-md-6 col-lg-3 mb-3" data-aos="zoom-in" data-aos-delay="300">
+            <div class="p-4 border rounded-4 shadow-sm bg-white h-100">
+              <i class="bi bi-clock-history text-success display-6 mb-2"></i>
+              <h6 class="fw-bold">Tizimli muvofiqlashtirish</h6>
+              <p class="small text-muted mb-0">Tizim mahsulotlarning o‘z vaqtida ishlab chiqilishi va jo‘natilishini muvofiqlashtiradi</p>
+            </div>
+          </div>
+        <div class="col-md-6 col-lg-3 mb-3" data-aos="zoom-in" data-aos-delay="100">
+          <div class="p-4 border rounded-4 shadow-sm bg-white h-100">
+            <i class="bi bi-diagram-3 text-success display-6 mb-2"></i>
+            <h6 class="fw-bold">Avtomatlashtirilgan ishlab chiqarish</h6>
+            <p class="small text-muted mb-0">Ishlab chiqarish jarayonlarini raqamlashtirish</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-3" data-aos="zoom-in" data-aos-delay="200">
+          <div class="p-4 border rounded-4 shadow-sm bg-white h-100">
+            <i class="bi bi-box-seam text-success display-6 mb-2"></i>
+            <h6 class="fw-bold">Real vaqtda kuzatuv</h6>
+            <p class="small text-muted mb-0">Materiallar harakatini nazorat qilish</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-3" data-aos="zoom-in" data-aos-delay="300">
+          <div class="p-4 border rounded-4 shadow-sm bg-white h-100">
+            <i class="bi bi-people text-success display-6 mb-2"></i>
+            <h6 class="fw-bold">Jamoaviy muvofiqlik</h6>
+            <p class="small text-muted mb-0">Barcha bo‘limlarni yagona tizimda birlashtirish</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TEAM SECTION -->
+  <div class="text-center my-4" data-aos="zoom-in">
+    <h2 class="fw-bold text-dark mb-4">Bizning jamoa</h2>
+    <p class="text-muted mb-5">PLM tizimini ishlab chiqishda ishtirok etayotgan mutaxassislar.</p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-2 col-sm-6 mb-4" data-aos="flip-left">
+        <div class="card border-0 shadow-sm">
+          <img src="{% static 'images/team/elmira.png' %}" class="card-img-top rounded-top" alt="Team Member">
+          <div class="card-body">
+            <h5 class="fw-bold">Elmira Erqulova</h5>
+            <p class="text-muted">Loyiha rahbari</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 mb-4" data-aos="flip-left">
+        <div class="card border-0 shadow-sm">
+          <img src="{% static 'images/team/baxtishod.png' %}" class="card-img-top rounded-top" alt="Team Member">
+          <div class="card-body">
+            <h5 class="fw-bold">Baxtishod Davronov</h5>
+            <p class="text-muted">PLM Arxitektori</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 mb-4" data-aos="flip-left" data-aos-delay="100">
+        <div class="card border-0 shadow-sm">
+          <img src="{% static 'images/team/parviz.png' %}" class="card-img-top rounded-top" alt="Team Member">
+          <div class="card-body">
+            <h5 class="fw-bold">Rakhimov Parviz</h5>
+            <p class="text-muted">Instruktor </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 mb-4" data-aos="flip-left" data-aos-delay="200">
+        <div class="card border-0 shadow-sm">
+          <img src="{% static 'images/team/tm.png' %}" class="card-img-top rounded-top" alt="Team Member">
+          <div class="card-body">
+            <h5 class="fw-bold">Temur-Malik Mamanazarov</h5>
+            <p class="text-muted">Instruktor</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 mb-4" data-aos="flip-left" data-aos-delay="200">
+        <div class="card border-0 shadow-sm">
+          <img src="{% static 'images/team/shf.png' %}" class="card-img-top rounded-top" alt="Team Member">
+          <div class="card-body">
+            <h5 class="fw-bold">Shaxzod Fayziev</h5>
+            <p class="text-muted">Instruktor</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ANIMATED GOAL BLOCK -->
+  <div class="text-center my-5" data-aos="fade-up">
+    <h2 class="fw-bold text-success">“Birlashtirilgan tizim – barqaror natija”</h2>
+    <p class="fs-5 text-muted w-75 mx-auto">
+      Bunyodkor PLM yordamida biz ishlab chiqarish jarayonlarini tezroq, sifatliroq va shaffofroq qilamiz.
+      Har bir buyurtma, material va natija real vaqt rejimida kuzatiladi.
+    </p>
+  </div>
+
+  <div class="position-relative border-start border-3 border-success ms-5 ps-4">
+    <div class="mb-4" data-aos="fade-right">
+      <h5 class="fw-bold text-success">Rejalashtirish</h5>
+      <p class="text-muted">Buyurtmalar, modellar va resurslarni muvofiqlashtirish.</p>
+    </div>
+    <div class="mb-4" data-aos="fade-right" data-aos-delay="150">
+      <h5 class="fw-bold text-success">Kesim va Tikuv</h5>
+      <p class="text-muted">Ishlab chiqarishning asosiy bosqichlarini boshqarish.</p>
+    </div>
+    <div class="mb-4" data-aos="fade-right" data-aos-delay="250">
+      <h5 class="fw-bold text-success">Qadoqlash va Yuklama</h5>
+      <p class="text-muted">Tayyor mahsulotni tizimli tarzda yetkazish.</p>
+    </div>
+    <div class="mb-4" data-aos="fade-right" data-aos-delay="300">
+      <h5 class="fw-bold text-success">Tahlil va Rivojlanish</h5>
+      <p class="text-muted">Har bir natijadan o‘rganish va samarani oshirish.</p>
+    </div>
+  </div>
+
+  <div class="bg-light py-5">
+    <div class="container text-center">
+      <div class="row">
+        <div class="col-md-3" data-aos="zoom-in">
+          <h2 class="fw-bold text-success counter" data-target="10">0</h2>
+          <p class="text-muted">Ishlab chiqarish bo‘limlari</p>
+        </div>
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
+          <h2 class="fw-bold text-success counter" data-target="260">0</h2>
+          <p class="text-muted">Faol ishchilar</p>
+        </div>
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
+          <h2 class="fw-bold text-success counter" data-target="3000">0</h2>
+          <p class="text-muted">Kunlik ishlab chiqarish quvvati</p>
+        </div>
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
+          <h2 class="fw-bold text-success counter" data-target="5">0</h2>
+          <p class="text-muted">Tashkilot hamkorlari</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // oddiy counter animatsiya
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+      const updateCount = () => {
+        const target = +counter.getAttribute('data-target');
+        const count = +counter.innerText;
+        const increment = target / 60;
+        if (count < target) {
+          counter.innerText = Math.ceil(count + increment);
+          setTimeout(updateCount, 40);
+        } else {
+          counter.innerText = target;
+        }
+      };
+      updateCount();
+    });
+  </script>
+
+
+  <section class="py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold text-success mb-4" data-aos="fade-up">
+        Strategik yo‘nalishlar
+      </h2>
+      <p class="text-muted mb-5 w-75 mx-auto">
+        Bizning PLM platformamiz nafaqat ishlab chiqarishni raqamlashtiradi, balki
+        barqaror rivojlanish, innovatsiya va xalqaro raqobatbardoshlikni ham maqsad qiladi.
+      </p>
+      <div class="row">
+        <div class="col-md-4 mb-4" data-aos="zoom-in">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-lightbulb text-success display-6 mb-3"></i>
+              <h5 class="fw-bold">Innovatsiya</h5>
+              <p class="text-muted small">
+                Har bir jarayonda yangi texnologiyalarni joriy etish —
+                avtomatlashtirish, sun’iy intellekt va IoT yechimlari.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-recycle text-success display-6 mb-3"></i>
+              <h5 class="fw-bold">Barqarorlik</h5>
+              <p class="text-muted small">
+                Resurslardan oqilona foydalanish va chiqindilarni kamaytirish
+                orqali ekologik mas’uliyatni ta’minlash.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <i class="bi bi-globe2 text-success display-6 mb-3"></i>
+              <h5 class="fw-bold">Global hamkorlik</h5>
+              <p class="text-muted small">
+                Mahsulot va tajribani xalqaro bozorlarga olib chiqish,
+                sifat va ishonch orqali global hamkorlikni kengaytirish.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold text-success mb-4" data-aos="fade-up">
+        Bizning kelajak ko‘rishimiz
+      </h2>
+      <p class="text-muted w-75 mx-auto" data-aos="fade-up" data-aos-delay="100">
+        2030-yilgacha Bunyodkor PLM
+        Markaziy Osiyodagi yetakchi raqamli ishlab chiqarish platformasiga aylanishni,
+        har bir korxonaga samarali va ekologik boshqaruv imkonini berishni maqsad qiladi.
+      </p>
+    </div>
+  </section>
+
+
+
+
+
+
+</div>
+
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
+
+
+
+<!-- [ Main Content ] start -->
+
+    <!-- [ breadcrumb ] start -->
+<!--    <div class="page-header">-->
+<!--      <div class="page-block">-->
+<!--        <div class="page-header-title">-->
+<!--          <h5 class="mb-0 font-medium">Dashboard</h5>-->
+<!--        </div>-->
+<!--        <ul class="breadcrumb">-->
+<!--          <li class="breadcrumb-item"><a href="#">Home</a></li>-->
+<!--          <li class="breadcrumb-item" aria-current="page">Dashboard</li>-->
+<!--        </ul>-->
+<!--      </div>-->
+<!--    </div>-->
+    <!-- [ breadcrumb ] end -->
+
+       <!-- Savdolar -->
+<!--    <div class="row justify-content">-->
+<!--      <div class="row gy-3">-->
+<!--        <div class="col-md-4  col-sm-6">-->
+<!--          <div class="card widget-card border-light shadow-sm">-->
+<!--            <div class="card-body p-4">-->
+<!--              <div class="row">-->
+<!--                <div class="col-8">-->
+<!--                  <div class="card-title widget-card-title mb-3">-->
+<!--                    <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Savdo </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                  </div>-->
+<!--                  <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>-->
+<!--                </div>-->
+<!--                <div class="col-4">-->
+<!--                  <div class="d-flex justify-content-end">-->
+<!--                    <div class="lh-1 text-white bg-warning rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                      <i class="bi bi-cash text-light fs-1"></i>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="row">-->
+
+<!--                 <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">Kecha</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--              </div>-->
+
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Income Payments &ndash;&gt;-->
+<!--        <div class="col-md-4  col-sm-6">-->
+<!--          <div class="card widget-card border-light shadow-sm">-->
+<!--            <div class="card-body p-4">-->
+<!--              <div class="row">-->
+<!--                <div class="col-8">-->
+<!--                  <div class="card-title widget-card-title mb-3">-->
+<!--                    <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Tushum </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                  </div>-->
+<!--                  <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>-->
+<!--                </div>-->
+<!--                <div class="col-4">-->
+<!--                  <div class="d-flex justify-content-end">-->
+<!--                    <div class="lh-1 text-success bg-success rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                      <i class="bi bi-arrow-down-short text-light fs-1"></i>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="row">-->
+
+<!--                 <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">Kecha</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--              </div>-->
+
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Qarzdorlik &ndash;&gt;-->
+<!--        <div class="col-md-4  col-sm-6">-->
+<!--          <div class="card widget-card border-light shadow-sm">-->
+<!--            <div class="card-body p-4">-->
+<!--              <div class="row">-->
+<!--                <div class="col-8">-->
+<!--                  <div class="card-title widget-card-title mb-3">-->
+<!--                    <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Qarzdorlik </span>-->
+<!--                    <span class="fs-7 mb-0 text-secondary">Butun davr </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                  </div>-->
+<!--                  <h5 class="card-subtitle text-body-secondary m-0">{{ today_income|floatformat:2|intcomma }} So'm</h5>-->
+<!--                </div>-->
+<!--                <div class="col-4">-->
+<!--                  <div class="d-flex justify-content-end">-->
+<!--                    <div class="lh-1 text-white bg-danger rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                      <i class="bi bi-cash-stack text-light fs-1"></i>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="row">-->
+
+<!--                 <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">Bugun</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ yesterday_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">{{ total_income|floatformat:2|intcomma }}</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--              </div>-->
+
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+
+
+<!--         &lt;!&ndash; Xarajatlar &ndash;&gt;-->
+<!--        <div class="col-md-4  col-sm-6">-->
+<!--          <div class="card widget-card border-light shadow-sm">-->
+<!--            <div class="card-body p-4">-->
+<!--              <div class="row">-->
+<!--                <div class="col-8">-->
+<!--                  <div class="card-title widget-card-title mb-3">-->
+<!--                    <span class="fs-5 mb-0 text-dark"><i class="fa-solid fa-chart-simple"></i> Xarajat </span><span class="fs-7 mb-0 text-secondary">Bugun </span><a href="{% url 'create_payment' %}" class="text-decoration-none btn btn-sm btn-light"><i class="bi bi-plus-lg"></i></a>-->
+<!--                  </div>-->
+<!--                  <h5 class="card-subtitle text-body-secondary m-0">9,700,250.00 So'm</h5>-->
+<!--                </div>-->
+<!--                <div class="col-4">-->
+<!--                  <div class="d-flex justify-content-end">-->
+<!--                    <div class="lh-1 text-white bg-primary rounded-circle p-3 d-flex align-items-center justify-content-center">-->
+<!--                      <i class="bi bi-arrow-up-short text-light fs-1"></i>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="row">-->
+
+<!--                 <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">Kecha</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">12,750,695.00</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col-6">-->
+<!--                    <div class="d-flex align-items-center mt-3">-->
+<!--                      <div>-->
+<!--                        <p class="fs-7 mb-0 text-secondary">{{ current_month_uz }}</p>-->
+<!--                        <p class="fs-7 mb-0 text-success">224,311,500.00</p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--              </div>-->
+
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-8  col-sm-6"></div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+{% endblock %}
+

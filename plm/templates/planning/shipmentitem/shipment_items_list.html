@@ -1,0 +1,68 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="fw-bold text-success mb-2">
+      🚚 Yuk xati №{{ shipment.shipment_number }} — Yuk tarkibi
+    </h4>
+    <div>
+      <a href="{% url 'plm:shipment_item_create' shipment.id %}" class="btn btn-success me-2">
+        <i class="bi bi-plus-circle"></i> Qo‘shish
+      </a>
+      <a href="{% url 'plm:shipmentinvoice_list' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Orqaga
+      </a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <table class="table table-hover align-middle">
+        <thead class="table-success text-center">
+          <tr>
+            <th>#</th>
+            <th>Buyurtma</th>
+            <th>O‘lchami</th>
+            <th>Miqdori</th>
+            <th>O‘lchov</th>
+            <th>Qadoq turi</th>
+            <th>Izoh</th>
+            <th>Amal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.order }}</td>
+            <td>{{ item.get_size_display }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit }}</td>
+            <td>{{ item.get_package_type_display }}</td>
+            <td>{{ item.note|default:"—" }}</td>
+            <td class="text-center">
+              <a href="{% url 'plm:shipment_item_update' shipment.id item.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a href="{% url 'plm:shipment_item_delete' shipment.id item.id %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if items %}
+        <tfoot>
+          <tr class="table-light fw-semibold">
+            <td colspan="3" class="text-end">Jami:</td>
+            <td class="text-center">{{ total_quantity }}</td>
+            <td colspan="4" class="text-start"> {{ items.0.unit|default:"" }}</td>
+          </tr>
+        </tfoot>
+        {% endif %}
+
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base1.html" %}
+{% block content %}
+<h3>{{ order }} buyurtmasi uchun pastal qo‘shish</h3><br>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            {{ form.pastal_soni.label_tag }} {{ form.pastal_soni }}
+        </div>
+        <div class="mb-3 col-md-3">
+            {{ form.pastal_olchami.label_tag }} {{ form.pastal_olchami }}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Saqlash</button>
+    <a href="{% url 'plm:cutting_list' %}" class="btn btn-secondary">Orqaga</a>
+</form>
+{% endblock %}

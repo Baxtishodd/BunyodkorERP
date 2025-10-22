@@ -1,0 +1,33 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+<!-- [ breadcrumb ] start -->
+<div class="page-header">
+  <div class="page-block">
+    <div class="page-header-title">
+      <h5 class="mb-0 font-medium">Xodimlar</h5>
+    </div>
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Xodimlar</a></li>
+      <li class="breadcrumb-item" aria-current="page">Xodimlar ro'yhati</li>
+    </ul>
+  </div>
+</div>
+<!-- [ breadcrumb ] end -->
+<div class="container mt-4 mb-5">
+    <h2>Korhonaga tushum qo'shish</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success m-2">Saqlash</button>
+    </form>
+
+    ID <i class="bi bi-info-circle text-primary"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           title="Payment ID">
+    </i>
+</div>
+
+{% endblock %}

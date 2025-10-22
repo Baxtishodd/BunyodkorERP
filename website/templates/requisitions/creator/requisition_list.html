@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Buyurtmalar ro`yhati</h2>
+
+    <a href="{% url 'requisition_create' %}" class="btn btn-primary mb-3">+ Yangi buyurtma</a>
+
+    {% if requisitions %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nomi</th>
+                    <th>Model</th>
+                    <th>Ishlatiladigan joy</th>
+                    <th>O'lchov birligi</th>
+                    <th>Soni</th>
+                    <th>Avvalgi narx</th>
+                    <th>Taklif narxlari</th>
+                    <th>Omborga yetib kelganmi?</th>
+                    <th>To'langan summa</th>
+                    <th>Fayl</th>
+                    <th>Sana</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requisitions %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ req.name }}</td>
+                    <td>{{ req.model }}</td>
+                    <td>{{ req.usage_location }}</td>
+                    <td>{{ req.unit }}</td>
+                    <td>{{ req.quantity }}</td>
+                    <td>{{ req.previous_price }}</td>
+                    <td>
+                        <ul class="list-unstyled mb-0">
+                            {% for price in req.offered_prices.all %}
+                            <li>{{ price.amount }} {{ price.currency }}</li>
+                            {% empty %}
+                            <li><i>Yo'q</i></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>✅</td>
+                    <td>{{ req.transferred_payment_amount }}</td>
+                    <td>
+                        {% if req.product_image %}
+                        <a href="{{ req.product_image.url }}" target="_blank">Ko'rish</a>
+                        {% else %}
+                        <i>Yo'q</i>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+
+                        <a href="#" class="btn btn-sm btn-info">Batafsil</a>
+                        <a href="#" class="btn btn-sm btn-warning">Tahrirlash</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>Hozircha hech qanday buyurtmanoma mavjud emas.</p>
+    {% endif %}
+</div>
+{% endblock %}

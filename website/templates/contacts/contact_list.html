@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% block title %}Contact List{% endblock %}
+
+{% block content %}
+
+<div class="row m-3 align-items-center">
+    <div class="col-md-2">
+        <a class="btn btn-success bi bi-person-plus" style="width: 100%;" href="{% url 'contact_create' %}"> New Contact</a>
+    </div>
+    <div class="col-md-4">
+        <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+            {% csrf_token %}
+            <input class="form-control me-2" type="text" name="q" placeholder="Search contacts.." value="{{ query|default:'' }}">
+            <input type="hidden" name="view" value="{{ view_type }}"> <!-- Retain the view type -->
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <form method="GET" action="{% url 'contact_list' %}" class="d-flex">
+
+<!--            <label  class="me-2">Lead Status:</label>-->
+            {{ contact_form.lead_status}}
+            <button class="btn btn-warning  ms-2" type="submit">Filter</button>
+            <a href="?view={{ view_type }}" class="btn btn-outline-danger ms-2">Reset Filters</a>
+
+        </form>
+    </div>
+    <div class="col-md-2">
+        <a href="?view=cards" class="btn btn-light"><i class="bi bi-grid-3x3-gap-fill"></i></a>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead class="table-dark">
+        <tr>
+                    <!-- Name Column -->
+            <th></th>
+            <th>
+                <a class="text-white" href="?sort=first_name&direction={% if sort_by == 'first_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Name
+                    {% if sort_by == 'first_name' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=country&direction={% if sort_by == 'country' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Country
+                    {% if sort_by == 'country' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=company&direction={% if sort_by == 'company' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Company
+                    {% if sort_by == 'company' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=lead_status&direction={% if sort_by == 'lead_status' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Lead Status
+                    {% if sort_by == 'lead_status' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=phone_mobile&direction={% if sort_by == 'phone_mobile' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Phone mobile
+                    {% if sort_by == 'phone_mobile' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a class="text-white" href="?sort=created_by&direction={% if sort_by == 'created_by' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                    Author
+                    {% if sort_by == 'created_by' %}
+                        {% if direction == 'asc' %}
+                            <i class="fas fa-arrow-down-a-z"></i>  <!-- Ascending sort icon -->
+                        {% else %}
+                            <i class="fas fa-arrow-down-z-a"></i>  <!-- Descending sort icon -->
+                        {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>Created at</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for contact in contacts %}
+        <tr>
+<!--            {% if contact.avatar %}-->
+<!--                <img src="{{ contact.avatar.url }}" class="rounded-circle me-2" alt="{{ contact.first_name }}" width="30" height="30">-->
+<!--            {% else %}-->
+<!--                 <div width="30" height="30"></div>-->
+<!--            {% endif %}-->
+
+            <td>
+                <div class="contact-avatar p-3"
+                     style="width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+                     background-color:{% if not contact.profile_picture %}{{ contact_colors|get_item:contact.id }}{% else %}transparent{% endif %};">
+                    {% if contact.profile_picture %}
+                      <img src="{{ contact.profile_picture.url }}" alt="{{ contact.first_name }}" style="width: 35px; height: 35px; border-radius: 50%;">
+                    {% else %}
+                      <span style="color: white; font-weight: bold;" class="">
+                        {{ contact.first_name.0|title }}{{ contact.last_name.0|title }}
+                      </span>
+                    {% endif %}
+              </div>
+            </td>
+
+            <td>
+                <a href="{% url 'contact_edit' contact.pk %}" class="text-decoration-none">
+                    {{ contact.first_name|title }} {% if contact.last_name %}{{ contact.last_name|title }}{% endif %}
+                </a>
+            </td>
+            <td>{{ contact.country }}</td>
+            <td>{% if contact.company %}{{ contact.company }}{% else %}-{% endif %}</td>
+            <td>{{ contact.get_lead_status_display }}</td>
+            <td>{% if contact.phone_mobile %}
+                    <a href="tel:{{ contact.phone_mobile }}" class="text-decoration-none">{{ contact.phone_mobile }}</a>
+                {% else %}-
+                {% endif %}</td>
+            <td>
+                <a class=" text-decoration-none" href="{% url 'accounts:profile' contact.created_by.pk %}">{{ contact.created_by }}</a>
+            </td>
+            <td>{{ contact.created_at|date:"Y-m-d"}}</td> <!-- timesince -->
+            <td>
+                {% if contact.created_by == request.user %}
+                    <a href="{% url 'contact_edit' contact.pk %}" class="btn btn-outline-primary rounded-5 btn-sm"><i class="bi bi-pen"></i></a>
+                    <a href="{% url 'contact_delete' contact.id %}" class="btn btn-outline-danger rounded-5 btn-sm"><i class="bi bi-trash-fill"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No contacts found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Links -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if contacts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in contacts.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > contacts.number|add:'-2' and num < contacts.number|add:'2' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if contacts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ contacts.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ contacts.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+{% endblock %}

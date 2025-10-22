@@ -1,0 +1,98 @@
+
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="page-header-title">
+          <h5 class="mb-0 font-medium">Tikuvchilarning kunlik ishi Patoklar</h5>
+        </div>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Model boshqaruvi</a></li>
+          <li class="breadcrumb-item"><a href="#">Rejalashtirish</a></li>
+          <li class="breadcrumb-item" aria-current="page">Patoklar</li>
+        </ul>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+      <div class="row ">
+      {% for line in lines %}
+      <div class="col-md-4 ">
+        <div class="pc-component">
+          <div class="card">
+            <h5 class="card-header">
+                <a href="{% url 'plm:productionline_detail' line.pk %}" class="btn btn-sm btn-primary">{{ line.name }}</a>
+            </h5>
+            <div class="card-body">
+              <div class="row">
+                  <div class="col-md-10">
+                    <p class="card-title">Ishchilar soni:</p>
+                  </div>
+                  <div class="col-md-2 text-end">
+                    <span class="badge rounded-pill text-bg-success">{{ line.employees_count }}</span>
+                  </div>
+              </div>
+                <div class="row">
+                  <div class="col-md-2">
+                    <p class="card-title">Art:</p>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="card-title text-end">
+                      <a href="#"  >
+                        {% if line.client or line.artikul %}
+                          {{ line.client|default:"" }} {{ line.artikul|default:"" }}
+                        {% else %}
+                          Model biriktirilmagan
+                        {% endif %}
+                      </a>
+                    </p>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="card-title">Ish soni:</p>
+                  </div>
+                  <div class="col-md-2 text-end">
+                    <span class="badge rounded-pill text-bg-primary">{{ line.quantity }}</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p class="card-title">Kunlik norma:</p>
+                  </div>
+                  <div class="col-md-2 text-end">
+                    <span class="badge rounded-pill text-bg-warning">{{ line.daily_norm }}</span>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="card-title ">Soatlik norma:</p>
+                  </div>
+                  <div class="col-md-2 text-end">
+                    <span class="badge rounded-pill text-bg-warning">{{ line.hourly_norm }}</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3">
+                    <p class="card-title"> Tikildi:</p>
+                  </div>
+                  <div class="col-md-3 text-end">
+                      <span class="badge rounded-pill text-bg-primary ">{{ line.tikildi }}</span>
+                  </div>
+                  <div class="col-md-6 text-end">
+                    <div class="progress mb-4" style="height: 20px">
+                      <div class="progress-bar" role="progressbar" style="width: {{ line.progress }}%" aria-valuemin="0" aria-valuemax="100">{{ line.progress }}%</div>
+                    </div>
+                  </div>
+                 </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <div class="alert alert-primary d-flex align-items-center">
+          <div> Hozircha patoklar mavjud emas</div>
+        </div>
+      {% endfor %}
+      </div>
+
+{% endblock %}
