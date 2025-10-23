@@ -26,10 +26,40 @@
     </div>
     <div class="col-md-7" data-aos="fade-left">
       <h3 class="fw-bold mb-3 text-dark">  <span class="border-start border-4 border-success me-3" style="height: 30px;"></span>Bizning maqsad</h3>
-      <p class="fs-5 text-secondary">
-        PLM tizimi — bu <strong>mahsulot hayot siklini to‘liq boshqarish</strong> uchun mo‘ljallangan raqamli platforma.
-        U Bunyodkor Textile ishlab chiqarish zanjirining barcha bosqichlarini yagona tizimga birlashtiradi:
+
+      <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+      <p class="fs-4 text-secondary">
+        <span id="typed"></span>
       </p>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        new Typed("#typed", {
+          strings: [
+            "PLM tizimi — bu <strong>mahsulot hayot siklini to‘liq boshqarish</strong> uchun mo‘ljallangan raqamli platforma.",
+            "Bunyodkor Textile ishlab chiqarish zanjirining barcha bosqichlarini yagona tizimga birlashtiradi.",
+            "Tizim buyurtmalardan tortib tayyor mahsulotgacha bo‘lgan barcha jarayonlarni raqamlashtiradi.",
+            "Kesim, tikuv, dazmol, qadoqlash — barchasi yagona boshqaruv ostida bo‘ladi.",
+            "Har bir bosqichda samaradorlikni kuzatish va tahlil qilish imkonini beradi.",
+            "Ma’lumotlar real vaqt rejimida yangilanadi, shuning uchun qarorlar tezroq qabul qilinadi.",
+            "PLM ishlab chiqarish jarayonlaridagi nosozliklarni kamaytiradi va sifatni oshiradi.",
+            "Resurslardan foydalanishni optimallashtirib, vaqt va xarajatlarni tejaydi.",
+            "Xodimlar, ishlab chiqarish liniyalari va buyurtmalar o‘zaro bog‘langan tizimda ishlaydi.",
+            "Natijada – to‘liq shaffoflik, aniqlik va samaradorlikka erishiladi."
+          ],
+          typeSpeed: 40,       // yozish tezligi
+          backSpeed: 0,        // orqaga o‘chirish (agar kerak bo‘lmasa 0)
+          startDelay: 300,     // boshlanishdan oldin kutish
+          showCursor: true,    // kursor belgisini ko‘rsatish
+          cursorChar: "|",     // kursor belgisi
+          smartBackspace: true, // matnni oqilona o‘chirish
+          fadeOut: false,       // yozish o‘chmaydi, navbat bilan chiqadi
+          loop: true           // faqat bir marta yoziladi
+        });
+      });
+    </script>
+
       <div class="row text-center mt-4">
           <div class="col-md-6 col-lg-3 mb-3" data-aos="zoom-in" data-aos-delay="300">
             <div class="p-4 border rounded-4 shadow-sm bg-white h-100">
@@ -132,24 +162,34 @@
     </p>
   </div>
 
-  <div class="position-relative border-start border-3 border-success ms-5 ps-4">
-    <div class="mb-4" data-aos="fade-right">
+<div class="d-flex justify-content-around flex-wrap gap-3 mt-4">
+  <div class="card shadow-sm border-success border-2" style="width: 16rem;" data-aos="fade-up">
+    <div class="card-body text-center">
       <h5 class="fw-bold text-success">Rejalashtirish</h5>
-      <p class="text-muted">Buyurtmalar, modellar va resurslarni muvofiqlashtirish.</p>
-    </div>
-    <div class="mb-4" data-aos="fade-right" data-aos-delay="150">
-      <h5 class="fw-bold text-success">Kesim va Tikuv</h5>
-      <p class="text-muted">Ishlab chiqarishning asosiy bosqichlarini boshqarish.</p>
-    </div>
-    <div class="mb-4" data-aos="fade-right" data-aos-delay="250">
-      <h5 class="fw-bold text-success">Qadoqlash va Yuklama</h5>
-      <p class="text-muted">Tayyor mahsulotni tizimli tarzda yetkazish.</p>
-    </div>
-    <div class="mb-4" data-aos="fade-right" data-aos-delay="300">
-      <h5 class="fw-bold text-success">Tahlil va Rivojlanish</h5>
-      <p class="text-muted">Har bir natijadan o‘rganish va samarani oshirish.</p>
+      <p class="text-muted mb-0">Buyurtmalar, modellar va resurslarni muvofiqlashtirish.</p>
     </div>
   </div>
+  <div class="card shadow-sm border-success border-2" style="width: 16rem;" data-aos="fade-up" data-aos-delay="100">
+    <div class="card-body text-center">
+      <h5 class="fw-bold text-success">Kesim va Tikuv</h5>
+      <p class="text-muted mb-0">Ishlab chiqarishning asosiy bosqichlarini boshqarish.</p>
+    </div>
+  </div>
+  <div class="card shadow-sm border-success border-2" style="width: 16rem;" data-aos="fade-up" data-aos-delay="200">
+    <div class="card-body text-center">
+      <h5 class="fw-bold text-success">Qadoqlash va Yuklama</h5>
+      <p class="text-muted mb-0">Tayyor mahsulotni tizimli tarzda yetkazish.</p>
+    </div>
+  </div>
+  <div class="card shadow-sm border-success border-2" style="width: 16rem;" data-aos="fade-up" data-aos-delay="300">
+    <div class="card-body text-center">
+      <h5 class="fw-bold text-success">Tahlil va Rivojlanish</h5>
+      <p class="text-muted mb-0">Har bir natijadan o‘rganish va samarani oshirish.</p>
+    </div>
+  </div>
+</div>
+
+
 
   <div class="bg-light py-5">
     <div class="container text-center">

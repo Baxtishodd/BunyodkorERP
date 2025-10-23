@@ -4,7 +4,21 @@
 
 <div class="card">
   <div class="card-body pc-component">
-    <h5 class="mb-3">Buyurtma ma'lumotlari: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></h5>
+    <h5 class="mb-3 d-flex align-items-center flex-wrap gap-2">
+      Buyurtma ma'lumotlari:
+      <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">
+        {{ order }}
+      </a>
+
+      <!-- 🔹 O‘lchamlar yonma-yon badge tarzida -->
+      {% for os in order.ordersize.all %}
+        <span class="badge bg-secondary ms-1">
+          {{ os.size }} — {{ os.quantity }} dona
+        </span>
+      {% empty %}
+        <span class="text-muted ms-2">(O‘lchamlar kiritilmagan)</span>
+      {% endfor %}
+    </h5>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
@@ -46,7 +60,7 @@
                           <th>Kelgan sana</th>
                           <th>Fabrika</th>
                           <th>Status</th>
-                          <th>Amal 1</th>
+                          <th>Amal</th>
                       </tr>
                   </thead>
                   <tbody>

@@ -671,6 +671,7 @@ def cutting_add_to_order(request, order_id):
             cutting.order = order
             cutting.author = request.user
             cutting.save()
+            messages.success(request, "Kesim ma'lumoti muvaffaqiyatli qo‘shildi ✅")
             return redirect("plm:plan_order_detail", order_id=cutting.order.pk)
     else:
         form = CuttingForm()

@@ -66,6 +66,8 @@ python manage.py createsuperuser
 # 6️⃣ Serverni ishga tushirish
 python manage.py runserver
 
+___
+
 👤 Kirish
 
 Admin panel:
@@ -110,3 +112,4 @@ MIT License — erkin foydalanish va o‘zgartirish mumkin.
 
 ## 📁 Loyihaning tuzilmasi
 
+___
