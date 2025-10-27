@@ -1,12 +1,13 @@
 {% extends "base1.html" %}
 {% load custom_tags %}
+{% load static %}
 {% block content %}
 
 <div class="card">
   <div class="card-body pc-component">
     <h5 class="mb-3 d-flex align-items-center flex-wrap gap-2">
       Buyurtma ma'lumotlari:
-      <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">
+      <a href="{% url 'plm:order_detail' order.pk %}" target="_blank" class="btn btn-light rounded-5">
         {{ order }}
       </a>
 
@@ -18,7 +19,17 @@
       {% empty %}
         <span class="text-muted ms-2">(O‘lchamlar kiritilmagan)</span>
       {% endfor %}
+
+         <!-- 🔹 Kichik rasm -->
+      <div class="ms-auto">
+        <img src="{% if order.model_picture %}{{ order.model_picture.url }}{% else %}{% static 'images/img.png' %}{% endif %}"
+             alt="{{ order }}"
+             class="img-thumbnail shadow-sm zoom-thumb"
+             style="width: 100px; height: 100px; object-fit: cover; cursor: zoom-in;"
+             data-bs-toggle="modal" data-bs-target="#imageModal">
+      </div>
     </h5>
+
 
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
@@ -26,12 +37,13 @@
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#accessory" role="tab">Aksessuar</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cutting" role="tab">Kesim</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#print" role="tab">Pechat</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tasnif" role="tab">Tasnif</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#classification" role="tab">Tasnif</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#stitching" role="tab">Tikim</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ironing" role="tab">Dazmol</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#inspection" role="tab">Sifat nazorati</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#packaging" role="tab">Qadoq</a></li>
     </ul>
+
 
     <!-- Tabs content -->
     <div class="tab-content">
@@ -213,6 +225,84 @@
         </div>
       </div>
 
+      <!-- TASnif -->
+    <!-- TASnif -->
+    <div class="tab-pane fade" id="classification" role="tabpanel">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>
+            Buyurtma:
+            <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">
+              {{ order }}
+            </a>
+          </strong>
+          <a href="{% url 'plm:classification_add_to_order' order.id %}" class="btn btn-sm btn-success">
+            + Tasnif qo‘shish
+          </a>
+        </div>
+
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Razmer</th>
+                <th>1-sort</th>
+                <th>2-sort</th>
+                <th>Brak</th>
+                <th>Jami</th>
+                <th>Sana</th>
+                <th>Mas’ul shaxs</th>
+                <th>Amal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in classifications %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><span class="badge bg-secondary">{{ item.ordersize.size }}</span></td>
+                <td class="text-success fw-semibold">{{ item.first_sort }}</td>
+                <td class="text-warning fw-semibold">{{ item.second_sort }}</td>
+                <td class="text-danger fw-semibold">{{ item.defect }}</td>
+                <td class="fw-bold">{{ item.total_classified }}</td>
+                <td>{{ item.classified_date|date:"d.m.Y" }}</td>
+                <td>{{ item.created_by }}</td>
+                <td>
+                  <a href="{% url 'plm:classification_update' item.pk %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pen-fill"></i>
+                  </a>
+                  <a href="{% url 'plm:classification_delete' item.pk %}" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="9" class="text-center py-3 text-muted">
+                  Hozircha Tasnif ma’lumotlari kiritilmagan
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+            {% if classifications %}
+            <tfoot>
+              <tr class="fw-bold bg-light">
+                <td colspan="9" class="text-start ps-3">
+                  <span class="text-success">Jami 1-sort:</span> {{ total_first_sort }} |
+                  <span class="text-warning">Jami 2-sort:</span> {{ total_second_sort }} |
+                  <span class="text-danger">Brak:</span> {{ total_defect }} |
+                  <span class="fw-semibold">Umumiy:</span> {{ total_classified_all }}
+                </td>
+              </tr>
+            </tfoot>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+    </div>
+
+
 
       <!-- PECHAT -->
       <div class="tab-pane fade" id="print" role="tabpanel">
@@ -277,67 +367,78 @@
 
         <!-- Tikim -->
       <div class="tab-pane fade" id="stitching" role="tabpanel">
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                <strong>Buyurtma: <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a></strong>
-                <a href="{% url 'plm:stitching_add' order.id %}" class="btn btn-sm btn-success">+ Ish qo‘shish</a>
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <strong>
+                Buyurtma:
+                <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a>
+              </strong>
+              <a href="{% url 'plm:stitching_add' order.id %}" class="btn btn-sm btn-success">+ Ish qo‘shish</a>
             </div>
-                <div class="card-body p-0">
-                    <table class="table table-bordered mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>O‘lcham</th>
-                                <th>Tikilgan soni</th>
-                                <th>Tikim sanasi</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ordersize in order.ordersize.all %}
-                                {% for stitching in ordersize.stitchings.all %}
-                                    <tr>
-                                        <td>{{ forloop.parentloop.counter }}.{{ forloop.counter }}</td>
-                                        <td>{{ stitching.ordersize.size }}</td>
-                                        <td>{{ stitching.quantity }}</td>
-                                        <td>{{ stitching.date|date:"d.m.Y" }}</td>
-                                         <td class="text-center">
-                                              <a href="{% url 'plm:stitching_update' stitching.pk %}" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-pencil-square"></i>
-                                              </a>
-                                              <a href="{% url 'plm:stitching_delete' stitching.pk %}" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                              </a>
-                                         </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="7" class="text-center"><span class="badge bg-primary">{{ ordersize.quantity }} - {{ ordersize.size }}</span> Bu buyurtmaga tikim ishlari qo‘shilmagan</td>
-                                    </tr>
-                                {% endfor %}
-                            {% endfor %}
-                        </tbody>
-                        <tfoot>
-                          <tr class="fw-bold">
-                            <td colspan="4" class="text-start">
-                              {% if order_total_quantity %}
-                                Jami tikilgan:
-                                <span class="text-success">{{ order_total_quantity }} dona</span>
-                                (
-                                {% for size, qty in order_size_totals.items %}
-                                  {{ size }} - {{ qty }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                                )
-                              {% else %}
-                                <span class="text-muted">Tikilgan ma’lumot yo‘q</span>
-                              {% endif %}
-                            </td>
-                          </tr>
-                        </tfoot>
-                    </table>
-                </div>
+
+            <!-- ✅ Jadvalni scroll bo‘lishi uchun max-width va overflow-x bilan o‘rab oldik -->
+            <div class="card-body p-0">
+              <div class="table-responsive" style="max-width: 100%; overflow-x: auto;">
+                <table class="table table-bordered mb-0 align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th>
+                      <th>O‘lcham</th>
+                      <th>Tikilgan soni</th>
+                      <th>Tikim sanasi</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ordersize in order.ordersize.all %}
+                      {% for stitching in ordersize.stitchings.all %}
+                        <tr>
+                          <td>{{ forloop.parentloop.counter }}.{{ forloop.counter }}</td>
+                          <td>{{ stitching.ordersize.size }}</td>
+                          <td>{{ stitching.quantity }}</td>
+                          <td>{{ stitching.date|date:"d.m.Y" }}</td>
+                          <td class="text-center">
+                            <a href="{% url 'plm:stitching_update' stitching.pk %}" class="btn btn-sm btn-outline-primary">
+                              <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'plm:stitching_delete' stitching.pk %}" class="btn btn-sm btn-outline-danger">
+                              <i class="bi bi-trash"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="7" class="text-center">
+                            <span class="badge bg-primary">{{ ordersize.quantity }} - {{ ordersize.size }}</span>
+                            Bu buyurtmaga tikim ishlari qo‘shilmagan
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr class="fw-bold">
+                      <td colspan="4" class="text-start">
+                        {% if order_total_quantity %}
+                          Jami tikilgan:
+                          <span class="text-success">{{ order_total_quantity }} dona</span>
+                          (
+                          {% for size, qty in order_size_totals.items %}
+                            {{ size }} - {{ qty }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                          )
+                        {% else %}
+                          <span class="text-muted">Tikilgan ma’lumot yo‘q</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
-      </div>
+          </div>
+        </div>
+
 
       <!-- Dazmol -->
       <div class="tab-pane fade" id="ironing" role="tabpanel">
@@ -394,81 +495,69 @@
       </div>
 
 
-      <!-- Sifat nazorati -->
+    <!-- 🔹 Sifat nazorati (Inspection) bo‘limi -->
     <div class="tab-pane fade" id="inspection" role="tabpanel">
-      <div class="card mb-4 shadow-sm">
+      <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <strong>Buyurtma:
-            <a href="{% url 'plm:order_detail' order.pk %}" class="btn btn-light rounded-5">{{ order }}</a>
-          </strong>
+          <strong>🧾 Sifat nazorati (Inspection)</strong>
           <a href="{% url 'plm:inspection_add_to_order' order.id %}" class="btn btn-sm btn-success">
-            + Ish qo‘shish
+              <i class="bi bi-plus-circle"></i> Qo‘shish
           </a>
         </div>
-
         <div class="card-body p-0">
-          <table class="table mb-0 align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>Umumiy tekshirilgan</th>
-                <th>Sifatdan o‘tgan</th>
-                <th>Sifatdan o‘tmagan</th>
-                <th>O‘tgan %</th>
-                <th>Tekshirilgan sana</th>
-                <th>Yaratilgan</th>
-                <th class="text-end">Amallar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for inspection in inspections %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ inspection.total_checked }}</td>
-                <td class="text-success fw-semibold">{{ inspection.passed_quantity }}</td>
-                <td class="text-danger fw-semibold">{{ inspection.failed_quantity }}</td>
-                <td>
-                  <div class="progress" style="height: 15px;">
-                    <div class="progress-bar bg-success"
-                         role="progressbar"
-                         style="width: {{ inspection.passed_percentage }}%;"
-                         aria-valuenow="{{ inspection.passed_percentage }}"
-                         aria-valuemin="0" aria-valuemax="100">
-                      {{ inspection.passed_percentage }}%
-                    </div>
-                  </div>
-                </td>
-                <td><span class="badge bg-primary">{{ inspection.inspected_date|date:"d.m.Y" }}</span></td>
-                <td>{{ inspection.created_at|date:"d.m.Y H:i" }}</td>
-                <td class="text-end">
-                  <a href="{% url 'plm:inspection_update' inspection.pk %}" class="btn btn-sm btn-primary">
-                    <i class="bi bi-pen-fill"></i>
-                  </a>
-                  <a href="{% url 'plm:inspection_delete' inspection.pk %}" class="btn btn-sm btn-danger">
-                    <i class="bi bi-trash"></i>
-                  </a>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="8" class="text-center text-muted">Hozircha sifat nazorati ma’lumoti yo‘q</td>
-              </tr>
-              {% endfor %}
-            </tbody>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center">
+              <thead class="table-success">
+                <tr>
+                  <th>#</th>
+                  <th>Razmer</th>
+                  <th>Sifatli soni</th>
+                  <th>Brak soni</th>
+                  <th>Jami tekshirilgan</th>
+                  <th>Sana</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ins in inspections %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ ins.ordersize }}</td>
+                  <td class="text-success fw-bold">{{ ins.passed_quantity }}</td>
+                  <td class="text-danger fw-bold">{{ ins.failed_quantity }}</td>
+                  <td>{{ ins.total_checked }}</td>
+                  <td>{{ ins.inspection_date|date:"d.m.Y" }}</td>
+                  <td>
+                    <a href="{% url 'plm:inspection_update' ins.id %}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'plm:inspection_delete' ins.id %}" class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-muted py-3">Hozircha sifat nazorati ma’lumotlari yo‘q.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-            <tfoot>
-              <tr class="fw-bold">
-                <td colspan="8" class="text-start ps-3">
-                  Jami tekshirilgan: {{ total_checked }} |
-                  Sifatdan o‘tgan: <span class="text-success">{{ total_passed }}</span> |
-                  Sifatdan o‘tmagan: <span class="text-danger">{{ total_failed }}</span>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+        <!-- Statistik jadval -->
+        <div class="card-footer bg-light d-flex justify-content-between flex-wrap">
+          <div><strong>Buyurtma soni:</strong> {{ total_order }}</div>
+          <div><strong>Tekshirilgan:</strong> {{ total_checked }}</div>
+          <div class="text-success"><strong>O‘tgan:</strong> {{ total_passed }}</div>
+          <div class="text-danger"><strong>Brak:</strong> {{ total_failed }}</div>
+          <div><strong>Sifat ko'rsatkichi:</strong> {{ passed_percentage }}%</div>
         </div>
       </div>
     </div>
+
+
 
     <!-- Qadoqlash -->
     <div class="tab-pane fade" id="packaging" role="tabpanel">
@@ -538,6 +627,20 @@
 
     </div>
   </div>
+
+    <!-- 🔍 Rasmni kattalashtirib ko‘rsatish uchun modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+          <button type="button" class="btn-close ms-auto me-2 mt-2 bg-white rounded-circle"
+                  data-bs-dismiss="modal" aria-label="Close"></button>
+
+          <img src="{% if order.model_picture %}{{ order.model_picture.url }}{% else %}{% static 'images/img.png' %}{% endif %}"
+               alt="{{ order }}"
+               class="img-fluid rounded-4 shadow-lg">
+        </div>
+      </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

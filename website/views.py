@@ -137,10 +137,9 @@ def records_view(request):
 		return redirect('index')
 
 @login_required
-def dashboard_view(request, pk=1):
-	if request.user.is_authenticated:
-		user = Record.objects.get(id=pk)
-		return render(request, 'dashboard.html', {'dashboard_view': user})
+def dashboard_view(request):
+
+	return render(request, 'dashboard.html')
 
 
 ###			start record  		###

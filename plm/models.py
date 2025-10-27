@@ -1,66 +1,68 @@
 from django.db import models
 from django.conf import settings
 from django.db.models import Sum
+from django.utils import timezone
 
 SIZE_CHOICES = [
-        ('oversize', 'Oversize'),
-        ('XXS', 'XXS'),
-        ('XS', 'XS'),
-        ('S', 'S'),
-        ('M', 'M'),
-        ('L', 'L'),
-        ('XL', 'XL'),
-        ('XXL', 'XXL'),
-        ('XXXL', 'XXXL'),
-        ('4XL', '4XL'),
-        ('5XL', '5XL'),
-        ('6XL', '6XL'),
-        ('7XL', '7XL'),
-        ('8XL', '8XL'),
-        ('9XL', '9XL'),
-        ('10XL', '10XL'),
-        ('11XL', '11XL'),
-        ('12XL', '12XL'),
-        ('40', '40'),
-        ('42', '42'),
-        ('44', '44'),
-        ('46', '46'),
-        ('48', '48'),
-        ('50', '50'),
-        ('52', '52'),
-        ('54', '54'),
-        ('56', '56'),
-        ('58', '58'),
-        ('60', '60'),
-        ('62', '62'),
-        ('64', '64'),
-        ('66', '66'),
-        ('68', '68'),
-        ('70', '70'),
-        ('42-44','42-44'),
-        ('46-48','46-48'),
-        ('50-52','50-52'),
-        ('54-56','54-56'),
-        ('58-60','58-60'),
-        ('62-64','62-64'),
-        ('66-68','66-68'),
-        ('70-72','70-72'),
-    ]
+    ('oversize', 'Oversize'),
+    ('XXS', 'XXS'),
+    ('XS', 'XS'),
+    ('S', 'S'),
+    ('M', 'M'),
+    ('L', 'L'),
+    ('XL', 'XL'),
+    ('XXL', 'XXL'),
+    ('XXXL', 'XXXL'),
+    ('4XL', '4XL'),
+    ('5XL', '5XL'),
+    ('6XL', '6XL'),
+    ('7XL', '7XL'),
+    ('8XL', '8XL'),
+    ('9XL', '9XL'),
+    ('10XL', '10XL'),
+    ('11XL', '11XL'),
+    ('12XL', '12XL'),
+    ('40', '40'),
+    ('42', '42'),
+    ('44', '44'),
+    ('46', '46'),
+    ('48', '48'),
+    ('50', '50'),
+    ('52', '52'),
+    ('54', '54'),
+    ('56', '56'),
+    ('58', '58'),
+    ('60', '60'),
+    ('62', '62'),
+    ('64', '64'),
+    ('66', '66'),
+    ('68', '68'),
+    ('70', '70'),
+    ('42-44', '42-44'),
+    ('46-48', '46-48'),
+    ('50-52', '50-52'),
+    ('54-56', '54-56'),
+    ('58-60', '58-60'),
+    ('62-64', '62-64'),
+    ('66-68', '66-68'),
+    ('70-72', '70-72'),
+]
+
 
 class ProductModel(models.Model):
-    artikul = models.CharField(max_length=100, verbose_name="Artikul", blank=True, null=True,)
+    artikul = models.CharField(max_length=100, verbose_name="Artikul", blank=True, null=True, )
     mijoz = models.CharField(max_length=200, verbose_name="Mijoz")
     ish_soni = models.PositiveIntegerField(verbose_name="Ish soni", default=0)
-    bajarilgan = models.PositiveIntegerField(verbose_name="Bajarilgan", default=0, blank=True, null=True,)
+    bajarilgan = models.PositiveIntegerField(verbose_name="Bajarilgan", default=0, blank=True, null=True, )
 
     # Ish jarayonlari (raqamli ko‘rsatkich)
-    kesim = models.PositiveIntegerField(verbose_name="Kesim soni", blank=True, null=True,)
-    dazmol = models.PositiveIntegerField(verbose_name="Dazmol soni", blank=True, null=True,)
-    pechat = models.PositiveIntegerField(verbose_name="Pechat soni", blank=True, null=True,)
-    sifat_nazorati = models.PositiveIntegerField(verbose_name="Sifat nazorati soni", blank=True, null=True,)
-    tasnif = models.PositiveIntegerField( verbose_name="Tasnif soni", blank=True, null=True,)
-    qadoq = models.PositiveIntegerField(verbose_name="Qadoq soni", blank=True, null=True,)
-    tikim = models.PositiveIntegerField( verbose_name="Tikim soni", blank=True, null=True,)
+    kesim = models.PositiveIntegerField(verbose_name="Kesim soni", blank=True, null=True, )
+    dazmol = models.PositiveIntegerField(verbose_name="Dazmol soni", blank=True, null=True, )
+    pechat = models.PositiveIntegerField(verbose_name="Pechat soni", blank=True, null=True, )
+    sifat_nazorati = models.PositiveIntegerField(verbose_name="Sifat nazorati soni", blank=True, null=True, )
+    tasnif = models.PositiveIntegerField(verbose_name="Tasnif soni", blank=True, null=True, )
+    qadoq = models.PositiveIntegerField(verbose_name="Qadoq soni", blank=True, null=True, )
+    tikim = models.PositiveIntegerField(verbose_name="Tikim soni", blank=True, null=True, )
 
     # Model rasmi
     model_picture = models.ImageField(upload_to="models/", blank=True, null=True, verbose_name="Model rasmi")
@@ -82,8 +84,23 @@ class ProductModel(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ("new", "Yangi"),
+        ("in_production", "Ishlab chiqarishda"),
+        ("paused", "To‘xtatilgan"),
+        ("completed", "Bajarilgan"),
+        ("canceled", "Bekor qilingan"),
+        ("shipped", "Yuborilgan"),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="new",
+        verbose_name="Holati"
+    )
     client = models.CharField(max_length=200, verbose_name="Mijoz nomi", blank=True, null=True)
-    artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True,)
+    artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True, )
     rangi = models.CharField(max_length=100, verbose_name="Rangi", blank=True, null=True, )
 
     deadline = models.DateTimeField(blank=True, null=True, verbose_name="Yuklanish vaqti")
@@ -113,13 +130,18 @@ class Order(models.Model):
     def total_stitched(self):
         return self.ordersize.all().aggregate(total=Sum("stitchings__quantity"))["total"] or 0
 
+    def get_picture(self):
+        if self.model_picture:
+            return self.model_picture.url
+        return "-"  # standart "rasm yo‘q" rasmi /static/images/no-image.png
+
 
 class OrderSize(models.Model):
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ordersize", verbose_name="Buyurtma")
     quantity = models.PositiveIntegerField(verbose_name="Soni")
     size = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize", verbose_name="O‘lchami")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Muallif")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                               verbose_name="Muallif")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
 
@@ -184,8 +206,8 @@ class HourlyWork(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="hourly_works")
 
     date = models.DateField(auto_now_add=True)
-    start_time = models.TimeField(verbose_name="Boshlanish vaqti")   # masalan 08:00
-    end_time = models.TimeField(verbose_name="Tugash vaqti")         # masalan 09:00
+    start_time = models.TimeField(verbose_name="Boshlanish vaqti")  # masalan 08:00
+    end_time = models.TimeField(verbose_name="Tugash vaqti")  # masalan 09:00
     quantity = models.PositiveIntegerField(verbose_name="Qilingan ish soni")
 
     @property
@@ -197,23 +219,24 @@ class HourlyWork(models.Model):
 
 
 class FabricArrival(models.Model):
-
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="fabric_arrival", verbose_name="Qaysi buyurtma uchun")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="fabric_arrival",
+                              verbose_name="Qaysi buyurtma uchun")
     fabric_name = models.CharField(max_length=200, verbose_name="Mato nomi")
-    measure_value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdori",  null=True, blank=True)  # yangi qo‘shildi
+    measure_value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdori", null=True,
+                                        blank=True)  # yangi qo‘shildi
     measure_unit = models.CharField(
         max_length=10,
         choices=[('kg', 'Kilogram'), ('m', 'Metr')], default='kg',
-        verbose_name="O‘lchov birligi",  null=True, blank=True
+        verbose_name="O‘lchov birligi", null=True, blank=True
     )
-    gramaj = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Gramaj", null=True, blank=True,)
+    gramaj = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Gramaj", null=True, blank=True, )
     arrival_date = models.DateTimeField(verbose_name="Qachon kelganligi")
     factory_name = models.CharField(max_length=200, verbose_name="Qaysi fabrikadan kelganligi")
     is_confirmed = models.BooleanField(default=False, verbose_name="Tasdiqlandi")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
-                               verbose_name="Muallif")
-    created_at = models.DateTimeField(auto_now_add=True,  null=True, blank=True,)
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti",  null=True, blank=True,)
+                                   verbose_name="Muallif")
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True, )
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti", null=True, blank=True, )
 
     def __str__(self):
         return f"{self.fabric_name} → {self.order}"
@@ -241,16 +264,59 @@ class Accessory(models.Model):
 
 
 class Cutting(models.Model):
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="cuttings", verbose_name="Buyurtma")
     pastal_soni = models.PositiveIntegerField(verbose_name="Pastal soni")
-    pastal_olchami = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize", verbose_name="Pastal o‘lchami")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Muallif")
+    pastal_olchami = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize",
+                                      verbose_name="Pastal o‘lchami")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                               verbose_name="Muallif")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
 
     def __str__(self):
         return f"{self.order} - {self.pastal_soni} dona ({self.pastal_olchami})"
+
+
+class Classification(models.Model):
+    ordersize = models.ForeignKey(
+        "OrderSize",
+        on_delete=models.CASCADE,
+        related_name="classifications",
+        verbose_name="Buyurtma o‘lchami (razmer)"
+    )
+    # 🟢 Ixtiyoriy: to‘g‘ridan-to‘g‘ri Order bilan bog‘lash (soddalash uchun)
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name="classifications",
+        verbose_name="Buyurtma",
+        null=True, blank=True
+    )
+
+    first_sort = models.PositiveIntegerField(default=0, verbose_name="1-sort (sifatli)")
+    second_sort = models.PositiveIntegerField(default=0, verbose_name="2-sort")
+    defect = models.PositiveIntegerField(default=0, verbose_name="Brak (nuqsonli)")
+    classified_date = models.DateField(verbose_name="Tasnif sanasi")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="Muallif"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Classification"
+        verbose_name_plural = "Classifications"
+        ordering = ["-classified_date"]
+
+    def __str__(self):
+        return f"{self.ordersize.order.artikul} | {self.ordersize.size} | 1-sort: {self.first_sort}, 2-sort: {self.second_sort}, brak: {self.defect}"
+
+    @property
+    def total_classified(self):
+        return self.first_sort + self.second_sort + self.defect
 
 
 class Printing(models.Model):
@@ -261,7 +327,7 @@ class Printing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
-                               verbose_name="Muallif")
+                                   verbose_name="Muallif")
 
     def __str__(self):
         return f"{self.order} modeli  ({self.quantity}) dona pechat ishi"
@@ -274,9 +340,9 @@ class Stitching(models.Model):
         ("done", "Tugallangan"),
     ]
     ordersize = models.ForeignKey("OrderSize", models.PROTECT, related_name="stitchings")
-    quantity = models.PositiveIntegerField()   # tikilgan soni
+    quantity = models.PositiveIntegerField()  # tikilgan soni
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")  # ✅ Qo‘shildi
-    date =  models.DateField(verbose_name="Kunlik tikim sanasi")
+    date = models.DateField(verbose_name="Kunlik tikim sanasi")
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -293,41 +359,49 @@ class Ironing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Yangilangan vaqti")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
-                               verbose_name="Muallif")
+                                   verbose_name="Muallif")
 
     def __str__(self):
         return f"{self.order} modeli  ({self.quantity}) dona dazmol ishi"
 
 
 class Inspection(models.Model):
-    order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="inspections")
-
-    total_checked = models.PositiveIntegerField(help_text="Umumiy tekshirilgan mahsulotlar soni")
-    passed_quantity = models.PositiveIntegerField(default=0, help_text="Sifatdan o‘tgan mahsulotlar soni")
-    failed_quantity = models.PositiveIntegerField(default=0, help_text="Sifatdan o‘tmagan mahsulotlar soni")
-
-    defect_notes = models.TextField(blank=True, help_text="Nuqson haqida qisqacha izoh (agar bo‘lsa)")
-    inspected_date = models.DateField(verbose_name="Kunlik Sifat nazorat ishi sanasi")
-
+    ordersize = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize",
+                                 verbose_name="O‘lchami")
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name="inspections",
+        verbose_name="Buyurtma",
+        null=True,
+        blank=True,
+    )
+    passed_quantity = models.PositiveIntegerField(default=0, verbose_name="Sifatli (o‘tgan) soni")
+    failed_quantity = models.PositiveIntegerField(default=0, verbose_name="Brak soni")
+    inspection_date = models.DateField(default=timezone.now, verbose_name="Inspeksiya sanasi")
+    comment = models.TextField(blank=True, null=True, verbose_name="Izoh")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Kim tomonidan"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name="inspections", verbose_name="Muallif")
 
     class Meta:
-        verbose_name = "Inspection"
-        verbose_name_plural = "Inspections"
-        ordering = ["-inspected_date"]
+        ordering = ["-inspection_date"]
+        verbose_name = "Sifat nazorati"
+        verbose_name_plural = "Sifat nazoratlari"
 
     def __str__(self):
-        return f"{self.order} | {self.passed_quantity} ta o‘tgan"
+        return f"Inspection {self.order} ({self.inspection_date})"
 
     @property
-    def passed_percentage(self):
-        """Necha foiz mahsulot sifatdan o‘tganini hisoblaydi."""
-        if self.total_checked > 0:
-            return round((self.passed_quantity / self.total_checked) * 100, 2)
-        return 0
+    def total_checked(self):
+        """Jami tekshirilgan (sifatli + brak)"""
+        return self.passed_quantity + self.failed_quantity
 
 
 class Packing(models.Model):
@@ -338,12 +412,14 @@ class Packing(models.Model):
     ]
 
     order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="packings")
-    packing_type = models.CharField(max_length=20, choices=PACKING_TYPE_CHOICES, default="karopka", verbose_name="Qadoq turi")
+    packing_type = models.CharField(max_length=20, choices=PACKING_TYPE_CHOICES, default="karopka",
+                                    verbose_name="Qadoq turi")
     product_quantity = models.PositiveIntegerField(verbose_name="Qadoqlangan mahsulot soni")
     box_quantity = models.PositiveIntegerField(verbose_name="Yopilgan karopkalar soni")
     packed_date = models.DateField(verbose_name="Qadoqlangan sana")
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="packings")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name="packings")
 
     class Meta:
         verbose_name = "Packing"
@@ -352,9 +428,6 @@ class Packing(models.Model):
 
     def __str__(self):
         return f"{self.order} — {self.packing_type} ({self.product_quantity} dona)"
-
-
-
 
 
 class Shipment(models.Model):
@@ -436,7 +509,6 @@ class ShipmentInvoice(models.Model):
         ("shipped", "Yuklab jo‘natildi"),
     ]
 
-
     shipment_number = models.PositiveIntegerField(
         verbose_name="Yuk xati raqami", unique=True, blank=True, null=True
     )
@@ -498,7 +570,6 @@ class ShipmentInvoice(models.Model):
         return sum(item.quantity for item in self.items.all())
 
 
-
 class ShipmentItem(models.Model):
     PACKAGE_TYPES = [
         ("box", "Karopka"),
@@ -512,7 +583,8 @@ class ShipmentItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Buyurtma")
     size = models.CharField(max_length=20, choices=SIZE_CHOICES, default="oversize", verbose_name="O‘lchami")
     quantity = models.PositiveIntegerField(verbose_name="Yuk miqdori")
-    unit = models.CharField(max_length=20, choices=[('dona', 'Dona'), ('kg', 'Kg'), ('karopka', 'Karopka')], default='dona')
+    unit = models.CharField(max_length=20, choices=[('dona', 'Dona'), ('kg', 'Kg'), ('karopka', 'Karopka')],
+                            default='dona')
     note = models.CharField(max_length=255, blank=True, null=True, verbose_name="Izoh")
 
     package_type = models.CharField(
@@ -524,40 +596,6 @@ class ShipmentItem(models.Model):
 
     def __str__(self):
         return f"{self.order} → {self.quantity} {self.unit}"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # class Warehouse(models.Model):
 #     name = models.CharField(max_length=150, verbose_name="Ombor nomi")
@@ -618,70 +656,3 @@ class ShipmentItem(models.Model):
 #
 #     def __str__(self):
 #         return f"{self.get_transaction_type_display()} - {self.item.name} ({self.quantity} {self.item.unit})"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

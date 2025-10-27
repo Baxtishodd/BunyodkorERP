@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
                      FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection,
-                     Packing, ShipmentInvoice, ShipmentInvoice, ShipmentItem)
+                     Packing, ShipmentInvoice, ShipmentInvoice, ShipmentItem, Classification)
 from django.utils.html import format_html
 
 
@@ -46,8 +46,8 @@ class ProductionLineInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("client", "artikul", "rangi", "deadline", "created_by", "created_at", "updated_at")
-    list_filter = ("rangi", "deadline", "created_at")
+    list_display = ("client", "artikul", "rangi", "status", "deadline", "created_by", "created_at", "updated_at")
+    list_filter = ("status", "rangi", "deadline", "created_at")
     search_fields = ("client", "artikul", "rangi")
     ordering = ("-created_at",)
     readonly_fields = ("created_at", "updated_at")
@@ -168,44 +168,61 @@ class IroningAdmin(admin.ModelAdmin):
     search_fields = ('order__order_name', 'order__account_name')
 
 
-@admin.register(Inspection)
-class InspectionAdmin(admin.ModelAdmin):
-    list_display = (
-        "order",
-        "total_checked",
-        "passed_quantity",
-        "failed_quantity",
-        "passed_percentage_display",
-        "inspected_date",
-        "created_by",
-    )
-    list_filter = ("inspected_date", "created_by")
-    search_fields = ("order__id", "order__name", "defect_notes")
-    readonly_fields = ("created_at", "updated_at", "passed_percentage_display")
-    date_hierarchy = "inspected_date"
-    ordering = ("-inspected_date",)
+# @admin.register(Inspection)
+# class InspectionAdmin(admin.ModelAdmin):
+#     list_display = (
+#         "order",
+#         "total_checked",
+#         "passed_quantity",
+#         "failed_quantity",
+#         "passed_percentage_display",
+#         "inspected_date",
+#         "created_by",
+#     )
+#     list_filter = ("inspected_date", "created_by")
+#     search_fields = ("order__id", "order__name", "defect_notes")
+#     readonly_fields = ("created_at", "updated_at", "passed_percentage_display")
+#     date_hierarchy = "inspected_date"
+#     ordering = ("-inspected_date",)
+#
+#     fieldsets = (
+#         ("Buyurtma ma’lumoti", {
+#             "fields": ("order", "created_by")
+#         }),
+#         ("Sifat nazorati", {
+#             "fields": (
+#                 "total_checked",
+#                 "passed_quantity",
+#                 "failed_quantity",
+#                 "defect_notes",
+#                 "passed_percentage_display",
+#             )
+#         }),
+#         ("Sana ma’lumotlari", {
+#             "fields": ("inspected_date", "created_at", "updated_at")
+#         }),
+#     )
+#
+#     @admin.display(description="O‘tgan %")
+#     def passed_percentage_display(self, obj):
+#         return f"{obj.passed_percentage} %"
 
-    fieldsets = (
-        ("Buyurtma ma’lumoti", {
-            "fields": ("order", "created_by")
-        }),
-        ("Sifat nazorati", {
-            "fields": (
-                "total_checked",
-                "passed_quantity",
-                "failed_quantity",
-                "defect_notes",
-                "passed_percentage_display",
-            )
-        }),
-        ("Sana ma’lumotlari", {
-            "fields": ("inspected_date", "created_at", "updated_at")
-        }),
-    )
+# @admin.register(Inspection)
+# class InspectionAdmin(admin.ModelAdmin):
+#     list_display = (
+#         "order",
+#         "ordersize",
+#         "checked_quantity",
+#         "passed_quantity",
+#         "failed_quantity",
+#         "inspection_date",
+#         "created_by",
+#     )
+#     list_filter = ("inspection_date", "created_by")
+#     search_fields = ("order__client", "order__artikul", "ordersize__size")
+#     date_hierarchy = "inspection_date"
+#     ordering = ("-inspection_date",)
 
-    @admin.display(description="O‘tgan %")
-    def passed_percentage_display(self, obj):
-        return f"{obj.passed_percentage} %"
 
 
 @admin.register(Packing)
@@ -291,7 +308,85 @@ class ShipmentItemAdmin(admin.ModelAdmin):
     autocomplete_fields = ("shipment", "order")
 
 
+@admin.register(Classification)
+class ClassificationAdmin(admin.ModelAdmin):
+    list_display = (
+        "get_order",
+        "get_artikul",
+        "get_size",
+        "first_sort",
+        "second_sort",
+        "defect",
+        "total_classified_display",
+        "classified_date",
+        "created_by",
+    )
+    list_filter = ("classified_date", "created_by")
+    search_fields = (
+        "ordersize__order__client",
+        "ordersize__order__artikul",
+        "ordersize__size",
+    )
+    ordering = ("-classified_date",)
+    readonly_fields = ("created_at", "updated_at")
 
+    fieldsets = (
+        ("Asosiy ma'lumotlar", {
+            "fields": (
+                "ordersize",
+                "first_sort",
+                "second_sort",
+                "defect",
+                "classified_date",
+            )
+        }),
+        ("Tizim ma'lumotlari", {
+            "fields": (
+                "created_by",
+                "created_at",
+                "updated_at",
+            )
+        }),
+    )
+
+    # Buyurtma nomini chiqarish
+    @admin.display(description="Buyurtma")
+    def get_order(self, obj):
+        return obj.ordersize.order.client if obj.ordersize and obj.ordersize.order else "-"
+
+    # Artikulni chiqarish
+    @admin.display(description="Artikul")
+    def get_artikul(self, obj):
+        return obj.ordersize.order.artikul if obj.ordersize and obj.ordersize.order else "-"
+
+    # Razmerni chiqarish
+    @admin.display(description="Razmer")
+    def get_size(self, obj):
+        return obj.ordersize.size if obj.ordersize else "-"
+
+    # Jami tasnifni chiqarish
+    @admin.display(description="Jami")
+    def total_classified_display(self, obj):
+        return obj.total_classified
+
+@admin.register(Inspection)
+class InspectionAdmin(admin.ModelAdmin):
+    list_display = (
+        "order",
+        "ordersize",
+        "passed_quantity",
+        "failed_quantity",
+        "total_checked",
+        "inspection_date",
+        "created_by",
+    )
+    list_filter = ("inspection_date", "created_by")
+    search_fields = ("order__client", "ordersize__size")
+    ordering = ("-inspection_date",)
+
+    @admin.display(description="Jami tekshirilgan")
+    def total_checked(self, obj):
+        return obj.total_checked
 
 
 

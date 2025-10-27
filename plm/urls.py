@@ -41,7 +41,6 @@ urlpatterns = [
     path("fabric-arrival/dashboard/", views.fabric_arrival_dashboard, name="fabric_arrival_dashboard"),
 
 
-
     path('accessories/', views.accessory_list, name='accessory_list'),
     # path('accessories/create/', views.accessory_create, name='accessory_create'),
     path('accessories/<int:pk>/edit/', views.accessory_update, name='accessory_update'),
@@ -52,6 +51,11 @@ urlpatterns = [
     path('cuttings/<int:pk>/edit/', views.cutting_update, name='cutting_update'),
     path('cuttings/<int:pk>/delete/', views.cutting_delete, name='cutting_delete'),
     path('cuttings/add/<int:order_id>/', views.cutting_add_to_order, name='cutting_add_to_order'),
+
+    path("classifications/add/<int:order_id>/", views.classification_add_to_order, name="classification_add_to_order"),
+    path("classifications/", views.classification_list, name="classification_list"),
+    path("classification/<int:pk>/update/", views.classification_update, name="classification_update"),
+    path("classification/<int:pk>/delete/", views.classification_delete, name="classification_delete"),
 
     path('prints/', views.print_list, name='print_list'),
     path('prints/<int:pk>/edit/', views.print_update, name='print_update'),
@@ -69,7 +73,7 @@ urlpatterns = [
     path('ironing/add/<int:order_id>/', views.ironing_add_to_order, name='ironing_add_to_order'),
 
     path("inspections/", views.inspection_list, name="inspection_list"),
-    path('inspection/<int:pk>/edit/', views.inspection_update, name='inspection_update'),
+    path("inspection/<int:pk>/update/", views.inspection_update, name="inspection_update"),
     path("order/<int:order_id>/inspection/add/", views.inspection_add_to_order, name="inspection_add_to_order"),
     path("inspection/<int:pk>/delete/", views.inspection_delete, name="inspection_delete"),
 
@@ -95,11 +99,12 @@ urlpatterns = [
     path("shipment/<int:shipment_id>/items/<int:pk>/delete/", views.shipment_item_delete, name="shipment_item_delete"),
 
 
-
-
     # Xodimlar
     path("employees/", views.employee_list, name="employee_list"),
     path('employees/add/', views.employee_create, name='employee_add'),
+
+    path("reglament/", views.reglament_view, name="reglament"),
+
 
     path('test', views.test, name='test'),
 

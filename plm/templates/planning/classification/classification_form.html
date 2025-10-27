@@ -1,0 +1,35 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-title">
+    <h5>{{ order.artikul }} buyurtmasi uchun tasnif kiritish</h5>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      {% csrf_token %}
+      <div class="col-md-6">
+        {{ form.ordersize.label_tag }} {{ form.ordersize }}
+      </div>
+      <div class="col-md-4">
+        {{ form.classified_date.label_tag }} {{ form.classified_date }}
+      </div>
+      <div class="col-md-4">
+        {{ form.first_sort.label_tag }} {{ form.first_sort }}
+      </div>
+      <div class="col-md-4">
+        {{ form.second_sort.label_tag }} {{ form.second_sort }}
+      </div>
+      <div class="col-md-4">
+        {{ form.defect.label_tag }} {{ form.defect }}
+      </div>
+      <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-success">💾 Saqlash</button>
+        <a href="{% url 'plm:plan_order_detail' order.id %}" class="btn btn-secondary">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

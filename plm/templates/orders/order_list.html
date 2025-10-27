@@ -1,11 +1,12 @@
 {% extends "base1.html" %}
+{% load static %}
 {% block content %}
-<div class="container mt-3">
+
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
     <h4 class="fw-bold text-success mb-2">Buyurtmalar ro‘yxati</h4>
 
     <div class="d-flex align-items-center">
-      <a href="{% url 'plm:order_create' %}" class="btn btn-primary d-flex me-2">
+      <a href="{% url 'plm:order_create' %}" class="btn btn-outline-success d-flex me-2">
             + Yangi buyurtma
       </a>
         <!-- 🔍 Qidiruv form -->
@@ -22,33 +23,64 @@
             placeholder="Qidiruv (mijoz, artikul, rang)..."
             style="min-width: 250px;"
           />
-          <button class="btn btn-success" type="submit">Qidir</button>
+
+          <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+
+          <select name="status" class="form-select">
+            <option value="">Status (barchasi)</option>
+            {% for code, label in status_choices %}
+              <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="client" class="form-select">
+            <option value="">Mijoz (barchasi)</option>
+            {% for c in client_choices %}
+              <option value="{{ c }}" {% if client_filter == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="rangi" class="form-select">
+            <option value="">Rang (barchasi)</option>
+            {% for c in color_choices %}
+              <option value="{{ c }}" {% if color_filter == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="patok" class="form-select">
+            <option value="">Patok (barchasi)</option>
+            {% for line in patok_choices %}
+              <option value="{{ line.id }}" {% if patok_filter|add:""|stringformat:"s" == line.id|stringformat:"s" %}selected{% endif %}>{{ line.name }}</option>
+            {% endfor %}
+          </select>
+
+          <button type="submit" class="btn btn-primary">Filtrlash</button>
+          <a href="{% url 'plm:order_list' %}" class="btn btn-secondary">Tozalash</a>
+
+           {% if search_query %}
+            <input type="hidden" name="q" value="{{ search_query }}">
+          {% endif %}
+          <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
+            {% for num in per_page_options %}
+              <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
+            {% endfor %}
+          </select>
+
         </div>
       </form>
 
-
-      <!-- 📄 Har sahifada nechta ko‘rsatish -->
-      <form method="get" class="ms-2">
-        {% if search_query %}
-          <input type="hidden" name="q" value="{{ search_query }}">
-        {% endif %}
-        <select name="per_page" class="form-select" onchange="this.form.submit()" style="width: 100px;">
-          {% for num in per_page_options %}
-            <option value="{{ num }}" {% if per_page == num %}selected{% endif %}>{{ num }}</option>
-          {% endfor %}
-        </select>
-      </form>
     </div>
   </div>
 
 
 
   <div class="card shadow-sm border-0 rounded-3">
-    <div class="card-body p-0">
+    <div class="card-body p-2">
       <table class="table table-hover align-middle">
         <thead class="table-success">
           <tr>
             <th>#</th>
+            <th>Status</th>
             <th>Rasm</th>
             <th>Mijoz</th>
             <th>Artikul</th>
@@ -63,11 +95,28 @@
           {% for order in page_obj %}
           <tr>
             <td>{{ forloop.counter }}</td>
+             <td>
+                {% if order.status == "new" %}
+                  <span class="badge bg-secondary">Yangi</span>
+                {% elif order.status == "in_production" %}
+                  <span class="badge bg-info text-dark">Ishlab chiqarishda</span>
+                {% elif order.status == "paused" %}
+                  <span class="badge bg-warning text-dark">To‘xtatilgan</span>
+                {% elif order.status == "completed" %}
+                  <span class="badge bg-success">Bajarilgan</span>
+                {% elif order.status == "canceled" %}
+                  <span class="badge bg-danger">Bekor qilingan</span>
+                {% elif order.status == "shipped" %}
+                  <span class="badge bg-primary">Yuborilgan</span>
+                {% else %}
+                  <span class="badge bg-light text-dark">Noma’lum</span>
+                {% endif %}
+              </td>
             <td>
               {% if order.model_picture %}
-                <img src="{{ order.model_picture.url }}" width="60" height="60" class="rounded">
+                <img src="{{ order.get_picture }}" width="60" height="60" class="rounded">
               {% else %}
-                -
+                <img src="{% static 'images/img.png' %}" width="60" height="60" class="rounded shadow-sm border">
               {% endif %}
             </td>
             <td>{{ order.client }}</td>
@@ -99,45 +148,48 @@
           {% endfor %}
         </tbody>
       </table>
+
+      <!-- 📄 Pagination -->
+      <nav>
+       <ul class="pagination justify-content-center mb-2">
+          {% if page_obj.has_previous %}
+            <!-- 🔙 Birinchi sahifaga o'tish -->
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page=1">««</a>
+            </li>
+
+            <!-- ⬅️ Oldingi sahifa -->
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">«</a>
+            </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+              <li class="page-item">
+                <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <!-- ➡️ Keyingi sahifa -->
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">»</a>
+            </li>
+
+            <!-- 🔚 Oxirgi sahifaga o'tish -->
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.paginator.num_pages }}">»»</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+
+
     </div>
   </div>
- <!-- 📄 Pagination -->
-  <nav>
-   <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-        <!-- 🔙 Birinchi sahifaga o'tish -->
-        <li class="page-item">
-          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page=1">««</a>
-        </li>
 
-        <!-- ⬅️ Oldingi sahifa -->
-        <li class="page-item">
-          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">«</a>
-        </li>
-      {% endif %}
-
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-        {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
-          <li class="page-item">
-            <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
-          </li>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <!-- ➡️ Keyingi sahifa -->
-        <li class="page-item">
-          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">»</a>
-        </li>
-
-        <!-- 🔚 Oxirgi sahifaga o'tish -->
-        <li class="page-item">
-          <a class="page-link" href="?q={{ search_query }}&per_page={{ per_page }}&page={{ page_obj.paginator.num_pages }}">»»</a>
-        </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
 {% endblock %}

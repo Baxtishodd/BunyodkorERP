@@ -53,7 +53,7 @@
               <span class="pc-mtext">Pechat</span></a>
             </li>
 
-            <li class="pc-item"><a class="pc-link" href="#">
+            <li class="pc-item"><a class="pc-link" href="{% url 'plm:classification_list' %}">
               <span class="pc-mtext">Tasnif</span></a>
             </li>
 
@@ -96,6 +96,12 @@
           <a href="{% url 'plm:employee_list' %}" class="pc-link">
             <span class="pc-micon"> <i data-feather="users"></i></span>
             <span class="pc-mtext">Xodimlar</span>
+          </a>
+        </li>
+        <li class="pc-item pc-hasmenu">
+          <a href="{% url 'plm:reglament' %}" class="pc-link">
+            <span class="pc-micon"> <i class="bi bi-file-text"></i></span>
+            <span class="pc-mtext">Reglament</span>
           </a>
         </li>
 

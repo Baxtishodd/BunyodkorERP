@@ -1,26 +1,31 @@
 {% extends "base1.html" %}
 {% block content %}
-<h3>{{ order }} buyurtmasi uchun sifat nazorati qo‘shish</h3><br>
+<h3>{{ order }} buyurtmasi uchun sifat nazorati ma’lumotini kiritish</h3><br>
 
 <form method="post">
     {% csrf_token %}
     <div class="row">
         <div class="mb-3 col-md-3">
-            {{ form.total_checked.label_tag }} {{ form.total_checked }}
+            {{ form.ordersize.label_tag }}
+            {{ form.ordersize }}
         </div>
         <div class="mb-3 col-md-3">
-            {{ form.passed_quantity.label_tag }} {{ form.passed_quantity }}
+            {{ form.passed_quantity.label_tag }}
+            {{ form.passed_quantity }}
         </div>
         <div class="mb-3 col-md-3">
-            {{ form.failed_quantity.label_tag }} {{ form.failed_quantity }}
+            {{ form.failed_quantity.label_tag }}
+            {{ form.failed_quantity }}
         </div>
         <div class="mb-3 col-md-3">
-            {{ form.inspected_date.label_tag }} {{ form.inspected_date }}
+            {{ form.inspection_date.label_tag }}
+            {{ form.inspection_date }}
         </div>
     </div>
 
-    <div class="mb-3 col-md-3">
-        {{ form.defect_notes.label_tag }} {{ form.defect_notes }}
+    <div class="mb-3">
+        {{ form.comment.label_tag }}
+        {{ form.comment }}
     </div>
 
     <button type="submit" class="btn btn-primary">Saqlash</button>

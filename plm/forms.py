@@ -1,7 +1,7 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
-                     Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice, ShipmentItem, ModelAssigned)
-
+                     Stitching, Ironing, Packing, Shipment, ShipmentInvoice, ShipmentItem, ModelAssigned,
+                     Classification, Inspection)
 
 
 class ProductModelForm(forms.ModelForm):
@@ -28,6 +28,7 @@ class ProductModelForm(forms.ModelForm):
             "model_picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -36,8 +37,9 @@ class EmployeeForm(forms.ModelForm):
         widgets = {
             "full_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ism familiya"}),
             "line": forms.Select(choices=Employee.line,
-                         attrs={'class': 'form-select'})
+                                 attrs={'class': 'form-select'})
         }
+
 
 class OrderForm(forms.ModelForm):
     deadline = forms.DateTimeField(
@@ -46,13 +48,15 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['client', 'artikul','rangi', 'deadline', 'model_picture']
+        fields = ['client', 'artikul', 'rangi', 'deadline', 'model_picture', 'status']
         widgets = {
             'client': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mijoz nomi'}),
             'artikul': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Artikul'}),
             'rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rang'}),
             'model_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
         }
+
 
 class OrderSizeForm(forms.ModelForm):
     class Meta:
@@ -63,6 +67,7 @@ class OrderSizeForm(forms.ModelForm):
             'size': forms.Select(attrs={'class': 'form-control'}),
         }
 
+
 class WorkTypeForm(forms.ModelForm):
     class Meta:
         model = WorkType
@@ -71,6 +76,7 @@ class WorkTypeForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
 
 class FabricArrivalForm(forms.ModelForm):
     class Meta:
@@ -85,6 +91,7 @@ class FabricArrivalForm(forms.ModelForm):
             'factory_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fabrika nomi'}),
         }
 
+
 class AccessoryForm(forms.ModelForm):
     class Meta:
         model = Accessory
@@ -95,6 +102,7 @@ class AccessoryForm(forms.ModelForm):
             'unit': forms.Select(attrs={'class': 'form-select'}),
         }
 
+
 class CuttingForm(forms.ModelForm):
     class Meta:
         model = Cutting
@@ -103,6 +111,7 @@ class CuttingForm(forms.ModelForm):
             'pastal_soni': forms.NumberInput(attrs={'class': 'form-control'}),
             'pastal_olchami': forms.Select(attrs={'class': 'form-select'}),
         }
+
 
 class PrintForm(forms.ModelForm):
     class Meta:
@@ -113,6 +122,7 @@ class PrintForm(forms.ModelForm):
             'daily_work_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
 
         }
+
 
 class StitchingForm(forms.ModelForm):
     class Meta:
@@ -141,6 +151,7 @@ class StitchingForm(forms.ModelForm):
         # # Sana kiritilayotganini ko‘rsatamiz
         # self.fields["date"].widget = forms.DateInput(attrs={"type": "date"})
 
+
 class IroningForm(forms.ModelForm):
     class Meta:
         model = Ironing
@@ -151,30 +162,19 @@ class IroningForm(forms.ModelForm):
 
         }
 
+
 class InspectionForm(forms.ModelForm):
     class Meta:
         model = Inspection
-        fields = [
-            "total_checked",
-            "passed_quantity",
-            "failed_quantity",
-            "inspected_date",
-            "defect_notes",
-        ]
+        fields = ["ordersize", "passed_quantity", "failed_quantity", "inspection_date", "comment"]
         widgets = {
-            'total_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Umumiy tekshirildi'}),
-            'passed_quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Sifatdan o`tdi'}),
-            'failed_quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Sifatdan o`tmadi'}),
-            "inspected_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "defect_notes": forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Nuqson haqida qisqacha izoh..."}),
+            "ordersize": forms.Select(attrs={"class": "form-select"}),
+            "passed_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "failed_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "inspection_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "comment": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
-        labels = {
-            "total_checked": "Umumiy tekshirilgan soni",
-            "passed_quantity": "Sifatdan o‘tgan soni",
-            "failed_quantity": "Sifatdan o‘tmagan soni",
-            "defect_notes": "Nuqson haqida izoh",
-            "inspected_date": "Tekshiruv sanasi",
-        }
+
 
 class PackingForm(forms.ModelForm):
     class Meta:
@@ -221,7 +221,6 @@ class ShipmentForm(forms.ModelForm):
             "status": forms.Select(attrs={"class": "form-select"}),
             "attachment": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
-
 
 
 class ShipmentInvoiceForm(forms.ModelForm):
@@ -283,7 +282,6 @@ class ShipmentInvoiceForm(forms.ModelForm):
         }
 
 
-
 class ShipmentItemForm(forms.ModelForm):
     class Meta:
         model = ShipmentItem
@@ -321,18 +319,21 @@ class ShipmentItemForm(forms.ModelForm):
             self.fields['order'].queryset = confirmed_orders
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class ClassificationForm(forms.ModelForm):
+    class Meta:
+        model = Classification
+        fields = ["ordersize", "first_sort", "second_sort", "defect", "classified_date"]
+        widgets = {
+            "ordersize": forms.Select(attrs={"class": "form-select"}),
+            "first_sort": forms.NumberInput(attrs={"class": "form-control", "placeholder": "1-sort soni"}),
+            "second_sort": forms.NumberInput(attrs={"class": "form-control", "placeholder": "2-sort soni"}),
+            "defect": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Brak soni"}),
+            "classified_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+        }
+        labels = {
+            "ordersize": "Buyurtma razmeri",
+            "first_sort": "1-sort",
+            "second_sort": "2-sort",
+            "defect": "Brak",
+            "classified_date": "Tasnif sanasi",
+        }

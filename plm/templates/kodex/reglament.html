@@ -1,0 +1,114 @@
+{% extends "base1.html" %}
+{% block content %}
+
+<div class="container py-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="text-center mb-4 fw-bold text-primary">Tizimdan Foydalanish Reglamenti</h2>
+      <hr class="mb-5"/>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">1. Umumiy qoidalar</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">PLM tizimi korxona ishlab chiqarish jarayonlarini markazlashtirilgan boshqarish uchun mo‘ljallangan.</li>
+          <li class="list-group-item">Har bir foydalanuvchi faqat o‘ziga berilgan roli doirasida ma’lumotlarni ko‘rish, kiritish yoki tahrirlash huquqiga ega.</li>
+          <li class="list-group-item">Tizimdagi barcha amallar avtomatik ravishda foydalanuvchi nomi va vaqt bilan loglanadi.</li>
+        </ul>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">2. Foydalanuvchi rollari va huquqlari</h4>
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Rol nomi</th>
+              <th>Vakolatlar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Admin</td>
+              <td>Tizim sozlamalari, foydalanuvchi huquqlari, normativ va ishlab chiqarish parametrlari ustidan to‘liq nazorat.</td>
+            </tr>
+            <tr>
+              <td>Rejalashtiruvchi (Planer)</td>
+              <td>Buyurtmalarni yaratish, modelni patoklarga biriktirish, muddatlarni belgilash.</td>
+            </tr>
+            <tr>
+              <td>Ishlab chiqarish ustasi</td>
+              <td>Kesim, tikim, dazmol, qadoq kabi amaliy jarayonlar bo‘yicha ma’lumot kiritish.</td>
+            </tr>
+            <tr>
+              <td>Sifat nazoratchi</td>
+              <td>Inspeksiya natijalarini kiritish va tahlil qilish.</td>
+            </tr>
+            <tr>
+              <td>Menejer / Rahbar</td>
+              <td>Hisobot va tahliliy ko‘rsatkichlarni ko‘rish.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">3. Ma’lumotlar kiritish qoidalari</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Har bir buyurtmaga mijoz nomi, artikul, rang, muddat va model rasmi majburiy tarzda kiritiladi.</li>
+          <li class="list-group-item">O‘lchamlar (OrderSize) to‘liq kiritilmaguncha buyurtma ishlab chiqarishga o‘tkazilmaydi.</li>
+          <li class="list-group-item">Ishlab chiqarish bosqichlari (kesim, tikim, pechat, dazmol, tasnif, sifat nazorati, qadoq) tartib bilan to‘ldiriladi.</li>
+          <li class="list-group-item">Inspeksiya natijalari asosida sifat foizi avtomatik hisoblanadi.</li>
+        </ul>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">4. Ma’lumotlarning yaxlitligi va xavfsizligi</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Har qanday ma’lumotni o‘chirishdan oldin tizim foydalanuvchidan tasdiq so‘raydi.</li>
+          <li class="list-group-item">Buyurtma o‘lchami tikim bilan bog‘langan bo‘lsa — o‘chirib bo‘lmaydi.</li>
+          <li class="list-group-item">Har bir yozuv yaratuvchi va so‘nggi tahrirlagan foydalanuvchi bilan birga saqlanadi.</li>
+          <li class="list-group-item">Foydalanuvchilar login va parollarini uchinchi shaxslarga bermasliklari shart.</li>
+        </ul>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">5. Ish jarayonlari va javobgarlik</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Har bir ishlab chiqarish bosqichining (kesim, pechat, tikim, dazmol va boshqalar) javobgar shaxsi bo‘ladi.</li>
+          <li class="list-group-item">Patok rahbari o‘z liniyasidagi model, xodim va normativlar uchun javobgar.</li>
+          <li class="list-group-item">Ishlab chiqarishdagi orqaga qaytish, to‘xtatish yoki bekor qilish sabablari tizimda qayd etiladi.</li>
+        </ul>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">6. Hisobot va tahlil</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Tizim real vaqt rejimida ishlab chiqarish holati, o‘tgan foiz, brak miqdori va bajarilgan ish hajmi bo‘yicha hisobot beradi.</li>
+          <li class="list-group-item">Hisobot ma’lumotlarini PDF yoki Excel formatida eksport qilish faqat ruxsat etilgan foydalanuvchilarga beriladi.</li>
+        </ul>
+      </section>
+
+      <section class="mb-5">
+        <h4 class="fw-semibold text-secondary mb-3">7. Zaxiralash va texnik xizmat</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Ma’lumotlar har kuni avtomatik zaxiralanadi.</li>
+          <li class="list-group-item">Tizimdagi har qanday texnik nosozlik admin’ga darhol xabar qilinadi.</li>
+          <li class="list-group-item">Versiyalar o‘zgarishi (model, norma, foydalanuvchi huquqi) audit log’da qayd etiladi.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h4 class="fw-semibold text-secondary mb-3">8. Axloqiy va tashkiliy me’yorlar</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Foydalanuvchi tizimdan shaxsiy yoki korxona faoliyatiga aloqasiz maqsadlarda foydalanmasligi kerak.</li>
+          <li class="list-group-item">Ma’lumotlarni manipulyatsiya qilish, noto‘g‘ri statistik kiritish yoki yashirish intizomiy javobgarlikka olib keladi.</li>
+        </ul>
+      </section>
+
+      <div class="text-center mt-5">
+        <a href="{% url 'plm:order_list' %}" class="btn btn-outline-primary rounded-5 px-4">Ortga qaytish</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -2,19 +2,20 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
-                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, InspectionForm, PackingForm,
-                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm)
+                    CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, PackingForm, InspectionForm,
+                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm, ClassificationForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
-                     Cutting, OrderSize, Stitching, Ironing, Inspection, Packing, Shipment, ShipmentInvoice,
-                     ShipmentItem)
+                     Cutting, OrderSize, Stitching, Ironing, Packing, Shipment, ShipmentInvoice, Inspection,
+                     ShipmentItem, Classification)
 from django.shortcuts import render, redirect
 from datetime import time
+from django.utils import timezone
+
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import Sum, Q, F
 from collections import Counter, defaultdict
 from django.core.paginator import Paginator
-from django.db.models import Q
 
 # Model kartalar ro‘yxati
 @login_required
@@ -261,6 +262,12 @@ def order_list(request):
     sort_by = request.GET.get("sort", "created_at")
     direction = request.GET.get("dir", "desc")
 
+    # 🔹 Dropdown filtrlar
+    status_filter = request.GET.get("status")
+    client_filter = request.GET.get("client")
+    color_filter = request.GET.get("rangi")
+    patok_filter = request.GET.get("patok")
+
     try:
         per_page = int(request.GET.get("per_page", 10))
     except (TypeError, ValueError):
@@ -277,6 +284,16 @@ def order_list(request):
             | Q(artikul__icontains=search_query)
             | Q(rangi__icontains=search_query)
         )
+
+    # 🔽 Filtrlar
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+    if client_filter:
+        orders = orders.filter(client=client_filter)
+    if color_filter:
+        orders = orders.filter(rangi=color_filter)
+    if patok_filter:
+        orders = orders.filter(modelassigned__line__id=patok_filter)
 
         # ⬆️⬇️ Sortirovka
     sort_fields = {
@@ -299,6 +316,12 @@ def order_list(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    # 🔹 Dropdown variantlar
+    status_choices = Order.STATUS_CHOICES
+    client_choices = Order.objects.values_list("client", flat=True).distinct()
+    color_choices = Order.objects.values_list("rangi", flat=True).distinct()
+    patok_choices = ProductionLine.objects.all()
+
 
     return render(
         request,
@@ -310,6 +333,15 @@ def order_list(request):
             "per_page_options": per_page_options,
             "sort_by": sort_by,
             "direction": direction,
+            # 🔽 filtrlar
+            "status_choices": status_choices,
+            "client_choices": client_choices,
+            "color_choices": color_choices,
+            "patok_choices": patok_choices,
+            "status_filter": status_filter,
+            "client_filter": client_filter,
+            "color_filter": color_filter,
+            "patok_filter": patok_filter,
         },
     )
 
@@ -416,32 +448,38 @@ def ordersize_update(request, pk):
     return render(request, "orders/ordersize/ordersize_form.html", {"form": form, "title": "O‘lchamni tahrirlash"})
 
 
+# @login_required
+# def ordersize_delete(request, pk):
+#     ordersize = get_object_or_404(OrderSize, pk=pk)
+#     order = ordersize.order
+#
+#     if request.method == "POST":
+#         ordersize.delete()
+#         messages.success(request, "Buyurtma o'lchami muvaffaqiyatli o‘chirildi ✅")
+#         return redirect("plm:order_detail", pk=order.pk)
+#     return render(request, "orders/ordersize/ordersize_confirm_delete.html", {"ordersize": ordersize})
+
 @login_required
 def ordersize_delete(request, pk):
     ordersize = get_object_or_404(OrderSize, pk=pk)
     order = ordersize.order
 
     if request.method == "POST":
+        # Tikim mavjudligini tekshiramiz
+        if ordersize.stitchings.exists():
+            messages.warning(request, "Ushbu o‘lcham tikim bilan bog‘langanligi sababli o‘chirib bo‘lmaydi ⚠️")
+            return redirect("plm:order_detail", pk=order.pk)
+
+        # Agar tikim yo‘q bo‘lsa — xavfsiz o‘chiramiz
         ordersize.delete()
-        messages.success(request, "Buyurtma o'lchami muvaffaqiyatli o‘chirildi ✅")
+        messages.success(request, "Buyurtma o‘lchami muvaffaqiyatli o‘chirildi ✅")
         return redirect("plm:order_detail", pk=order.pk)
+
     return render(request, "orders/ordersize/ordersize_confirm_delete.html", {"ordersize": ordersize})
 
+
+
 # Mato tastiqlanish Ro‘yxat
-@login_required
-def fabric_list1(request):
-    fabrics = FabricArrival.objects.select_related('order').order_by('-id')
-    return render(request, 'planning/fabric/fabric_list.html', {'fabrics': fabrics})
-
-# @login_required
-# def fabric_list(request):
-#     confirmed_orders = Order.objects.filter(
-#         id__in=ModelAssigned.objects.values_list("model_name_id", flat=True)
-#     ).prefetch_related('fabric_arrival')
-#
-#     return render(request, 'planning/fabric/fabric_list.html', {'orders': confirmed_orders})
-
-
 @login_required
 def fabric_list(request):
     # 🔍 Qidiruv so‘rovi
@@ -942,16 +980,19 @@ def stitching_update(request, pk):
         "order": order,
     })
 
+
 @login_required
 def stitching_delete(request, pk):
     stitching = get_object_or_404(Stitching, pk=pk)
     order = stitching.ordersize.order
+
     if request.method == "POST":
         stitching.delete()
-        messages.success(request, "Tikim ma'lumoti o‘chirildi ❌")
+        messages.success(request, "Tikim yozuvi muvaffaqiyatli o‘chirildi ✅")
         return redirect("plm:plan_order_detail", order_id=order.pk)
 
     return render(request, "planning/stitching/stitching_confirm_delete.html", {"stitching": stitching})
+
 
 
 # Ironing view Dazmol modeli
@@ -1064,21 +1105,20 @@ def ironing_delete(request, pk):
 # Inspection VIEW
 @login_required
 def inspection_list(request):
-    # 🔍 Qidiruv va sahifalash
     search_query = request.GET.get("q", "").strip()
+
+    # 📄 Har sahifada nechta element chiqishi
     try:
         per_page = int(request.GET.get("per_page", 10))
     except (TypeError, ValueError):
         per_page = 10
 
     per_page_options = [5, 10, 25, 50, 100]
-    if per_page not in per_page_options:
-        per_page = 10
 
-    # ✅ ModelAssigned mavjud bo‘lgan (tasdiqlangan) buyurtmalar
+    # 🔹 Faqat model tayinlangan (tasdiqlangan) buyurtmalar
     confirmed_orders = (
         Order.objects.filter(modelassigned__isnull=False)
-        .prefetch_related("inspections")
+        .prefetch_related("inspections", "ordersize")
         .order_by("-created_at")
         .distinct()
     )
@@ -1086,35 +1126,40 @@ def inspection_list(request):
     # 🔍 Qidiruv
     if search_query:
         confirmed_orders = confirmed_orders.filter(
-            Q(client__icontains=search_query)
-            | Q(artikul__icontains=search_query)
-            | Q(rangi__icontains=search_query)
+            Q(artikul__icontains=search_query) | Q(client__icontains=search_query)
         )
 
-    # 📊 Har bir buyurtma uchun umumiy ma’lumot
-    orders_with_totals = []
+    # 🔹 Hisob-kitoblar
+    data = []
     for order in confirmed_orders:
-        jami_checked = order.inspections.aggregate(total=Sum("total_checked"))["total"] or 0
-        jami_passed = order.inspections.aggregate(total=Sum("passed_quantity"))["total"] or 0
-        jami_failed = order.inspections.aggregate(total=Sum("failed_quantity"))["total"] or 0
+        total_order_qty = order.sum_order_size() or 0  # buyurtmadagi umumiy son
+        inspections = order.inspections.all()
 
-        passed_percent = round((jami_passed / jami_checked) * 100, 2) if jami_checked > 0 else 0
+        total_passed = inspections.aggregate(s=Sum("passed_quantity"))["s"] or 0
+        total_failed = inspections.aggregate(s=Sum("failed_quantity"))["s"] or 0
+        total_checked = total_passed + total_failed
 
-        orders_with_totals.append({
+        passed_percent = round((total_passed / total_order_qty * 100), 1) if total_order_qty else 0
+
+        data.append({
             "order": order,
-            "jami_checked": jami_checked,
-            "jami_passed": jami_passed,
-            "jami_failed": jami_failed,
+            "client": order.client,
+            "artikul": order.artikul,
+            "model_picture": order.model_picture.url if order.model_picture else None,
+            "total_order_qty": total_order_qty,
+            "total_passed": total_passed,
+            "total_failed": total_failed,
+            "total_checked": total_checked,
             "passed_percent": passed_percent,
         })
 
     # 📄 Pagination
-    paginator = Paginator(orders_with_totals, per_page)
+    paginator = Paginator(data, per_page)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # 🧩 Context
     context = {
+        "data": data,
         "page_obj": page_obj,
         "search_query": search_query,
         "per_page": per_page,
@@ -1123,10 +1168,10 @@ def inspection_list(request):
 
     return render(request, "planning/inspection/inspection_list.html", context)
 
+# -
 
 @login_required
 def inspection_add_to_order(request, order_id):
-    """Orderga yangi inspection qo‘shish"""
     order = get_object_or_404(Order, id=order_id)
 
     if request.method == "POST":
@@ -1135,50 +1180,58 @@ def inspection_add_to_order(request, order_id):
             inspection = form.save(commit=False)
             inspection.order = order
             inspection.created_by = request.user
+            inspection.inspection_date = timezone.now()
             inspection.save()
-            messages.success(request, "Sifat nazorati muvaffaqiyatli qo‘shildi ✅")
-            return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
+
+            messages.success(request, "✅ Sifat nazorati ma’lumoti muvaffaqiyatli qo‘shildi!")
+            return redirect("plm:plan_order_detail", order_id=order.id)
     else:
         form = InspectionForm()
 
-    return render(request, "planning/inspection/inspection_form.html", {"form": form, "order": order})
+    context = {
+        "order": order,
+        "form": form,
+        "title": f"{order.artikul} uchun Inspection qo‘shish",
+    }
+    return render(request, "planning/inspection/inspection_form.html", context)
+
 
 @login_required
 def inspection_update(request, pk):
-    """Inspection ma'lumotlarini tahrirlash"""
     inspection = get_object_or_404(Inspection, pk=pk)
-    order = inspection.order  # Bog‘langan buyurtma
+    order = inspection.order
 
     if request.method == "POST":
         form = InspectionForm(request.POST, instance=inspection)
         if form.is_valid():
             form.save()
-            messages.success(request, "Sifat nazorati ma'lumotlari yangilandi.")
-            return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
+            messages.success(request, "Sifat nazorati ma’lumoti yangilandi ✅")
+            return redirect("plm:plan_order_detail", order_id=order.id)
     else:
         form = InspectionForm(instance=inspection)
 
     return render(
         request,
         "planning/inspection/inspection_form.html",
-        {
-            "form": form,
-            "order": order,
-        },
+        {"form": form, "order": order},
     )
 
 @login_required
 def inspection_delete(request, pk):
-    """Inspectionni o‘chirish"""
     inspection = get_object_or_404(Inspection, pk=pk)
-    order_id = inspection.order.id
+    order = inspection.order
 
     if request.method == "POST":
         inspection.delete()
-        messages.success(request, "Sifat nazorati yozuvi o‘chirildi 🗑️")
-        return redirect("plm:plan_order_detail", order_id=inspection.order.pk)
+        messages.success(request, "Sifat nazorati yozuvi o‘chirildi ❌")
+        return redirect("plm:plan_order_detail", order_id=order.id)
 
-    return render(request, "planning/inspection/inspection_confirm_delete.html", {"inspection": inspection})
+    return render(
+        request,
+        "planning/inspection/inspection_confirm_delete.html",
+        {"inspection": inspection, "order": order},
+    )
+
 
 # Packing VIEW
 @login_required
@@ -1408,10 +1461,17 @@ def plan_order_detail(request, order_id):
     jami_dazmol = sum(c.quantity for c in order.ironing.all())
 
     # ✅ Sifat nazorati (Inspection) umumiy statistika
-    inspections = Inspection.objects.filter(order=order)
-    total_checked = inspections.aggregate(total=Sum("total_checked"))["total"] or 0
-    total_passed = inspections.aggregate(total=Sum("passed_quantity"))["total"] or 0
-    total_failed = inspections.aggregate(total=Sum("failed_quantity"))["total"] or 0
+    inspections = order.inspections.all().order_by("-inspection_date")
+
+    total_order = order.sum_order_size() if hasattr(order, "sum_order_size") else 0
+    total_checked = sum(i.passed_quantity + i.failed_quantity for i in inspections)
+    total_passed = sum(i.passed_quantity for i in inspections)
+    total_failed = sum(i.failed_quantity for i in inspections)
+
+    passed_percentage = (
+        round((total_passed / total_checked) * 100, 1)
+        if total_checked else 0
+    )
 
     # Qadoqlash
     packings = Packing.objects.filter(order=order)
@@ -1422,6 +1482,14 @@ def plan_order_detail(request, order_id):
     shipment = Shipment.objects.filter(order=order)
     total_shipment_products = shipment.aggregate(total=Sum("product_quantity"))["total"] or 0
     total_shipment_box = shipment.aggregate(total=Sum("box_quantity"))["total"] or 0
+
+    # ✅ TASnif (Classification)
+    classifications = Classification.objects.filter(ordersize__order=order).select_related("ordersize", "created_by")
+
+    total_first_sort = sum(c.first_sort for c in classifications)
+    total_second_sort = sum(c.second_sort for c in classifications)
+    total_defect = sum(c.defect for c in classifications)
+    total_classified_all = total_first_sort + total_second_sort + total_defect
 
 
 
@@ -1440,14 +1508,21 @@ def plan_order_detail(request, order_id):
         "order_size_totals": dict(order_size_totals),
         "order_total_quantity": total_quantity,
 
-        # "classifications": Classification.objects.filter(order=order),
+        "classifications": classifications,
+        "total_first_sort": total_first_sort,
+        "total_second_sort": total_second_sort,
+        "total_defect": total_defect,
+        "total_classified_all": total_classified_all,
+
         "ironings": ironing,
         "jami_dazmol": jami_dazmol,
 
         "inspections": inspections,
+        "total_order": total_order,
         "total_checked": total_checked,
         "total_passed": total_passed,
         "total_failed": total_failed,
+        "passed_percentage": passed_percentage,
 
         "packings": packings,
         "total_packed_products": total_packed_products,
@@ -1668,11 +1743,145 @@ def shipment_item_delete(request, shipment_id, pk):
     return render(request, "planning/shipmentitem/shipment_item_confirm_delete.html", context)
 
 
+@login_required
+def classification_add_to_order(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    is_confirmed = ModelAssigned.objects.filter(model_name_id=order_id).exists()
+
+    if not is_confirmed:
+        messages.warning(request, "Bu buyurtma hali tasdiqlanmagan!")
+        return redirect("plm:classification_list")
+
+    if request.method == "POST":
+        form = ClassificationForm(request.POST)
+        if form.is_valid():
+            classification = form.save(commit=False)
+            classification.created_by = request.user
+            classification.save()
+            messages.success(request, "Razmer bo‘yicha tasnif muvaffaqiyatli qo‘shildi ✅")
+            return redirect("plm:plan_order_detail", order_id=order.pk)
+    else:
+        # faqat shu buyurtmaga tegishli razmerlar chiqsin
+        form = ClassificationForm()
+        form.fields["ordersize"].queryset = OrderSize.objects.filter(order=order)
+
+    return render(request, "planning/classification/classification_form.html", {
+        "form": form,
+        "order": order
+    })
+
+
+@login_required
+def classification_list(request):
+    # 🔍 Qidiruv
+    search_query = request.GET.get("q", "").strip()
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (TypeError, ValueError):
+        per_page = 10
+
+    # ✅ Faqat ModelAssigned orqali tasdiqlangan buyurtmalar
+    confirmed_orders = (
+        Order.objects.filter(modelassigned__isnull=False)
+        .prefetch_related("ordersize__classifications")
+        .order_by("-created_at")
+        .distinct()
+    )
+
+    # 🔍 Qidiruv (mijoz yoki artikul bo‘yicha)
+    if search_query:
+        confirmed_orders = confirmed_orders.filter(
+            Q(client__icontains=search_query) |
+            Q(artikul__icontains=search_query)
+        )
+
+    # 📊 Hisob-kitoblar
+    results = []
+    for order in confirmed_orders:
+        # Order ichidagi barcha classification yozuvlarini yig‘amiz
+        totals = order.ordersize.all().aggregate(
+            total_first=Sum("classifications__first_sort"),
+            total_second=Sum("classifications__second_sort"),
+            total_defect=Sum("classifications__defect"),
+        )
+
+        total_first = totals["total_first"] or 0
+        total_second = totals["total_second"] or 0
+        total_defect = totals["total_defect"] or 0
+        total_all = total_first + total_second + total_defect
+        first_percent = round((total_first / total_all) * 100, 2) if total_all else 0
+
+        results.append({
+            "order": order,
+            "total_first": total_first,
+            "total_second": total_second,
+            "total_defect": total_defect,
+            "total_all": total_all,
+            "first_percent": first_percent,
+        })
+
+    # 📄 Pagination
+    paginator = Paginator(results, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 📦 Context
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+    }
+
+    return render(request, "planning/classification/classification_list.html", context)
 
 
 
 
+@login_required
+def classification_update(request, pk):
+    classification = get_object_or_404(Classification, pk=pk)
+    order = classification.ordersize.order  # Buyurtma bilan bog‘lash
 
+    if request.method == "POST":
+        form = ClassificationForm(request.POST, instance=classification)
+        if form.is_valid():
+            updated = form.save(commit=False)
+            updated.save()
+            messages.success(request, "Tasnif ma’lumoti muvaffaqiyatli yangilandi ✅")
+            return redirect("plm:plan_order_detail", order_id=order.pk)
+        else:
+            messages.error(request, "Xatolik yuz berdi. Ma’lumotni tekshirib qayta urinib ko‘ring.")
+    else:
+        form = ClassificationForm(instance=classification)
+
+    return render(
+        request,
+        "planning/classification/classification_form.html",
+        {"form": form, "order": order, "classification": classification},
+    )
+
+
+@login_required
+def classification_delete(request, pk):
+    classification = get_object_or_404(Classification, pk=pk)
+    order = classification.ordersize.order  # buyurtma bilan bog‘lash
+
+    if request.method == "POST":
+        classification.delete()
+        messages.success(request, "Tasnif muvaffaqiyatli o‘chirildi 🗑️")
+        return redirect("plm:plan_order_detail", order_id=order.pk)
+
+    return render(
+        request,
+        "planning/classification/classification_confirm_delete.html",
+        {"classification": classification, "order": order},
+    )
+
+
+@login_required
+def reglament_view(request):
+    return render(request, "kodex/reglament.html")
 
 
 

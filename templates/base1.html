@@ -37,20 +37,46 @@
     <link rel="stylesheet" href="{% static 'assets/fonts/material.css' %}" />
     <!-- [Template CSS Files] -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" id="main-style-link" />
+      <style>
+        /* 🔍 Qidiruv maydoni uchun lupa belgisi */
+        .select2-search__field {
+          background-image: url("https://cdn-icons-png.flaticon.com/512/622/622669.png");
+          background-repeat: no-repeat;
+          background-size: 16px;
+          background-position: 8px center;
+          padding-left: 28px !important;
+          border-radius: 6px;
+        }
 
+        @keyframes float {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0); }
+        }
+
+        .img-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .zoom-thumb {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          .zoom-thumb:hover {
+            transform: scale(1.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+          }
+          .modal-content img {
+            transition: transform 0.3s ease;
+          }
+          .modal-content img:hover {
+            transform: scale(1.2);
+          }
+
+
+        </style>
   </head>
   <!-- [Head] end -->
-  <style>
-    /* 🔍 Qidiruv maydoni uchun lupa belgisi */
-    .select2-search__field {
-      background-image: url("https://cdn-icons-png.flaticon.com/512/622/622669.png");
-      background-repeat: no-repeat;
-      background-size: 16px;
-      background-position: 8px center;
-      padding-left: 28px !important;
-      border-radius: 6px;
-    }
-    </style>
+
   <!-- [Body] Start -->
 
   <body>
@@ -78,12 +104,13 @@
           {% if messages %}
 
             {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
+              <div class="alert alert-{{ message.tags }} bordered alert-dismissible fade show" role="alert">
+                <h4>{{ message }}</h4>
               </div>
             {% endfor %}
 
-            {% endif %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
       </div>
@@ -179,7 +206,6 @@
         });
       });
     </script>
-
 
   </body>
   <!-- [Body] end -->
