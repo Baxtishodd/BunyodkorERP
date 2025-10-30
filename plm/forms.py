@@ -337,3 +337,17 @@ class ClassificationForm(forms.ModelForm):
             "defect": "Brak",
             "classified_date": "Tasnif sanasi",
         }
+
+
+class ModelAssignedForm(forms.ModelForm):
+    class Meta:
+        model = ModelAssigned
+        fields = ["line", "model_name"]
+        widgets = {
+            "line": forms.Select(attrs={"class": "form-select"}),
+            "model_name": forms.Select(attrs={"class": "form-select"}),
+        }
+        labels = {
+            "line": "Patok",
+            "model_name": "Buyurtma (Artikul)",
+        }

@@ -105,6 +105,12 @@ urlpatterns = [
 
     path("reglament/", views.reglament_view, name="reglament"),
 
+    # ModelAssigned uchun yo‘llar
+    path("modelassigned/", views.modelassigned_list, name="modelassigned_list"),
+    path("modelassigned/create/<int:order_id>/", views.modelassigned_create, name="modelassigned_create"),
+    path("modelassigned/<int:pk>/delete/", views.modelassigned_delete, name="modelassigned_delete"),
+
+
 
     path('test', views.test, name='test'),
 

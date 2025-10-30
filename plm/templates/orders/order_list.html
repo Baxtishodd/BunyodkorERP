@@ -2,7 +2,8 @@
 {% load static %}
 {% block content %}
 
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap" xmlns:patok_filter xmlns:patok_filter
+     xmlns:patok_filter xmlns:patok_filter xmlns:patok_filter xmlns:patok_filter>
     <h4 class="fw-bold text-success mb-2">Buyurtmalar ro‘yxati</h4>
 
     <div class="d-flex align-items-center">
@@ -87,6 +88,7 @@
             <th>Miqdor</th>
             <th>Rang</th>
             <th>Tasdiqlash</th>
+            <th>Tastiqlangan sana</th>
             <th>Yuklanish vaqti</th>
             <th>Harakat</th>
           </tr>
@@ -131,8 +133,20 @@
                     <span class="badge btn-light">Rejada</span>
                   </a>
                 {% else %}
-                  <span class="badge bg-warning">Tasdiqlanmagan</span>
+                  <a href="{% url 'plm:modelassigned_create' order.id %}"
+                    class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="bi bi-plus-circle"></i> Model biriktirish
+                  </a>
                 {% endif %}
+              {% endwith %}
+            </td>
+            <td>
+              {% with assigned=order.modelassigned_set.last %}
+                  {% if assigned %}
+                      {{ assigned.assigned_date|date:"Y-m-d" }}
+                  {% else %}
+                      <span class="badge bg-warning">Tasdiqlanmagan</span>
+                  {% endif %}
               {% endwith %}
             </td>
             <td>{{ order.deadline|date:"d.m.Y H:i" }}</td>

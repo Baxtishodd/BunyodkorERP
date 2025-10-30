@@ -36,51 +36,86 @@
           <a href="#!" class="pc-link"><span class="pc-micon"> <i data-feather="align-right"></i> </span><span
               class="pc-mtext">Rejalashtirish</span><span class="pc-arrow"><i class="ti ti-chevron-right"></i></span></a>
           <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:productionline_list' %}">Patoklar</a></li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:fabric_list' %}">
-              <span class="pc-mtext">Mato</span></a>
-            </li>
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:accessory_list' %}">
-              <span class="pc-mtext">Aksessuar</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:productionline_list' %}">
+                  <i class="bi bi-diagram-3 me-2"></i>
+                  <span>Patoklar</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:cutting_list' %}">
-              <span class="pc-mtext">Kesim</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:modelassigned_list' %}">
+                  <i class="bi bi-link-45deg me-2"></i>
+                  <span>Model biriktirish</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:print_list' %}">
-              <span class="pc-mtext">Pechat</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:fabric_list' %}">
+                  <i class="bi bi-palette me-2"></i>
+                  <span>Mato</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:classification_list' %}">
-              <span class="pc-mtext">Tasnif</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:accessory_list' %}">
+                  <i class="bi bi-bag-check me-2"></i>
+                  <span>Aksessuar</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:stitching_list' %}">
-              <span class="pc-mtext">Tikim</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:cutting_list' %}">
+                  <i class="bi bi-scissors me-2"></i>
+                  <span>Kesim</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:ironing_list' %}">
-              <span class="pc-mtext">Dazmol</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:print_list' %}">
+                  <i class="bi bi-printer me-2"></i>
+                  <span>Pechat</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:inspection_list' %}">
-              <span class="pc-mtext">Sifat nazorati</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:classification_list' %}">
+                  <i class="bi bi-diagram-2 me-2"></i>
+                  <span>Tasnif</span>
+                </a>
+              </li>
 
-            <li class="pc-item"><a class="pc-link" href="{% url 'plm:packing_list' %}">
-              <span class="pc-mtext">Qadoq</span></a>
-            </li>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:stitching_list' %}">
+                  <i class="bi bi-stack me-2"></i>
+                  <span>Tikim</span>
+                </a>
+              </li>
 
-<!--            <li class="pc-item pc-hasmenu">-->
-<!--              <a href="#!" class="pc-link">Narh jadvali<span class="pc-arrow"><i class="ti ti-chevron-right"></i></span></a>-->
-<!--              <ul class="pc-submenu">-->
-<!--                <li class="pc-item"><a class="pc-link" href="{% url 'plm:worktype_list' %}">Tikim narh jadvali</a></li>-->
-<!--              </ul>-->
-<!--            </li>-->
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:ironing_list' %}">
+                  <i class="bi bi-droplet-half me-2"></i>
+                  <span>Dazmol</span>
+                </a>
+              </li>
 
-          </ul>
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:inspection_list' %}">
+                  <i class="bi bi-shield-check me-2"></i>
+                  <span>Sifat nazorati</span>
+                </a>
+              </li>
+
+              <li class="pc-item">
+                <a class="pc-link d-flex align-items-center" href="{% url 'plm:packing_list' %}">
+                  <i class="bi bi-box-seam me-2"></i>
+                  <span>Qadoq</span>
+                </a>
+              </li>
+
+            </ul>
+
         </li>
         <li class="pc-item pc-hasmenu">
           <a href="{% url 'plm:shipmentinvoice_list' %}" class="pc-link">

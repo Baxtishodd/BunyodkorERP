@@ -6,9 +6,6 @@
   <div class="row mb-4">
     <div class="col-md-8 d-flex align-items-center">
       <h2 class="fw-bold text-primary mb-0">{{ line.name }}</h2>
-      <span class="badge bg-info fs-6 ms-3">
-        Hodimlar soni: {{ employees|length }}
-      </span>
 
     </div>
   </div>
@@ -19,6 +16,7 @@
       <div class="card shadow-sm mb-4">
         <div class="card-header bg-white text-dark fw-bold border-bottom">
           <i class="bi bi-people-fill me-2 text-primary"></i> Hodimlar
+
         </div>
         <ul class="list-group list-group-flush">
           {% for emp in employees %}
@@ -26,9 +24,15 @@
               <i class="bi bi-person-circle text-primary me-2"></i>
               <strong>{{ emp.full_name }}</strong>
             </li>
+
           {% empty %}
             <li class="list-group-item text-muted">Hodim biriktirilmagan</li>
           {% endfor %}
+            <li class="list-group-item">
+              <span class="badge bg-info fs-7 ms-3">
+                Hodimlar soni: {{ employees|length }}
+              </span>
+            </li>
         </ul>
       </div>
 

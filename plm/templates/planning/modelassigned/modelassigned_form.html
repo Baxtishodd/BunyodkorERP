@@ -1,0 +1,48 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">🧩 Modelni patokka biriktirish</h6>
+      <a href="{% url 'plm:productionline_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-list"></i> Patoklar ro‘yxati
+      </a>
+    </div>
+
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Patok tanlash -->
+        <div class="row align-items-end mb-3">
+          <div class="col-md-9">
+            {{ form.line.label_tag }}
+            {{ form.line }}
+          </div>
+          <div class="col-md-3 text-end">
+            <a href="{% url 'plm:worktype_create' %}"
+               class="btn btn-outline-primary w-100">
+              <i class="bi bi-plus-circle"></i> Yangi patok yaratish
+            </a>
+          </div>
+        </div>
+
+        <!-- Model tanlash -->
+        <div class="mb-3">
+          {{ form.model_name.label_tag }}
+          {{ form.model_name }}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'plm:order_list' %}" class="btn btn-secondary">
+            ⬅️ Orqaga
+          </a>
+          <button type="submit" class="btn btn-success">
+            💾 Saqlash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

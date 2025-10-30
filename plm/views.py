@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
                     CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, PackingForm, InspectionForm,
-                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm, ClassificationForm)
+                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm, ClassificationForm, ModelAssignedForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
                      Cutting, OrderSize, Stitching, Ironing, Packing, Shipment, ShipmentInvoice, Inspection,
@@ -1884,6 +1884,114 @@ def reglament_view(request):
     return render(request, "kodex/reglament.html")
 
 
+
+from django.db.models import Q
+from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
+
+@login_required
+def modelassigned_list(request):
+    """Biriktirilgan modellar ro‘yxati"""
+    search_query = request.GET.get("q", "").strip()
+    line_filter = request.GET.get("line", "")
+    start_date = request.GET.get("start_date", "")
+    end_date = request.GET.get("end_date", "")
+
+    # Har sahifada nechta yozuv bo‘lishi
+    try:
+        per_page = int(request.GET.get("per_page", 10))
+    except (ValueError, TypeError):
+        per_page = 10
+
+    # 🔹 Asosiy queryset
+    assigned_list = (
+        ModelAssigned.objects.select_related("line", "model_name")
+        .order_by("-assigned_date")
+    )
+
+    # 🔍 Qidiruv
+    if search_query:
+        assigned_list = assigned_list.filter(
+            Q(line__name__icontains=search_query)
+            | Q(model_name__client__icontains=search_query)
+            | Q(model_name__artikul__icontains=search_query)
+        )
+
+    # 🔽 Filtrlar
+    if line_filter:
+        assigned_list = assigned_list.filter(line_id=line_filter)
+
+    if start_date:
+        assigned_list = assigned_list.filter(assigned_date__gte=parse_date(start_date))
+    if end_date:
+        assigned_list = assigned_list.filter(assigned_date__lte=parse_date(end_date))
+
+    # 📄 Pagination
+    paginator = Paginator(assigned_list, per_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # 🔹 Patoklar ro‘yxati filtr uchun
+    line_choices = ProductionLine.objects.all()
+
+    context = {
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "line_filter": line_filter,
+        "start_date": start_date,
+        "end_date": end_date,
+        "per_page": per_page,
+        "per_page_options": [5, 10, 25, 50, 100],
+        "line_choices": line_choices,
+    }
+
+    return render(request, "planning/modelassigned/modelassigned_list.html", context)
+
+
+@login_required
+def modelassigned_create(request, order_id=None):
+    """Buyurtma uchun modelni patokka biriktirish"""
+    order = None
+    if order_id:
+        order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        form = ModelAssignedForm(request.POST)
+
+        if form.is_valid():
+            assigned = form.save(commit=False)
+
+            # Agar buyurtma urldan kelsa, formda model_name ni o‘zgartirmaymiz
+            if order:
+                assigned.model_name = order
+
+            assigned.save()
+            messages.success(request, "✅ Model patokka muvaffaqiyatli biriktirildi!")
+            return redirect("plm:order_list")
+    else:
+        # formni buyurtma bilan oldindan to‘ldiramiz (disabled)
+        if order:
+            form = ModelAssignedForm(initial={"model_name": order})
+            form.fields["model_name"].disabled = True
+        else:
+            form = ModelAssignedForm()
+
+    context = {"form": form, "order": order}
+    return render(request, "planning/modelassigned/modelassigned_form.html", context)
+
+
+@login_required
+def modelassigned_delete(request, pk):
+    """Biriktirilgan modelni o‘chirish"""
+    assigned = get_object_or_404(ModelAssigned, pk=pk)
+
+    if request.method == "POST":
+        assigned.delete()
+        messages.success(request, "Biriktirilgan model o‘chirildi ❌")
+        return redirect("plm:modelassigned_list")
+
+    context = {"assigned": assigned}
+    return render(request, "planning/modelassigned/modelassigned_confirm_delete.html", context)
 
 
 
