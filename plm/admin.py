@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (ProductModel, Order, ProductionLine, Employee, WorkType, HourlyWork, Norm, ModelAssigned,
                      FabricArrival, Accessory, Cutting, Printing, OrderSize, Stitching, Ironing, Inspection,
-                     Packing, ShipmentInvoice, ShipmentInvoice, ShipmentItem, Classification)
+                     Packing, ShipmentInvoice, ShipmentInvoice, ShipmentItem, Classification, ChangeLog)
 from django.utils.html import format_html
 
 
@@ -388,6 +388,32 @@ class InspectionAdmin(admin.ModelAdmin):
     def total_checked(self, obj):
         return obj.total_checked
 
+
+@admin.register(ChangeLog)
+class ChangeLogAdmin(admin.ModelAdmin):
+    list_display = ("title", "version", "author", "created_at")
+    list_filter = ("created_at", "author")
+    search_fields = ("title", "description", "version")
+    readonly_fields = ("created_at",)
+    ordering = ("-created_at",)
+
+    fieldsets = (
+        ("Asosiy ma'lumotlar", {
+            "fields": ("title", "version", "description")
+        }),
+        ("Qo‘shimcha", {
+            "fields": ("author", "created_at"),
+        }),
+    )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("author")
+
+    def save_model(self, request, obj, form, change):
+        if not obj.author:
+            obj.author = request.user
+        super().save_model(request, obj, form, change)
 
 
 

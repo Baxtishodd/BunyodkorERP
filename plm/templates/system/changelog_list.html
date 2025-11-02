@@ -1,0 +1,103 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold text-primary mb-0">📜 Changelog</h4>
+    <a href="{% url 'plm:changelog_add' %}" class="btn btn-gradient btn-sm shadow-sm">
+      <i class="bi bi-plus-lg"></i> Yangi o‘zgarish
+    </a>
+  </div>
+
+  <div class="timeline">
+    {% for group in grouped_logs %}
+      <div class="timeline-month">
+        <span class="month-label">{{ group.month }}</span>
+      </div>
+
+      {% for log in group.logs %}
+        <div class="timeline-item">
+          <div class="timeline-circle"></div>
+          <div class="timeline-content card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="fw-semibold mb-1 text-dark">{{ log.title }}</h6>
+                {% if log.version %}
+                  <span class="badge bg-warning text-dark small">{{ log.version }}</span>
+                {% endif %}
+              </div>
+              <small class="text-secondary">{{ log.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+            <p class="text-muted mt-2 mb-1">{{ log.description }}</p>
+            {% if log.author %}
+              <small class="text-primary">👤 {{ log.author }}</small>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% empty %}
+      <div class="alert alert-light text-center mt-4">Hozircha o‘zgarishlar yo‘q.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+/* Gradient tugma */
+.btn-gradient {
+  background: linear-gradient(90deg, #007bff, #00b4d8);
+  color: #fff !important;
+  border: none;
+  transition: 0.3s ease;
+}
+.btn-gradient:hover {
+  background: linear-gradient(90deg, #0062cc, #0096c7);
+  transform: translateY(-1px);
+}
+
+/* Timeline asosiy chizig‘i */
+.timeline {
+  position: relative;
+  margin-left: 40px;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 25px;
+}
+
+/* Oyning nomi */
+.timeline-month {
+  position: relative;
+  margin: 20px 0 10px;
+}
+.timeline-month .month-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #444;
+  background: #f8f9fa;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Timeline elementi */
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+}
+.timeline-circle {
+  position: absolute;
+  left: -31px;
+  top: 18px;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(90deg, #007bff, #00b4d8);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #fff;
+}
+.timeline-content {
+  border-radius: 10px;
+  transition: 0.25s ease;
+}
+.timeline-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-light">
+      <h6 class="mb-0">🧵 Yangi patok qo‘shish</h6>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.name.label_tag }}
+          {{ form.name }}
+        </div>
+        <button type="submit" class="btn btn-primary">Saqlash</button>
+        <a href="{% url 'plm:productionline_list' %}" class="btn btn-secondary">Bekor qilish</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

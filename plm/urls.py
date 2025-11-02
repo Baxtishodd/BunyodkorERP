@@ -32,6 +32,8 @@ urlpatterns = [
 
     path("production-lines/", views.productionline_list, name="productionline_list"),
     path("productionline/<int:pk>/", views.productionline_detail, name="productionline_detail"),
+    path("productionline/create/", views.productionline_create, name="productionline_create"),
+
 
     path('fabrics/', views.fabric_list, name='fabric_list'),
     path('fabrics/<int:pk>/confirm/', views.fabric_confirm, name='fabric_confirm'),
@@ -42,7 +44,6 @@ urlpatterns = [
 
 
     path('accessories/', views.accessory_list, name='accessory_list'),
-    # path('accessories/create/', views.accessory_create, name='accessory_create'),
     path('accessories/<int:pk>/edit/', views.accessory_update, name='accessory_update'),
     path('accessories/<int:pk>/delete/', views.accessory_delete, name='accessory_delete'),
     path('accessories/add/<int:order_id>/', views.accessory_add_to_order, name='accessory_add_to_order'),
@@ -109,6 +110,12 @@ urlpatterns = [
     path("modelassigned/", views.modelassigned_list, name="modelassigned_list"),
     path("modelassigned/create/<int:order_id>/", views.modelassigned_create, name="modelassigned_create"),
     path("modelassigned/<int:pk>/delete/", views.modelassigned_delete, name="modelassigned_delete"),
+
+    path("changelog/", views.changelog_list, name="changelog_list"),
+    path("changelog/add/", views.changelog_create, name="changelog_add"),
+
+    path("dashboard/", views.dashboard, name="dashboard"),
+
 
 
 

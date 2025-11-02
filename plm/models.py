@@ -597,6 +597,43 @@ class ShipmentItem(models.Model):
     def __str__(self):
         return f"{self.order} → {self.quantity} {self.unit}"
 
+
+class ChangeLog(models.Model):
+    title = models.CharField(max_length=255, verbose_name="O‘zgarish nomi")
+    description = models.TextField(verbose_name="Tavsif")
+    version = models.CharField(max_length=50, verbose_name="Versiya raqami")
+    created_at = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Yaratgan foydalanuvchi"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.version} - {self.title}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # class Warehouse(models.Model):
 #     name = models.CharField(max_length=150, verbose_name="Ombor nomi")
 #     location = models.CharField(max_length=255, blank=True, null=True, verbose_name="Manzil")
@@ -621,7 +658,8 @@ class ShipmentItem(models.Model):
 # class WarehouseItem(models.Model):
 #     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name="items")
 #     name = models.CharField(max_length=200, verbose_name="Mahsulot nomi")
-#     category = models.CharField(max_length=100, blank=True, null=True, verbose_name="Kategoriya (Tayyor kiyim, mato, ip, aksessuar...)")
+#     category = models.CharField(max_length=100, blank=True, null=True, verbose_name="Kategoriya (Tayyor kiyim, mato,
+#     ip, aksessuar...)")
 #     quantity = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Miqdor")
 #     unit = models.CharField(
 #         max_length=20,

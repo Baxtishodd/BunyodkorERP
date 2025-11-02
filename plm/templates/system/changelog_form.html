@@ -1,0 +1,52 @@
+{% extends "base1.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <h6 class="mb-0 fw-bold">📝 Yangi o‘zgarish qo‘shish</h6>
+      <a href="{% url 'plm:changelog_list' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Orqaga
+      </a>
+    </div>
+
+    <div class="card-body">
+      <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="id_title" class="form-label">O‘zgarish nomi</label>
+          {{ form.title }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_version" class="form-label">Versiya raqami</label>
+          {{ form.version }}
+          <div class="form-text text-muted">Masalan: <code>v1.2.0</code> yoki <code>2025.10.31</code></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="id_description" class="form-label">Tavsif</label>
+          {{ form.description }}
+          <div class="form-text text-muted">O‘zgarish tafsilotlarini kiriting (nimalar yangilandi, tuzatildi va hokazo)</div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-save"></i> Saqlash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border-radius: 12px;
+  }
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+</style>
+{% endblock %}

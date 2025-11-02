@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from .models import ProductModel, Printing
 from .forms import (ProductModelForm, EmployeeForm, OrderForm, WorkTypeForm, FabricArrivalForm, AccessoryForm,
                     CuttingForm, PrintForm, OrderSizeForm, StitchingForm, IroningForm, PackingForm, InspectionForm,
-                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm, ClassificationForm, ModelAssignedForm)
+                    ShipmentForm, ShipmentInvoiceForm, ShipmentItemForm, ClassificationForm, ModelAssignedForm,
+                    ProductionLineForm, ChangeLogForm)
 
 from .models import (ProductionLine, Employee, HourlyWork, WorkType, Order, FabricArrival, Accessory, ModelAssigned,
                      Cutting, OrderSize, Stitching, Ironing, Packing, Shipment, ShipmentInvoice, Inspection,
-                     ShipmentItem, Classification)
+                     ShipmentItem, Classification, ChangeLog)
 from django.shortcuts import render, redirect
 from datetime import time
 from django.utils import timezone
@@ -294,6 +295,9 @@ def order_list(request):
         orders = orders.filter(rangi=color_filter)
     if patok_filter:
         orders = orders.filter(modelassigned__line__id=patok_filter)
+
+
+
 
         # ⬆️⬇️ Sortirovka
     sort_fields = {
@@ -1994,11 +1998,117 @@ def modelassigned_delete(request, pk):
     return render(request, "planning/modelassigned/modelassigned_confirm_delete.html", context)
 
 
+@login_required
+def productionline_create(request):
+    if request.method == 'POST':
+        form = ProductionLineForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Yangi patok muvaffaqiyatli qo‘shildi ✅")
+            return redirect('plm:productionline_list')
+    else:
+        form = ProductionLineForm()
+    return render(request, 'planning/line/productionline_form.html', {'form': form})
 
 
+from itertools import groupby
+@login_required
+def changelog_list(request):
+    changelogs = ChangeLog.objects.all().order_by("-created_at")
+
+    grouped_logs = []
+    for month, logs in groupby(changelogs, key=lambda x: x.created_at.strftime("%B %Y")):
+        grouped_logs.append({
+            "month": month,
+            "logs": list(logs)
+        })
+
+    return render(request, "system/changelog_list.html", {"grouped_logs": grouped_logs})
+
+@login_required
+def changelog_create(request):
+    if request.method == "POST":
+        form = ChangeLogForm(request.POST)
+        if form.is_valid():
+            log = form.save(commit=False)
+            log.author = request.user
+            log.save()
+            return redirect("plm:changelog_list")
+    else:
+        form = ChangeLogForm()
+    return render(request, "system/changelog_form.html", {"form": form})
 
 
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from datetime import timedelta
+from django.utils import timezone
 
+@login_required
+def dashboard(request):
+    # 🔹 Umumiy statistikalar
+    total_orders = Order.objects.count()
+    active_orders = Order.objects.filter(status__in=["new", "in_production"]).count()
+    completed_orders = Order.objects.filter(status="completed").count()
+    total_employees = Employee.objects.count()
+    total_lines = ProductionLine.objects.count()
+
+    # 🔹 So‘nggi 5 buyurtma
+    latest_orders = Order.objects.order_by("-created_at")[:5]
+
+    # 🔹 Patoklar progressi
+    line_progress = []
+    for line in ProductionLine.objects.all():
+        assigned = line.modelassigned_set.last()
+        if assigned:
+            order = assigned.model_name
+            total = order.sum_order_size() or 0
+            stitched = order.total_stitched()
+            percent = int((stitched / total) * 100) if total else 0
+            line_progress.append({
+                "name": line.name,
+                "client": order.client or "—",
+                "artikul": order.artikul or "—",
+                "progress": percent,
+            })
+
+    # 🔹 6 oylik buyurtma statistikasi (xatolarsiz)
+    six_months_ago = timezone.now() - timedelta(days=180)
+    monthly_data = (
+        Order.objects.filter(created_at__gte=six_months_ago)
+        .values("created_at__year", "created_at__month")
+        .annotate(count=Count("id"))
+        .order_by("created_at__year", "created_at__month")
+    )
+
+    labels, data = [], []
+    for item in monthly_data:
+        year = item.get("created_at__year")
+        month = item.get("created_at__month")
+
+        # 🩵 None holatlari uchun xavfsiz tekshiruv
+        if year and month:
+            label = f"{year}-{int(month):02d}"
+        elif year:
+            label = f"{year}-??"
+        else:
+            label = "Noma’lum"
+        labels.append(label)
+        data.append(item.get("count", 0))
+
+    context = {
+        "total_orders": total_orders,
+        "active_orders": active_orders,
+        "completed_orders": completed_orders,
+        "total_employees": total_employees,
+        "total_lines": total_lines,
+        "latest_orders": latest_orders,
+        "line_progress": line_progress,
+        "chart_labels": labels,
+        "chart_data": data,
+    }
+
+    return render(request, "plm/dashboard.html", context)
 
 
 

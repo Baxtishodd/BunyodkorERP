@@ -1,7 +1,7 @@
 from django import forms
 from .models import (ProductModel, Employee, Order, WorkType, FabricArrival, Accessory, Cutting, Printing, OrderSize,
                      Stitching, Ironing, Packing, Shipment, ShipmentInvoice, ShipmentItem, ModelAssigned,
-                     Classification, Inspection)
+                     Classification, Inspection, ProductionLine, ChangeLog)
 
 
 class ProductModelForm(forms.ModelForm):
@@ -351,3 +351,40 @@ class ModelAssignedForm(forms.ModelForm):
             "line": "Patok",
             "model_name": "Buyurtma (Artikul)",
         }
+
+
+class ProductionLineForm(forms.ModelForm):
+    class Meta:
+        model = ProductionLine
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Patok nomi'}),
+        }
+
+
+class ChangeLogForm(forms.ModelForm):
+    class Meta:
+        model = ChangeLog
+        fields = ["title", "description", "version"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "O‘zgarish nomi"}),
+            "version": forms.TextInput(attrs={"class": "form-control", "placeholder": "v1.0.0"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Nimalar o‘zgardi?"}),
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
