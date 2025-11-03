@@ -3,23 +3,10 @@ import os
 from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 import environ
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-jcxge@8cwms-4-$&qia^6p+^8-qwrsw7vey#0e6e326apg3mvo'
-# SECURITY WARNING: don't run with debug turned on in production!
-
-# DEBUG = True
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76']
-
-
 
 env = environ.Env(
     DEBUG=(bool, False)
@@ -27,7 +14,31 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
+
 DEBUG = env("DEBUG")
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76']
+
+# --- DATABASES ---
+if os.environ.get("DATABASE_URL"):
+    # 🚀 Railway (PostgreSQL) uchun
+    DATABASES = {
+        "default": dj_database_url.config(conn_max_age=600)
+    }
+else:
+    # 💻 Lokal uchun (MySQL yoki lokal DB)
+    DATABASES = {
+        'default': {
+            'ENGINE': env("ENGINE", default='django.db.backends.mysql'),
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST", default='localhost'),
+            'PORT': env("DB_PORT", default='3306'),
+        }
+    }
+# DATABASE_URL=mysql://root:vXoyFdSAeZfIDyAuAfGuKWiQEATFmrPe@trolley.proxy.rlwy.net:46675/railway
+
 
 # Application definition
 
@@ -89,37 +100,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dcrm.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': env("ENGINE"),
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': 'localhost',
-        'PORT': env("PORT"),
-    }
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'new_db',
-#         'USER': 'root',
-#         'PASSWORD': '12345',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -135,12 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-US'
-
 
 # Add your supported languages
 LANGUAGES = [
@@ -149,14 +127,11 @@ LANGUAGES = [
     ('uz', _('Uzbek')),
 ]
 
-
 USE_L10N = True
 USE_I18N = True
 
-
 USE_TZ = True
 TIME_ZONE = 'Asia/Tashkent'
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -179,7 +154,3 @@ LOGOUT_REDIRECT_URL = 'index'
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-
-
