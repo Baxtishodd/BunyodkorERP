@@ -17,7 +17,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76', 'https://bunyodkorerp-production.up.railway.app/']
 
 # --- DATABASES ---
 if os.environ.get("DATABASE_URL"):
