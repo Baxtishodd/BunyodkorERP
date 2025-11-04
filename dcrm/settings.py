@@ -17,7 +17,9 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76', 'https://bunyodkorerp-production.up.railway.app/']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76', 'https://bunyodkorerp-production.up.railway.app/']
+
+ALLOWED_HOSTS = ['*']
 
 # --- DATABASES ---
 if os.environ.get("DATABASE_URL"):
@@ -26,7 +28,7 @@ if os.environ.get("DATABASE_URL"):
         "default": dj_database_url.config(conn_max_age=600)
     }
 else:
-    # 💻 Lokal uchun (MySQL yoki lokal DB)
+# 💻 Lokal uchun (MySQL yoki lokal DB)
     DATABASES = {
         'default': {
             'ENGINE': env("ENGINE", default='django.db.backends.mysql'),
@@ -37,11 +39,9 @@ else:
             'PORT': env("DB_PORT", default='3306'),
         }
     }
-# DATABASE_URL=mysql://root:vXoyFdSAeZfIDyAuAfGuKWiQEATFmrPe@trolley.proxy.rlwy.net:46675/railway
 
 
-# Application definition
-
+# Applications definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
