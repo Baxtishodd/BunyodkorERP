@@ -19,7 +19,8 @@ DEBUG = env("DEBUG")
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76', 'https://bunyodkorerp-production.up.railway.app/']
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bunyodkorerp.onrender.com', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['*']
 
 # --- DATABASES ---
 if os.environ.get("DATABASE_URL"):
@@ -28,7 +29,7 @@ if os.environ.get("DATABASE_URL"):
         "default": dj_database_url.config(conn_max_age=600)
     }
 else:
-# 💻 Lokal uchun (MySQL yoki lokal DB)
+    # 💻 Lokal uchun (MySQL yoki lokal DB)
     DATABASES = {
         'default': {
             'ENGINE': env("ENGINE", default='django.db.backends.mysql'),
@@ -39,7 +40,6 @@ else:
             'PORT': env("DB_PORT", default='3306'),
         }
     }
-
 
 # Applications definition
 INSTALLED_APPS = [
@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'accounts',
     'website',
     'plm',
-]
+  ]
 
 INSTALLED_APPS += ['django.contrib.sites']
 SITE_ID = 1
@@ -68,6 +68,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,7 +77,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # my edit
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     # 'django.middleware.locale.LocaleMiddleware',
 ]
 
