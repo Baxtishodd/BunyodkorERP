@@ -140,6 +140,8 @@ STATIC_URL = '/static/'  # Note the leading slash
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Add this line
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Path to locale directory
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 
