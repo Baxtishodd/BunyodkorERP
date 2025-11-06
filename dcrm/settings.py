@@ -60,7 +60,11 @@ INSTALLED_APPS = [
     'plm',
   ]
 
-INSTALLED_APPS += ['django.contrib.sites']
+INSTALLED_APPS += [
+    'django.contrib.sites',
+    'cloudinary_storage',
+    'cloudinary',
+]
 SITE_ID = 1
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -153,6 +157,12 @@ LOGIN_URL = 'login'  # Fixed from LOGIN to LOGIN_URL
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
+
+# Cloudinary sozlamalari
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
