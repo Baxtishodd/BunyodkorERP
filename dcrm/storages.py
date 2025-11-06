@@ -12,15 +12,21 @@ class ImageKitStorage(Storage):
         )
 
     def _save(self, name, content):
+        # 🔹 Faylni ImageKit’ga yuklash
         upload = self.imagekit.upload_file(
             file=content,
             file_name=name,
         )
-        return upload['name']
+
+        # ✅ upload.url — bu haqiqiy ImageKit havolasi
+        # Django modelga URL emas, faqat fayl nomini yozadi
+        # URL esa .url() metodida qaytariladi
+        return upload.name or name
 
     def url(self, name):
-        return f"{os.getenv('IMAGEKIT_URL_ENDPOINT')}/{name}"
+        # 🔹 To‘liq ImageKit URL qaytadi
+        return f"{os.getenv('IMAGEKIT_URL_ENDPOINT').rstrip('/')}/{name.lstrip('/')}"
 
     def exists(self, name):
-        # Fayl nomi bilan to‘qnashuv bo‘lmasligi uchun
+        # 🔹 Django fayl allaqachon bor deb o‘ylamasin
         return False
