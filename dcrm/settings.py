@@ -168,5 +168,5 @@ imagekit = ImageKit(
 # Media files
 DEFAULT_FILE_STORAGE = 'dcrm.storages.ImageKitStorage'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = None
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # fallback uchun kerak
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
