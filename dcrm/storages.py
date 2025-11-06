@@ -1,7 +1,7 @@
 import os
 from django.core.files.storage import Storage
 from imagekitio import ImageKit
-
+from io import BytesIO
 
 class ImageKitStorage(Storage):
     def __init__(self):
@@ -12,21 +12,27 @@ class ImageKitStorage(Storage):
         )
 
     def _save(self, name, content):
-        # 🔹 Faylni ImageKit’ga yuklash
+        # ✅ Fayl nomini tekshirish
+        if not name:
+            name = getattr(content, 'name', 'unnamed_file')
+
+        # ✅ Fayl obyektini o‘qish
+        if hasattr(content, 'read'):
+            file_data = content.read()
+        else:
+            raise ValueError("content obyektida read() metodi yo‘q!")
+
+        # ✅ Faylni ImageKit’ga yuklash
         upload = self.imagekit.upload_file(
-            file=content,
+            file=BytesIO(file_data),
             file_name=name,
         )
 
-        # ✅ upload.url — bu haqiqiy ImageKit havolasi
-        # Django modelga URL emas, faqat fayl nomini yozadi
-        # URL esa .url() metodida qaytariladi
+        # ✅ Django model uchun faqat nomni saqlaymiz
         return upload.name or name
 
     def url(self, name):
-        # 🔹 To‘liq ImageKit URL qaytadi
         return f"{os.getenv('IMAGEKIT_URL_ENDPOINT').rstrip('/')}/{name.lstrip('/')}"
 
     def exists(self, name):
-        # 🔹 Django fayl allaqachon bor deb o‘ylamasin
         return False
