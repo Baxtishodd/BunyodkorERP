@@ -4,9 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 import environ
 import dj_database_url
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,8 +62,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'django.contrib.sites',
-    'cloudinary_storage',
-    'cloudinary',
+    'imagekit',
 ]
 SITE_ID = 1
 
@@ -160,13 +156,17 @@ LOGIN_URL = 'login'  # Fixed from LOGIN to LOGIN_URL
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
+from imagekitio import ImageKit
 
-# Renderdagi CLOUDINARY_URL ni o‘qish
-cloudinary.config(cloudinary_url=os.getenv('CLOUDINARY_URL'))
-
-# Cloudinary sozlamalari
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# ImageKit konfiguratsiyasi
+imagekit = ImageKit(
+    private_key=os.getenv('IMAGEKIT_PRIVATE_KEY'),
+    public_key=os.getenv('IMAGEKIT_PUBLIC_KEY'),
+    url_endpoint=os.getenv('IMAGEKIT_URL_ENDPOINT')
+)
 
 # Media files
+DEFAULT_FILE_STORAGE = 'dcrm.storages.ImageKitStorage'
 MEDIA_URL = '/media/'
+
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
