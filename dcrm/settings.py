@@ -4,6 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 import environ
 import dj_database_url
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,7 +61,7 @@ INSTALLED_APPS = [
     'accounts',
     'website',
     'plm',
-  ]
+]
 
 INSTALLED_APPS += [
     'django.contrib.sites',
@@ -158,11 +161,12 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
 
+# Renderdagi CLOUDINARY_URL ni o‘qish
+cloudinary.config(cloudinary_url=os.getenv('CLOUDINARY_URL'))
+
 # Cloudinary sozlamalari
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Media files
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
