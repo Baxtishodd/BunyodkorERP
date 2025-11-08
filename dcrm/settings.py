@@ -1,21 +1,21 @@
 from pathlib import Path
 import os
+import environ
 from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
-import environ
+
 import dj_database_url
+from pathlib import Path
+import os
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+env = environ.Env(DEBUG=(bool, True))
 
-env = environ.Env(
-    DEBUG=(bool, True)
-)
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-SECRET_KEY = env("DJANGO_SECRET_KEY")
-
-DEBUG = env("DEBUG")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.101.76', 'https://bunyodkorerp-production.up.railway.app/']
 
@@ -156,17 +156,10 @@ LOGIN_URL = 'login'  # Fixed from LOGIN to LOGIN_URL
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
-from imagekitio import ImageKit
 
-# ImageKit konfiguratsiyasi
-imagekit = ImageKit(
-    private_key=os.getenv('IMAGEKIT_PRIVATE_KEY'),
-    public_key=os.getenv('IMAGEKIT_PUBLIC_KEY'),
-    url_endpoint=os.getenv('IMAGEKIT_URL_ENDPOINT')
-)
 
 # Media files
-DEFAULT_FILE_STORAGE = 'dcrm.storages.ImageKitStorage'
+DEFAULT_FILE_STORAGE = "dcrm.storages.SupabaseStorage"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # fallback uchun kerak
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
