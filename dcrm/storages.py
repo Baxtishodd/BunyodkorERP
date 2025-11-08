@@ -31,6 +31,7 @@ class SupabaseStorage(Storage):
         try:
             headers = {
                 "Authorization": f"Bearer {self.anon_key}",
+                "apikey": self.anon_key,
                 "Content-Type": "application/octet-stream"
             }
 
@@ -42,8 +43,9 @@ class SupabaseStorage(Storage):
             else:
                 raise TypeError("SupabaseStorage: content formati noto‘g‘ri")
 
+            # ✅ 'upsert=true' bilan PUT ishlatamiz (agar fayl bo‘lsa yangilanadi)
             upload_url = f"{self.api_url}/{self.bucket}/{name}?upsert=true"
-            response = requests.put(upload_url, headers=headers, data=data, timeout=20)
+            response = requests.put(upload_url, headers=headers, data=data, timeout=30)
 
             if response.status_code not in [200, 201]:
                 raise Exception(
