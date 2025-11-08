@@ -23,6 +23,7 @@ class SupabaseStorage(Storage):
 
     def _save(self, name, content):
         """ Faylni Supabase'ga yuklash """
+        print(f"🟢 SupabaseStorage ishladi: {name}")
         try:
             headers = {
                 "Authorization": f"Bearer {self.anon_key}",
