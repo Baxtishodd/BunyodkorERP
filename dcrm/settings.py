@@ -160,6 +160,7 @@ LOGOUT_REDIRECT_URL = 'index'
 
 # Media files
 DEFAULT_FILE_STORAGE = "dcrm.storages.SupabaseStorage"
-MEDIA_URL = '/media/'
+MEDIA_URL = f"{os.getenv('SUPABASE_URL')}/storage/v1/object/public/{os.getenv('SUPABASE_BUCKET')}/"
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # fallback uchun kerak
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

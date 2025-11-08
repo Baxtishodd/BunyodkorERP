@@ -42,9 +42,7 @@ class SupabaseStorage(Storage):
             else:
                 raise TypeError("SupabaseStorage: content formati noto‘g‘ri")
 
-            upload_url = f"{self.api_url}/{self.bucket}/{name}"
-
-            # ✅ Faylni POST o‘rniga PUT bilan yuboramiz — bu Supabase uchun xavfsizroq
+            upload_url = f"{self.api_url}/{self.bucket}/{name}?upsert=true"
             response = requests.put(upload_url, headers=headers, data=data, timeout=20)
 
             if response.status_code not in [200, 201]:
