@@ -24,7 +24,6 @@ ALLOWED_HOSTS = ['bunyodkorerp.onrender.com', 'localhost', '127.0.0.1']
 # ALLOWED_HOSTS = ['*']
 
 # --- DATABASES ---
-# DATABASE_URL=postgresql://postgres:vjNrSKIBlNMisVExEasbuTClwOUZGinP@gondola.proxy.rlwy.net:22920/railway
 
 if os.environ.get("DATABASE_URL"):
     DATABASES = {
