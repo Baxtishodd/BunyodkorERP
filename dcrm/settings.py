@@ -1,17 +1,18 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 import environ
 from django.utils.translation import gettext_lazy as _
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 
 import dj_database_url
-from pathlib import Path
-import os
-from dotenv import load_dotenv
 
+
+# load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+# .env ni yuklash — faqat 1 marta
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, ".env"))
-env = environ.Env(DEBUG=(bool, True))
+load_dotenv(BASE_DIR / ".env")
 
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
@@ -23,23 +24,24 @@ ALLOWED_HOSTS = ['bunyodkorerp.onrender.com', 'localhost', '127.0.0.1']
 # ALLOWED_HOSTS = ['*']
 
 # --- DATABASES ---
+# DATABASE_URL=postgresql://postgres:vjNrSKIBlNMisVExEasbuTClwOUZGinP@gondola.proxy.rlwy.net:22920/railway
+
 if os.environ.get("DATABASE_URL"):
-    # 🚀 Railway (PostgreSQL) uchun
     DATABASES = {
         "default": dj_database_url.config(conn_max_age=600)
     }
 else:
-    # 💻 Lokal uchun (MySQL yoki lokal DB)
     DATABASES = {
         'default': {
-            'ENGINE': env("ENGINE", default='django.db.backends.mysql'),
-            'NAME': env("DB_NAME"),
-            'USER': env("DB_USER"),
-            'PASSWORD': env("DB_PASSWORD"),
-            'HOST': env("DB_HOST", default='localhost'),
-            'PORT': env("DB_PORT", default='3306'),
+            'ENGINE': os.getenv("ENGINE", "django.db.backends.mysql"),
+            'NAME': os.getenv("DB_NAME"),
+            'USER': os.getenv("DB_USER"),
+            'PASSWORD': os.getenv("DB_PASSWORD"),
+            'HOST': os.getenv("DB_HOST", "localhost"),
+            'PORT': os.getenv("DB_PORT", "3306"),
         }
     }
+
 
 # Applications definition
 INSTALLED_APPS = [
@@ -157,10 +159,15 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
 
 
-
 # Media files
 DEFAULT_FILE_STORAGE = "dcrm.storages.SupabaseStorage"
 MEDIA_URL = f"{os.getenv('SUPABASE_URL')}/storage/v1/object/public/{os.getenv('SUPABASE_BUCKET')}/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # fallback uchun kerak
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = None
+# fallback uchun kerak
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+from django.core.files.storage import default_storage
+print(f"🧠 Hozirgi storage b: {DEFAULT_FILE_STORAGE}")
+print(f"🧠 Django ishlatayotgani: {default_storage.__class__}")
+

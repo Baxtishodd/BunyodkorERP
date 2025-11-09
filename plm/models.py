@@ -83,6 +83,10 @@ class ProductModel(models.Model):
         return f"{self.artikul} - {self.mijoz}"
 
 
+from django.conf import settings
+print("🧠 Hozirgi storage:", settings.DEFAULT_FILE_STORAGE)
+
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ("new", "Yangi"),
@@ -616,23 +620,6 @@ class ChangeLog(models.Model):
 
     def __str__(self):
         return f"{self.version} - {self.title}"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # class Warehouse(models.Model):
 #     name = models.CharField(max_length=150, verbose_name="Ombor nomi")

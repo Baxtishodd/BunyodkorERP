@@ -370,6 +370,7 @@ def order_detail(request, pk):
 @login_required
 def order_create(request):
     if request.method == "POST":
+        print("📂 Yuklangan fayllar:", request.FILES)
         form = OrderForm(request.POST, request.FILES)
         if form.is_valid():
             order = form.save(commit=False)
