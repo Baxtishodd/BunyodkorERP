@@ -1,145 +1,266 @@
 {% extends "base1.html" %}
-{% load static %}
-
+{% block title %}PLM Dashboard{% endblock %}
 {% block content %}
-<div class="container-fluid mt-4">
-  <h4 class="fw-bold mb-4">📊 Ishlab chiqarish paneli</h4>
+<div class="container-fluid mt-4 mb-4 pb-4">
+  <h3 class="fw-bold mb-4 text-primary">
+    <i class="bi bi-speedometer2 me-2"></i> PLM Dashboard
+  </h3>
 
-  <!-- Statistik kartalar -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-2 col-sm-6">
-      <div class="card text-center shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="text-muted">Jami buyurtmalar</h6>
-          <h2 class="fw-bold text-primary">{{ total_orders }}</h2>
+  <!-- === KARTALAR (asosiy statistikalar) === -->
+    <!-- === KARTALAR (asosiy statistikalar) === -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-bag-check-fill text-primary fs-3"></i>
+          <h6 class="mt-2 text-muted">Jami Buyurtmalar</h6>
+          <h3 class="fw-bold text-primary">{{ total_orders }}</h3>
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6">
-      <div class="card text-center shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="text-muted">Faol buyurtmalar</h6>
-          <h2 class="fw-bold text-warning">{{ active_orders }}</h2>
+
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-gear-fill text-info fs-3"></i>
+          <h6 class="mt-2 text-muted">Ishlab Chiqarishda</h6>
+          <h3 class="fw-bold text-info">{{ active_orders }}</h3>
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6">
-      <div class="card text-center shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="text-muted">Bajarilgan</h6>
-          <h2 class="fw-bold text-success">{{ completed_orders }}</h2>
+
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-check2-circle text-success fs-3"></i>
+          <h6 class="mt-2 text-muted">Bajarilgan</h6>
+          <h3 class="fw-bold text-success">{{ completed_orders }}</h3>
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6">
-      <div class="card text-center shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="text-muted">Xodimlar</h6>
-          <h2 class="fw-bold text-info">{{ total_employees }}</h2>
+
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-diagram-3-fill text-primary fs-3"></i>
+          <h6 class="mt-2 text-muted">Patoklar</h6>
+          <h3 class="fw-bold text-primary">{{ total_lines }}</h3>
         </div>
       </div>
     </div>
-    <div class="col-md-2 col-sm-6">
-      <div class="card text-center shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="text-muted">Patoklar</h6>
-          <h2 class="fw-bold text-secondary">{{ total_lines }}</h2>
+
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-people-fill text-secondary fs-3"></i>
+          <h6 class="mt-2 text-muted">Hodimlar</h6>
+          <h3 class="fw-bold text-secondary">{{ total_employees }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="card text-center shadow-sm border-0 bg-light">
+        <div class="card-body py-3">
+          <i class="bi bi-scissors text-danger fs-3"></i>
+          <h6 class="mt-2 text-muted">Bugungi Tikilgan</h6>
+          <h3 class="fw-bold text-danger">{{ today_stitched }}</h3>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Grafik va patoklar -->
-  <div class="row">
-    <div class="col-md-7 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-light fw-semibold">📈 So‘nggi 6 oyda yaratilgan buyurtmalar</div>
-        <div class="card-body">
-          <canvas id="ordersChart" height="130"></canvas>
-        </div>
-      </div>
+
+  <!-- === PATOKLAR HOLATI === -->
+  <div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-primary text-white fw-semibold">
+      <h3 class="fw-bold text-white">
+         <i class="bi bi-building-gear me-2"></i> Patoklar holati
+      </h3>
     </div>
-    <div class="col-md-5 mb-4">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-light fw-semibold">🏭 Patoklar progressi</div>
-        <div class="card-body">
-          {% for line in line_progress %}
-          <div class="mb-3">
-            <div class="d-flex justify-content-between">
-              <span><strong>{{ line.name }}</strong> — {{ line.client }} ({{ line.artikul }})</span>
-              <span class="text-muted">{{ line.progress }}%</span>
-            </div>
-            <div class="progress mt-1" style="height: 10px;">
-              <div class="progress-bar bg-success" style="width: {{ line.progress }}%;"></div>
-            </div>
-          </div>
-          {% empty %}
-          <p class="text-muted mb-0">Faol patoklar yo‘q</p>
-          {% endfor %}
-        </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Patok</th>
+              <th>Mijoz</th>
+              <th>Artikul</th>
+              <th>Hodimlar</th>
+              <th>Tikildi</th>
+              <th>Reja</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for l in lines_data %}
+            <tr>
+              <td class="fw-semibold">{{ l.name }}</td>
+              <td>{{ l.client|default:"-" }}</td>
+              <td>{{ l.artikul|default:"-" }}</td>
+              <td>{{ l.employees }}</td>
+              <td>{{ l.tikildi }}</td>
+              <td>{{ l.quantity }}</td>
+              <td style="min-width:160px;">
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar bg-success" role="progressbar"
+                       style="width: {{ l.progress }}%;"></div>
+                </div>
+                <small class="text-muted">{{ l.progress }}%</small>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <!-- So‘nggi buyurtmalar -->
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-light fw-semibold">🧾 So‘nggi buyurtmalar</div>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th>Mijoz</th>
-            <th>Artikul</th>
-            <th>Rangi</th>
-            <th>Holati</th>
-            <th>Yaratilgan</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for order in latest_orders %}
-          <tr>
-            <td>{{ order.client }}</td>
-            <td>{{ order.artikul }}</td>
-            <td>{{ order.rangi }}</td>
-            <td>
-              <span class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'in_production' %}warning{% else %}secondary{% endif %}">
-                {{ order.get_status_display }}
-              </span>
-            </td>
-            <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="5" class="text-center text-muted py-4">Buyurtmalar topilmadi</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <!-- === GRAFIKLAR === -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">
+          <h3 class="">
+            <i class="bi bi-pie-chart-fill me-2 text-primary"></i> Buyurtmalar Statistikasi
+          </h3>
+        </div>
+        <div class="card-body">
+          <canvas id="orderStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">
+          <h3>
+            <i class="bi bi-bar-chart-fill me-2 text-success"></i> Eng faol ishchilar
+          </h3>
+        </div>
+        <div class="card-body">
+          <canvas id="topEmployeesChart"></canvas>
+        </div>
+      </div>
+
+            <!-- === ISHLAB CHIQARISH BOSQICHLARI === -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">
+          <i class="bi bi-activity me-2 text-primary"></i> Ishlab chiqarish bosqichlari
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><i class="bi bi-scissors me-2 text-danger"></i>Kesim: <b>{{ production_stats.cutting }}</b></li>
+          <li class="list-group-item"><i class="bi bi-brush me-2 text-warning"></i>Pechat: <b>{{ production_stats.printing }}</b></li>
+          <li class="list-group-item"><i class="bi bi-thread me-2 text-info"></i>Tikim: <b>{{ production_stats.stitching }}</b></li>
+          <li class="list-group-item"><i class="bi bi-droplet-half me-2 text-secondary"></i>Dazmol: <b>{{ production_stats.ironing }}</b></li>
+          <li class="list-group-item"><i class="bi bi-box-seam me-2 text-success"></i>Qadoqlash: <b>{{ production_stats.packing }}</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- === YAQIN DEADLINE BUYURTMALAR === -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-warning fw-semibold">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> Yaqin deadline buyurtmalar
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Mijoz</th>
+              <th>Artikul</th>
+              <th>Deadline</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in urgent_orders %}
+            <tr>
+              <td>{{ order.client }}</td>
+              <td>{{ order.artikul }}</td>
+              <td>{{ order.deadline|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% if order.status == "new" %}
+                  <span class="badge bg-secondary">Yangi</span>
+                {% elif order.status == "in_production" %}
+                  <span class="badge bg-info text-dark">Ishlab chiqarishda</span>
+                {% elif order.status == "paused" %}
+                  <span class="badge bg-warning text-dark">To‘xtatilgan</span>
+                {% elif order.status == "completed" %}
+                  <span class="badge bg-success">Bajarilgan</span>
+                {% elif order.status == "canceled" %}
+                  <span class="badge bg-danger">Bekor qilingan</span>
+                {% elif order.status == "shipped" %}
+                  <span class="badge bg-primary">Yuborilgan</span>
+                {% else %}
+                  <span class="badge bg-light text-dark">Noma’lum</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">Hech narsa yo‘q ✅</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Chart.js -->
+<!-- === CHART.JS === -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const ctx = document.getElementById('ordersChart');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: {{ chart_labels|safe }},
-      datasets: [{
-        label: 'Buyurtmalar soni',
-        data: {{ chart_data|safe }},
-        borderColor: '#0d6efd',
-        backgroundColor: 'rgba(13, 110, 253, 0.1)',
-        borderWidth: 2,
-        tension: 0.3,
-        fill: true,
-        pointRadius: 4,
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-      plugins: { legend: { display: false } }
+const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+
+const statusColors = {
+  "new": "#6c757d",
+  "in_production": "#0dcaf0",
+  "paused": "#ffc107",
+  "completed": "#198754",
+  "canceled": "#dc3545",
+  "shipped": "#0d6efd"
+};
+
+// endi label ko‘rsatamiz, lekin rang status kodiga qarab olinadi
+const labels = [{% for s in order_status_data %}"{{ s.label }}",{% endfor %}];
+const codes = [{% for s in order_status_data %}"{{ s.status }}",{% endfor %}];
+const dataValues = [{% for s in order_status_data %}{{ s.total }},{% endfor %}];
+
+const backgroundColors = codes.map(code => statusColors[code] || '#adb5bd');
+
+new Chart(statusCtx, {
+  type: 'doughnut',
+  data: {
+    labels: labels, // endi "Yangi", "Bajarilgan" kabi chiqadi
+    datasets: [{
+      data: dataValues,
+      backgroundColor: backgroundColors
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { position: 'bottom' }
     }
-  });
+  }
+});
+
+
+const empCtx = document.getElementById('topEmployeesChart').getContext('2d');
+new Chart(empCtx, {
+  type: 'bar',
+  data: {
+    labels: [{% for e in top_employees %}"{{ e.employee__full_name }}",{% endfor %}],
+    datasets: [{
+      label: 'Ish hajmi (dona)',
+      data: [{% for e in top_employees %}{{ e.total }},{% endfor %}],
+      backgroundColor: '#198754'
+    }]
+  },
+  options: { plugins: { legend: { display: false } } }
+});
 </script>
 {% endblock %}

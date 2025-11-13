@@ -1,3 +1,4 @@
+{% load static %}
 {% if user.is_authenticated %}
 <!-- [ Header Topbar ] start -->
 <header class="pc-header">
@@ -87,7 +88,7 @@
               {% if user.profile_picture %}
                   <img src="{{ user.profile_picture.url }}" alt="Profile Image"  class="w-10 rounded-full">
               {% else %}
-                  <img src="/media/avatars/default-avatar.jpg" alt="Profile Image"  class="w-10 rounded-full">
+                  <img src="{% static 'images/default-avatar.jpg' %}" alt="Profile Image"  class="w-10 rounded-full">
               {% endif %}
             </div>
             <div class="grow ms-3">

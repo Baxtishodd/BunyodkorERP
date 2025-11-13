@@ -1952,37 +1952,56 @@ def modelassigned_list(request):
 
     return render(request, "planning/modelassigned/modelassigned_list.html", context)
 
-
 @login_required
-def modelassigned_create(request, order_id=None):
-    """Buyurtma uchun modelni patokka biriktirish"""
-    order = None
-    if order_id:
-        order = get_object_or_404(Order, id=order_id)
+def modelassigned_create(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
 
     if request.method == "POST":
         form = ModelAssignedForm(request.POST)
-
         if form.is_valid():
-            assigned = form.save(commit=False)
-
-            # Agar buyurtma urldan kelsa, formda model_name ni o‘zgartirmaymiz
-            if order:
-                assigned.model_name = order
-
-            assigned.save()
-            messages.success(request, "✅ Model patokka muvaffaqiyatli biriktirildi!")
-            return redirect("plm:order_list")
+            model_assigned = form.save(commit=False)
+            model_assigned.model_name = order  # buyurtmani biriktiramiz
+            model_assigned.save()
+            messages.success(request, "Model patokka muvaffaqiyatli biriktirildi ✅")
+            # Yoki shu patok sahifasiga qaytish
+            return redirect("plm:productionline_detail", pk=model_assigned.line.pk)
     else:
-        # formni buyurtma bilan oldindan to‘ldiramiz (disabled)
-        if order:
-            form = ModelAssignedForm(initial={"model_name": order})
-            form.fields["model_name"].disabled = True
-        else:
-            form = ModelAssignedForm()
+        # Dastlab model tanlangan holda formni ochish
+        form = ModelAssignedForm(initial={"model_name": order})
 
-    context = {"form": form, "order": order}
-    return render(request, "planning/modelassigned/modelassigned_form.html", context)
+    return render(request, "planning/modelassigned/modelassigned_form.html", {"form": form, "order": order})
+
+
+# @login_required
+# def modelassigned_create(request, order_id=None):
+#     """Buyurtma uchun modelni patokka biriktirish"""
+#     order = None
+#     if order_id:
+#         order = get_object_or_404(Order, id=order_id)
+#
+#     if request.method == "POST":
+#         form = ModelAssignedForm(request.POST)
+#
+#         if form.is_valid():
+#             assigned = form.save(commit=False)
+#
+#             # Agar buyurtma urldan kelsa, formda model_name ni o‘zgartirmaymiz
+#             if order:
+#                 assigned.model_name = order
+#
+#             assigned.save()
+#             messages.success(request, "✅ Model patokka muvaffaqiyatli biriktirildi!")
+#             return redirect("plm:order_list")
+#     else:
+#         # formni buyurtma bilan oldindan to‘ldiramiz (disabled)
+#         if order:
+#             form = ModelAssignedForm(initial={"model_name": order})
+#             form.fields["model_name"].disabled = True
+#         else:
+#             form = ModelAssignedForm()
+#
+#     context = {"form": form, "order": order}
+#     return render(request, "planning/modelassigned/modelassigned_form.html", context)
 
 
 @login_required
@@ -2039,74 +2058,100 @@ def changelog_create(request):
         form = ChangeLogForm()
     return render(request, "system/changelog_form.html", {"form": form})
 
-
-from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+# =============== DASHBOARD PAGE ===============
 from datetime import timedelta
+from django.db.models import Count, Sum
 from django.utils import timezone
 
 @login_required
 def dashboard(request):
-    # 🔹 Umumiy statistikalar
+    today = timezone.now().date()
+    last_7_days = today - timedelta(days=7)
+
+    # --- Umumiy ko‘rsatkichlar ---
     total_orders = Order.objects.count()
-    active_orders = Order.objects.filter(status__in=["new", "in_production"]).count()
+    active_orders = Order.objects.filter(status="in_production").count()
     completed_orders = Order.objects.filter(status="completed").count()
-    total_employees = Employee.objects.count()
     total_lines = ProductionLine.objects.count()
+    total_employees = Employee.objects.count()
+    today_stitched = Stitching.objects.filter(date=today).aggregate(total=Sum("quantity"))["total"] or 0
 
-    # 🔹 So‘nggi 5 buyurtma
-    latest_orders = Order.objects.order_by("-created_at")[:5]
-
-    # 🔹 Patoklar progressi
-    line_progress = []
+    # --- Patoklar holati ---
+    lines_data = []
     for line in ProductionLine.objects.all():
+        employees_count = line.employee_count()
         assigned = line.modelassigned_set.last()
         if assigned:
             order = assigned.model_name
-            total = order.sum_order_size() or 0
-            stitched = order.total_stitched()
-            percent = int((stitched / total) * 100) if total else 0
-            line_progress.append({
-                "name": line.name,
-                "client": order.client or "—",
-                "artikul": order.artikul or "—",
-                "progress": percent,
-            })
+            artikul = order.artikul
+            client = order.client
+            tikildi = order.total_stitched()
+            quantity = order.sum_order_size() or 0
+            progress = int((tikildi / quantity) * 100) if quantity else 0
+        else:
+            artikul = client = None
+            tikildi = quantity = progress = 0
+        lines_data.append({
+            "name": line.name,
+            "client": client,
+            "artikul": artikul,
+            "employees": employees_count,
+            "tikildi": tikildi,
+            "quantity": quantity,
+            "progress": progress
+        })
 
-    # 🔹 6 oylik buyurtma statistikasi (xatolarsiz)
-    six_months_ago = timezone.now() - timedelta(days=180)
-    monthly_data = (
-        Order.objects.filter(created_at__gte=six_months_ago)
-        .values("created_at__year", "created_at__month")
-        .annotate(count=Count("id"))
-        .order_by("created_at__year", "created_at__month")
+    # --- Buyurtmalar statusi statistikasi ---
+    # order_status_data = (
+    #     Order.objects.values("status")
+    #     .annotate(total=Count("id"))
+    #     .order_by()
+    # )
+    order_status_data = []
+    status_counts = Order.objects.values("status").annotate(total=Count("id"))
+    for s in status_counts:
+        code = s["status"]
+        label = dict(Order.STATUS_CHOICES).get(code, code)
+        order_status_data.append({
+            "status": code,  # chart rang uchun kerak
+            "label": label,  # foydalanuvchiga ko‘rsatish uchun
+            "total": s["total"]
+        })
+
+    # --- Eng faol ishchilar ---
+    top_employees = (
+        HourlyWork.objects.values("employee__full_name")
+        .annotate(total=Sum("quantity"))
+        .order_by("-total")[:5]
     )
 
-    labels, data = [], []
-    for item in monthly_data:
-        year = item.get("created_at__year")
-        month = item.get("created_at__month")
+    # --- Ishlab chiqarish bosqichlari statistikasi ---
+    production_stats = {
+        "cutting": Cutting.objects.aggregate(total=Sum("pastal_soni"))["total"] or 0,
+        "printing": Printing.objects.aggregate(total=Sum("quantity"))["total"] or 0,
+        "stitching": Stitching.objects.aggregate(total=Sum("quantity"))["total"] or 0,
+        "ironing": Ironing.objects.aggregate(total=Sum("quantity"))["total"] or 0,
+        "packing": Packing.objects.aggregate(total=Sum("product_quantity"))["total"] or 0,
+    }
 
-        # 🩵 None holatlari uchun xavfsiz tekshiruv
-        if year and month:
-            label = f"{year}-{int(month):02d}"
-        elif year:
-            label = f"{year}-??"
-        else:
-            label = "Noma’lum"
-        labels.append(label)
-        data.append(item.get("count", 0))
+    # --- Deadline yaqinlashayotgan buyurtmalar ---
+    urgent_orders = Order.objects.filter(
+        deadline__lte=timezone.now() + timedelta(days=3),
+        status__in=["new", "in_production"]
+    ).order_by("deadline")[:10]
 
     context = {
         "total_orders": total_orders,
         "active_orders": active_orders,
         "completed_orders": completed_orders,
-        "total_employees": total_employees,
         "total_lines": total_lines,
-        "latest_orders": latest_orders,
-        "line_progress": line_progress,
-        "chart_labels": labels,
-        "chart_data": data,
+        "total_employees": total_employees,
+        "today_stitched": today_stitched,
+        "lines_data": lines_data,
+        "order_status_data": order_status_data,
+        "top_employees": top_employees,
+        "production_stats": production_stats,
+        "urgent_orders": urgent_orders,
     }
 
     return render(request, "plm/dashboard.html", context)
