@@ -2101,12 +2101,7 @@ def dashboard(request):
             "progress": progress
         })
 
-    # --- Buyurtmalar statusi statistikasi ---
-    # order_status_data = (
-    #     Order.objects.values("status")
-    #     .annotate(total=Count("id"))
-    #     .order_by()
-    # )
+
     order_status_data = []
     status_counts = Order.objects.values("status").annotate(total=Count("id"))
     for s in status_counts:
