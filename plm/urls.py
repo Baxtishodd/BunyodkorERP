@@ -116,6 +116,9 @@ urlpatterns = [
 
     path("dashboard/", views.dashboard, name="dashboard"),
 
+    path("timeline/gantt/", views.gantt_timeline, name="gantt_timeline"),
+
+
 
 
 

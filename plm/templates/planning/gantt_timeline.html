@@ -1,0 +1,80 @@
+{% extends 'base1.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
+
+<style>
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 20px;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* STATUS COLORS */
+    .status-new { fill: #9c88ff !important; }            /* Yangi */
+    .status-in_production { fill: #00b894 !important; }  /* Ishlab chiqarishda */
+    .status-paused { fill: #fdcb6e !important; }         /* To‘xtatilgan */
+    .status-completed { fill: #0984e3 !important; }      /* Bajarilgan */
+    .status-canceled { fill: #d63031 !important; }       /* Bekor qilingan */
+    .status-shipped { fill: #6c5ce7 !important; }
+</style>
+
+<div class="card">
+    <div class="title">
+        <i class="bi bi-calendar3"></i> Gantt Timeline — Buyurtmalar rejalashtirish
+    </div>
+    <div class="btn-group mb-3">
+        <button class="btn btn-outline-primary" onclick="gantt.change_view_mode('Day')">Kun</button>
+        <button class="btn btn-outline-primary" onclick="gantt.change_view_mode('Week')">Hafta</button>
+        <button class="btn btn-outline-primary" onclick="gantt.change_view_mode('Month')">Oy</button>
+    </div>
+
+    <div id="gantt"></div>
+</div>
+
+<script>
+    const tasks = {{ tasks|safe }};
+
+    const gantt = new Gantt("#gantt", tasks, {
+        view_mode: "Week",
+        bar_height: 28,
+        padding: 22,
+        view_modes: ["Day", "Week", "Month"],
+        date_format: "YYYY-MM-DD",
+
+        custom_popup_html: task => `
+            <div style="padding: 10px">
+                <h5 style="margin-bottom: 5px; font-weight:600;">${task.name}</h5>
+                <p>Boshlanish: ${task.start}</p>
+                <p>Tugash: ${task.end}</p>
+                <p>Status: <b>${task.custom_class.replace("status-", "")}</b></p>
+            </div>
+        `
+    });
+
+    // 🎯 To'g'ri: barni uning o'z taskiga bog'lab rang beramiz
+    setTimeout(() => {
+        gantt.bars.forEach(bar => {
+            if (bar.task.custom_class) {
+                bar.$bar.classList.add(bar.task.custom_class);
+            }
+        });
+    }, 300);
+</script>
+
+
+
+{% endblock %}

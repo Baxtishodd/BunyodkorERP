@@ -107,6 +107,7 @@ class Order(models.Model):
     artikul = models.CharField(max_length=100, verbose_name="Artikuli", blank=True, null=True, )
     rangi = models.CharField(max_length=100, verbose_name="Rangi", blank=True, null=True, )
 
+    start_date = models.DateField(null=True, blank=True, verbose_name="Boshlanish sanasi")
     deadline = models.DateTimeField(blank=True, null=True, verbose_name="Yuklanish vaqti")
     # Model rasmi
     model_picture = models.ImageField(upload_to="orders/", blank=True, null=True, verbose_name="Model rasmi")

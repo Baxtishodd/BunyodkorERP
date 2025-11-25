@@ -2152,7 +2152,55 @@ def dashboard(request):
     return render(request, "plm/dashboard.html", context)
 
 
+# @login_required
+# def gantt_timeline(request):
+#     # faqat ishlab chiqarishda bo'lgan yoki tasdiqlangan buyurtmalarni olamiz
+#     orders = Order.objects.filter(
+#         status__in=["new", "in_production", "paused"]
+#     ).order_by("-created_at")
+#
+#     data = []
+#
+#     for order in orders:
+#         data.append({
+#             "id": order.id,
+#             "client": order.client,
+#             "artikul": order.artikul,
+#             "start": order.start_date.strftime("%Y-%m-%d") if order.start_date else "",
+#             "end": order.deadline.strftime("%Y-%m-%d") if order.deadline else "",
+#             "status": order.get_status_display(),
+#             "color": "#4CAF50" if order.status == "in_production" else "#FFC107"
+#         })
+#
+#     return render(request, "planning/gantt_timeline.html", {"orders": data})
 
+def gantt_timeline(request):
+    orders = Order.objects.exclude(start_date=None).exclude(deadline=None)
+
+    tasks = []
+
+    for o in orders:
+
+        status_class = {
+            "new": "status-new",
+            "in_production": "status-in_production",
+            "paused": "status-paused",
+            "completed": "status-completed",
+            "canceled": "status-canceled",
+            "shipped": "status-shipped",
+        }.get(o.status, "status-new")
+
+        tasks.append({
+            "id": o.id,
+            "name": f"{o.client} {o.artikul}",
+            "start": o.start_date.strftime("%Y-%m-%d"),
+            "end": o.deadline.strftime("%Y-%m-%d"),
+            "progress": 100 if o.status == "completed" else 50,
+            "custom_class": status_class,
+            "data_custom_class": status_class
+        })
+
+    return render(request, "planning/gantt_timeline.html", {"tasks": tasks})
 
 
 

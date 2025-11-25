@@ -45,10 +45,14 @@ class OrderForm(forms.ModelForm):
     deadline = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
     )
+    start_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+        required=False
+    )
 
     class Meta:
         model = Order
-        fields = ['client', 'artikul', 'rangi', 'deadline', 'model_picture', 'status']
+        fields = ['client', 'artikul', 'start_date', 'deadline', 'rangi', 'model_picture', 'status']
         widgets = {
             'client': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mijoz nomi'}),
             'artikul': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Artikul'}),
