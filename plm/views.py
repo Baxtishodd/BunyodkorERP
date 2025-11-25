@@ -1000,7 +1000,7 @@ def stitching_delete(request, pk):
 
 
 
-# Ironing view Dazmol modeli
+# ironing view Dazmol modeli
 @login_required
 def ironing_list(request):
     # 🔍 Qidiruv va sahifalash parametrlari
