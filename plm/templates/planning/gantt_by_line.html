@@ -1,0 +1,71 @@
+{% extends 'base1.html' %}
+{% block title %}Gantt Timeline — Buyurtmalar rejalashtirish{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+<script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
+
+<style>
+    .group-label {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 25px 0 10px 5px;
+    }
+
+    .status-new { fill: #eeeeee !important; }
+    .status-in_production { fill: #00b894 !important; }
+    .status-paused { fill: #fdcb6e !important; }
+    .status-completed { fill: #0984e3 !important; }
+    .status-canceled { fill: #d63031 !important; }
+    .status-shipped { fill: #6c5ce7 !important; }
+</style>
+
+<div class="card p-3">
+    <h3>Patoklar kesimida Gantt timeline</h3>
+
+    <div id="gantt-wrapper"></div>
+</div>
+
+<script>
+    const tasks = {{ tasks|safe }};
+
+    let grouped = {};
+
+    // Gruppalash: ProductionLine bo‘yicha
+    tasks.forEach(t => {
+        if (!grouped[t.group]) grouped[t.group] = [];
+        grouped[t.group].push(t);
+    });
+
+    const wrapper = document.getElementById("gantt-wrapper");
+
+    Object.keys(grouped).forEach(line => {
+
+        // Guruh nomi
+        wrapper.insertAdjacentHTML(
+            "beforeend",
+            `<div class='group-label'>${line}</div><div id="gantt-${line}"></div>`
+        );
+
+        const gantt = new Gantt(`#gantt-${line}`, grouped[line], {
+            view_mode: "Week",
+            bar_height: 26,
+            padding: 20,
+            date_format: "YYYY-MM-DD",
+            on_render: () => {
+                setTimeout(() => {
+                    gantt.bars.forEach(bar => {
+                        if (bar.task.custom_class) {
+                            bar.$bar_progress.classList.add(bar.task.custom_class);
+                        }
+                    });
+                }, 30);
+            }
+        });
+
+    });
+</script>
+
+
+
+{% endblock %}

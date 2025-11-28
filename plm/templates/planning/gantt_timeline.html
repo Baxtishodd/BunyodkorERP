@@ -1,5 +1,5 @@
 {% extends 'base1.html' %}
-
+{% block title %}Gantt Timeline — Buyurtmalar rejalashtirish{% endblock %}
 {% block content %}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
@@ -23,8 +23,13 @@
         gap: 10px;
     }
 
+    .bar {
+    fill: #ffffff !important;  /* OQ FON */
+    }
+
+
     /* STATUS COLORS */
-    .status-new { fill: #9c88ff !important; }            /* Yangi */
+    .status-new { fill: #eeeeee !important; }            /* Yangi */
     .status-in_production { fill: #00b894 !important; }  /* Ishlab chiqarishda */
     .status-paused { fill: #fdcb6e !important; }         /* To‘xtatilgan */
     .status-completed { fill: #0984e3 !important; }      /* Bajarilgan */
@@ -47,33 +52,47 @@
 
 <script>
     const tasks = {{ tasks|safe }};
+    let gantt;
 
-    const gantt = new Gantt("#gantt", tasks, {
-        view_mode: "Week",
-        bar_height: 28,
-        padding: 22,
-        view_modes: ["Day", "Week", "Month"],
-        date_format: "YYYY-MM-DD",
+    // Status ranglarini bar-progress elementiga qo‘llash funksiyasi
+    function applyStatusColors() {
+        setTimeout(() => {
+            gantt.bars.forEach(bar => {
+                if (bar.task.custom_class) {
+                    bar.$bar_progress.classList.add(bar.task.custom_class);
+                }
+            });
+        }, 50);
+    }
 
-        custom_popup_html: task => `
-            <div style="padding: 10px">
-                <h5 style="margin-bottom: 5px; font-weight:600;">${task.name}</h5>
-                <p>Boshlanish: ${task.start}</p>
-                <p>Tugash: ${task.end}</p>
-                <p>Status: <b>${task.custom_class.replace("status-", "")}</b></p>
-            </div>
-        `
-    });
+    // Timeline’ni ishga tushirish
+    function initGantt() {
+        gantt = new Gantt("#gantt", tasks, {
+            view_mode: "Week",
+            bar_height: 28,
+            padding: 22,
+            date_format: "YYYY-MM-DD",
 
-    // 🎯 To'g'ri: barni uning o'z taskiga bog'lab rang beramiz
-    setTimeout(() => {
-        gantt.bars.forEach(bar => {
-            if (bar.task.custom_class) {
-                bar.$bar.classList.add(bar.task.custom_class);
-            }
+            // Gantt qayta chizilganda ranglar yo‘qolmasligi uchun
+            on_render: applyStatusColors,
+
+            custom_popup_html: task => `
+                <div style="padding: 10px">
+                    <h5 style="margin-bottom: 5px; font-weight:600;">${task.name}</h5>
+                    <p>Boshlanish: ${task.start}</p>
+                    <p>Tugash: ${task.end}</p>
+                    <p>Status: <b>${task.custom_class.replace("status-", "")}</b></p>
+                </div>
+            `
         });
-    }, 300);
+
+        // boshlang‘ich render uchun rang berish
+        applyStatusColors();
+    }
+
+    initGantt();
 </script>
+
 
 
 

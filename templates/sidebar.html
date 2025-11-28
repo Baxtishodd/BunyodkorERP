@@ -29,7 +29,8 @@
         <li class="pc-item pc-hasmenu">
           <a href="{% url 'plm:dashboard' %}" class="pc-link">
             <span class="pc-micon"><i data-feather="activity"></i></span>
-            <span class="pc-mtext">Dashboard</span>
+            <span class="pc-mtext">Dashboard <span class="badge-beta">BETA</span>
+            </span>
           </a>
         </li>
         <li class="pc-item pc-hasmenu">
@@ -43,12 +44,32 @@
               class="pc-mtext">Rejalashtirish</span><span class="pc-arrow"><i class="ti ti-chevron-right"></i></span></a>
           <ul class="pc-submenu">
 
-              <li class="pc-item">
-                  <a href="{% url 'plm:gantt_timeline' %}" class="pc-link">
-                      <i class="bi bi-bar-chart-steps me-2"></i>
-                      <span class="pc-mtext">Gantt Timeline</span>
+              <li class="pc-item pc-hasmenu">
+                  <a href="#!" class="pc-link">
+                      <span class="pc-micon">
+                          <i data-feather="align-right"></i>
+                      </span>
+                      <span class="pc-mtext">
+                          Timeline
+                          <span class="badge-beta">BETA</span>
+                      </span>
+                      <i class="ti ti-chevron-right"></i>
                   </a>
-              </li>
+                  <ul class="pc-submenu">
+                      <li class="pc-item">
+                          <a href="{% url 'plm:gantt_timeline' %}" class="pc-link">
+                              <i class="bi bi-bar-chart-steps me-2"></i>
+                              <span class="pc-mtext">Gantt Timeline</span>
+                          </a>
+                      </li>
+                      <li class="pc-item">
+                          <a href="{% url 'plm:gantt_by_line' %}" class="pc-link">
+                              <i class="bi bi-bar-chart-steps me-2"></i>
+                              <span class="pc-mtext">Gantt by Line</span>
+                          </a>
+                      </li>
+
+                  </ul>
 
               <li class="pc-item">
                 <a class="pc-link d-flex align-items-center" href="{% url 'plm:productionline_list' %}">

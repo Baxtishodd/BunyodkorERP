@@ -2152,27 +2152,35 @@ def dashboard(request):
     return render(request, "plm/dashboard.html", context)
 
 
-# @login_required
-# def gantt_timeline(request):
-#     # faqat ishlab chiqarishda bo'lgan yoki tasdiqlangan buyurtmalarni olamiz
-#     orders = Order.objects.filter(
-#         status__in=["new", "in_production", "paused"]
-#     ).order_by("-created_at")
-#
-#     data = []
-#
-#     for order in orders:
-#         data.append({
-#             "id": order.id,
-#             "client": order.client,
-#             "artikul": order.artikul,
-#             "start": order.start_date.strftime("%Y-%m-%d") if order.start_date else "",
-#             "end": order.deadline.strftime("%Y-%m-%d") if order.deadline else "",
-#             "status": order.get_status_display(),
-#             "color": "#4CAF50" if order.status == "in_production" else "#FFC107"
-#         })
-#
-#     return render(request, "planning/gantt_timeline.html", {"orders": data})
+
+def gantt_by_lines(request):
+    lines = ProductionLine.objects.all().prefetch_related("modelassigned_set__model_name")
+
+    gantt_data = []
+
+    for line in lines:
+        orders = ModelAssigned.objects.filter(line=line).select_related("model_name")
+
+        for item in orders:
+            order = item.model_name
+
+            # Deadline bo'lmasa 5 kun deb default
+            start_date = order.created_at.date() if order.created_at else order.assigned_date
+            end_date = order.deadline.date() if order.deadline else start_date + timedelta(days=5)
+
+            gantt_data.append({
+                "id": f"{order.id}_{line.id}",
+                "name": f"{order.artikul} ({line.name})",
+                "start": str(start_date),
+                "end": str(end_date),
+                "progress": 100 if order.status == "completed" else 60,
+                "custom_class": f"status-{order.status}",
+                "group": line.name   # 🔥 Muhim: grouping uchun label
+            })
+
+    return render(request, "planning/gantt_by_line.html", {
+        "tasks": gantt_data
+    })
 
 def gantt_timeline(request):
     orders = Order.objects.exclude(start_date=None).exclude(deadline=None)
